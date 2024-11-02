@@ -58,7 +58,7 @@ const SidebarAdmin = () => {
           </Link>
 
 
-          {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-300">Orders</h3>}
+          {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-500">Orders</h3>}
           <Link href="/admin/dashboard/orders/allOrders" passHref>
             <SidebarItem icon={<FaShoppingCart />} label="Orders" isOpen={isOpen} />
           </Link>

@@ -1,8 +1,9 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import FacebookProvider from "next-auth/providers/facebook"; // Missing FacebookProvider import
-import userModels from "@/models/userModels";
+import FacebookProvider from "next-auth/providers/facebook";
 import connectDB from "@/lib/dbConnect";
+import userModels from "@/models/userModels";
+
 
 // Connect to MongoDB once
 connectDB();

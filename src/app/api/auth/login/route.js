@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server';
 export const POST = async (req) => {
     try {
         console.log('Connecting to the database...');
-        await connectDB(); // Connect to the database
+        await connectDB(); 
         console.log('Database connection established.');
 
         // Parse the JSON body of the request

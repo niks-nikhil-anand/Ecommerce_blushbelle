@@ -65,7 +65,7 @@ const authOptions = {
 
   pages: {
     error: "/auth/error", // Custom error page
-    signIn: "/auth/signin", // Custom sign-in page
+    signIn: "/auth/signIn", // Custom sign-in page
   },
 
   debug: process.env.NODE_ENV === "development", // Enable debug in development mode

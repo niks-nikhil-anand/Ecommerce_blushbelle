@@ -1,8 +1,9 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook"; // Missing FacebookProvider import
-import userModels from "@/models/userModels";
 import connectDB from "@/lib/dbConnect";
+import userModels from "@/models/userModels";
+
 
 // Connect to MongoDB once
 connectDB();
@@ -64,8 +65,8 @@ const authOptions = {
   },
 
   pages: {
-    error: "/auth/error", // Custom error page
-    signIn: "/auth/signIn", // Custom sign-in page
+    error: "/auth/error",
+    signIn: "/auth/signIn",
   },
 
   debug: process.env.NODE_ENV === "development", // Enable debug in development mode

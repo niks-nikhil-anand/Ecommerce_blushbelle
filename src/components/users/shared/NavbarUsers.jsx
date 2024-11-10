@@ -46,7 +46,7 @@ const Navbar = () => {
             }
             const data = await response.json();
             console.log(data)
-            setUserId(data[0]._id); // Assuming the API returns an object with the `_id` field
+            setUserId(data._id); // Assuming the API returns an object with the `_id` field
           } catch (error) {
             console.error('Failed to fetch user details:', error);
           }

@@ -3,7 +3,7 @@ import partnerApplication from "@/models/partnerApplication";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { generateRandomToken, generateResetLink } from "@/lib/forgotPasswordToken";
-import SignupOtpEmail from "@/emails/signUpOTPEmail";
+import SignupOtpEmail from "@/emails/loginOTPEmail";
 
 
 const resend = new Resend(process.env.RESEND_API_KEY);

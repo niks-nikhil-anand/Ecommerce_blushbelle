@@ -2,11 +2,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaEye, FaEyeSlash, FaGoogle, FaFacebookF } from 'react-icons/fa';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
-import loginBanner from '../../../../../public/admin/loginBanner.jpg';
-import bannerbg from '../../../../../public/admin/banner-mask-2.png';
+import { useRouter } from 'next/navigation'; 
 import axios from 'axios';
+
+
 
 const AdminLoginForm = () => {
   const [email, setEmail] = useState('');
@@ -57,18 +56,18 @@ const AdminLoginForm = () => {
           className="p-10  w-full flex flex-col justify-center md:ml-6"
         >
           <motion.h2
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-2xl font-bold mb-2 text-center"
-          >
-            Admin Login
-          </motion.h2>
+      className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-extrabold mb-6 text-center md:text-left text-green-800 mt-8 tracking-wide"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      Welcome Back to CleanVeda Nutrition
+    </motion.h2>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-center text-gray-600 mb-6"
+            className="text-center text-gray-600 mb-6 underline"
           >
             Access your admin dashboard 🚀
           </motion.p>

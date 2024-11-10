@@ -20,22 +20,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         minlength: [6, 'Password must be at least 6 characters long']
     },
-    isVerified: {
-        type: Boolean,
-        default: false
-    },
-    isVerifiedExpires:{
-        type: Date,
-        default: null
-    },
-    resetPasswordToken: {
-        type: String,
-        default: ''
-    },
-    resetPasswordExpires: {
-        type: Date,
-        default: null
-    },
+    resetPasswordToken:{
+        type:String
+      },
+      resetPasswordExpires:{
+        type : Date
+      },
+      isLoginOTP:{
+        type:String
+      },
+      isLoginOTPExpires:{
+        type : Date
+      },
     profilePic: {
         type: String,
         default: ''

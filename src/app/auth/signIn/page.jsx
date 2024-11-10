@@ -79,7 +79,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center bg-green-50 px-6 md:px-4 w-full flex-col">
+    <div className="flex justify-center items-center bg-gray-100 px-6 md:px-4 w-full flex-col">
       <div className="w-full md:w-2/3 lg:w-1/2 md:pl-6 my-5">
         <h2 className="text-3xl font-bold mb-4 text-center md:text-left text-green-900 mt-5">Login</h2>
 
@@ -154,13 +154,13 @@ const LoginForm = () => {
 
 
         <div className="flex justify-between mt-4 text-sm md:text-base">
-      <a href="#" className="text-green-700 hover:underline">Forgot password?</a>
+      <Link href={"/forgotPassword"} className="text-green-700 hover:underline">Forgot password?</Link>
       <Link href={"/auth/register"} className="text-green-700 hover:underline">Create an account</Link>
     </div>
 
         <div className="flex items-center justify-between my-6">
       <span className="border-t border-gray-300 flex-grow"></span>
-      <span className="mx-4 text-gray-600">JonoJivan Grocery</span>
+      <span className="mx-4 text-gray-600">CleanVeda Nutrition</span>
       <span className="border-t border-gray-300 flex-grow"></span>
     </div>
 

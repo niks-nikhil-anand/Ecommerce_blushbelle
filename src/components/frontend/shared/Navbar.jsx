@@ -7,11 +7,6 @@ import Image from 'next/image';
 import waveNav from '../../../../public/frontend/SvgAssets/wave-nav.svg'; 
 import Link from "next/link";
 
-
-
-
-
-
 const Navbar = () => {
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isLearnOpen, setIsLearnOpen] = useState(false);
@@ -52,10 +47,15 @@ const Navbar = () => {
   {/* Right Side - Search, User, Cart Icons */}
   <div className="flex items-center space-x-4 md:hidden">
     <FiSearch className="w-6 h-6 cursor-pointer" />
+    <Link href={"/auth/signIn"}>
+    
     <FiUser className="w-6 h-6 cursor-pointer" />
+    </Link>
     <div className="relative">
+      <Link  href={"/product/cart"}>
+      
             <FiShoppingBag className="w-6 h-6 cursor-pointer" />
-        
+      </Link>
           </div>
   </div>
 </div>

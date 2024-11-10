@@ -10,8 +10,6 @@ import Image from "next/image";
 import facebookIcon from '../../../../public/IconHub/facebookIcon.png';
 import googleIcon from '../../../../public/IconHub/GoogleIcons.png';
 
-
-
 const LoginForm = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -43,11 +41,7 @@ const LoginForm = () => {
         if (cookieResponse.status === 200 ) {
           toast.success("Login successful!");
           setEmail(''); setPassword(''); setRememberMe(false);
-          console.log(cookieResponse.data._id)
-          console.log("redirecting")
-
-          console.log("User ID:", cookieResponse.data._id); // Verify ID
-          console.log(`/users/${cookieResponse.data._id}`)
+          console.log("User ID:", cookieResponse.data._id);
           router.push(`/users/${cookieResponse.data._id}`);
         }
       }
@@ -58,22 +52,37 @@ const LoginForm = () => {
     }
   };
 
+  const handleSendOtp = async () => {
+    try {
+      const response = await axios.post('/api/auth/login/sendOTP', { email });
+      if (response.status === 200) {
+        toast.success("OTP sent successfully!");
+      }
+    } catch (error) {
+      toast.error("Failed to send OTP. Please try again.");
+    }
+  };
+
   const handleLoginWithOTP = async (e) => {
     e.preventDefault();
     setLoading(true);
-    if (otpInput === "123456") { // Mock OTP validation
-      toast.success("OTP verified successfully!");
-      setOtpInput('');
-      router.push(`/users/profile`); // Change route as needed
-    } else {
+    try {
+      const response = await axios.post('/api/auth/login/loginWithOTP', { email, otp: otpInput });
+      if (response.status === 200) {
+        toast.success("OTP verified successfully!");
+        setOtpInput('');
+        router.push(`/users/profile`);
+      }
+    } catch (error) {
       toast.error("Invalid OTP. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleOtpInputChange = (e) => {
     const value = e.target.value;
-    if (/^\d{0,6}$/.test(value)) { // Allow only numbers, max 6 digits
+    if (/^\d{0,6}$/.test(value)) {
       setOtpInput(value);
     }
   };
@@ -99,7 +108,7 @@ const LoginForm = () => {
         </div>
 
         <form onSubmit={isOtpLogin ? handleLoginWithOTP : handleLoginWithPassword}>
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <input
               type="email"
               placeholder="Email"
@@ -108,6 +117,15 @@ const LoginForm = () => {
               className="w-full px-5 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"
               required
             />
+            {isOtpLogin && (
+              <button
+                type="button"
+                onClick={handleSendOtp}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-700 underline text-sm md:text-base"
+              >
+                Send OTP
+              </button>
+            )}
           </div>
 
           {!isOtpLogin ? (
@@ -152,35 +170,34 @@ const LoginForm = () => {
           </motion.button>
         </form>
 
-
         <div className="flex justify-between mt-4 text-sm md:text-base">
-      <Link href={"/forgotPassword"} className="text-green-700 hover:underline">Forgot password?</Link>
-      <Link href={"/auth/register"} className="text-green-700 hover:underline">Create an account</Link>
-    </div>
+          <Link href={"/forgotPassword"} className="text-green-700 hover:underline">Forgot password?</Link>
+          <Link href={"/auth/register"} className="text-green-700 hover:underline">Create an account</Link>
+        </div>
 
         <div className="flex items-center justify-between my-6">
-      <span className="border-t border-gray-300 flex-grow"></span>
-      <span className="mx-4 text-gray-600">CleanVeda Nutrition</span>
-      <span className="border-t border-gray-300 flex-grow"></span>
-    </div>
+          <span className="border-t border-gray-300 flex-grow"></span>
+          <span className="mx-4 text-gray-600">CleanVeda Nutrition</span>
+          <span className="border-t border-gray-300 flex-grow"></span>
+        </div>
 
-    {/* Social login buttons */}
-    <div className="flex flex-col sm:flex-row sm:justify-around space-y-4 sm:space-y-0 sm:space-x-4">
-  <button
-    onClick={() => handleProviderSignIn("google")}
-    className="flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-lg bg-gradient-to-r from-white to-gray-100 hover:from-gray-100 hover:to-white transition-all transform hover:-translate-y-1 hover:shadow-xl active:shadow-md active:translate-y-0"
-  >
-    <Image src={googleIcon} alt="Google Icon" width={24} height={24} />
-    <span className="ml-2 text-gray-700 font-medium">Sign in with Google</span>
-  </button>
-  <button
-    onClick={() => signIn("facebook")}
-    className="flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-lg bg-gradient-to-r from-white to-gray-100 hover:from-gray-100 hover:to-white transition-all transform hover:-translate-y-1 hover:shadow-xl active:shadow-md active:translate-y-0"
-  >
-    <Image src={facebookIcon} alt="Facebook Icon" width={24} height={24} />
-    <span className="ml-2 text-gray-700 font-medium">Sign in with Facebook</span>
-  </button>
-</div>
+        {/* Social login buttons */}
+        <div className="flex flex-col sm:flex-row sm:justify-around space-y-4 sm:space-y-0 sm:space-x-4">
+          <button
+            onClick={() => handleProviderSignIn("google")}
+            className="flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-lg bg-gradient-to-r from-white to-gray-100 hover:from-gray-100 hover:to-white transition-all transform hover:-translate-y-1 hover:shadow-xl active:shadow-md active:translate-y-0"
+          >
+            <Image src={googleIcon} alt="Google Icon" width={24} height={24} />
+            <span className="ml-2 text-gray-700 font-medium">Sign in with Google</span>
+          </button>
+          <button
+            onClick={() => handleProviderSignIn("facebook")}
+            className="flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-lg bg-gradient-to-r from-white to-gray-100 hover:from-gray-100 hover:to-white transition-all transform hover:-translate-y-1 hover:shadow-xl active:shadow-md active:translate-y-0"
+          >
+            <Image src={facebookIcon} alt="Facebook Icon" width={24} height={24} />
+            <span className="ml-2 text-gray-700 font-medium">Sign in with Facebook</span>
+          </button>
+        </div>
       </div>
     </div>
   );

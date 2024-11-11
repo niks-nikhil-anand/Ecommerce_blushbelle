@@ -1,7 +1,7 @@
 import connectDB from "@/lib/dbConnect";
-import partnerApplication from "@/models/partnerApplication";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+import userModels from "@/models/userModels";
 
 
 export const POST = async (req) => {
@@ -23,7 +23,7 @@ export const POST = async (req) => {
       throw new Error("token is required");
     }
 
-    const partner = await partnerApplication.find({resetPasswordToken: token });
+    const partner = await userModels.find({resetPasswordToken: token });
 
     if (!partner) {
       console.error("Invalid or expired token");

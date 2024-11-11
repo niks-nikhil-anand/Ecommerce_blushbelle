@@ -1,22 +1,17 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const newsLetterSchema = new mongoose.Schema({
+const NewsLetterSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
   email: {
     type: String,
     required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  },
-}, 
-{
-  timestamps: true,
+    unique: true
+  }
 });
 
-// Corrected export to match the schema name
-export const NewsLetter = mongoose.models.NewsLetter || mongoose.model("NewsLetter", newsLetterSchema);
+const NewsLetter = mongoose.models.NewsLetter || mongoose.model('NewsLetter', NewsLetterSchema);
+
+export default NewsLetter;

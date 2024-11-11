@@ -68,10 +68,11 @@ const LoginForm = () => {
     setLoading(true);
     try {
       const response = await axios.post('/api/auth/login/loginWithOTP', { email, otp: otpInput });
+
       if (response.status === 200) {
         toast.success("OTP verified successfully!");
         setOtpInput('');
-        router.push(`/users/profile`);
+        router.push(`/users/${response.data._id}`);
       }
     } catch (error) {
       toast.error("Invalid OTP. Please try again.");

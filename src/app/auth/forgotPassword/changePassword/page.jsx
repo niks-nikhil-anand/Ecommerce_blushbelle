@@ -3,6 +3,8 @@ import React, { useState, Suspense } from 'react';
 import { toast } from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
 import Loader from '@/components/loader/loader';
+import { motion } from 'framer-motion';
+
 
 
 const ChangePassword = () => {
@@ -68,8 +70,26 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 border rounded-lg shadow-lg bg-white mt-[10rem] mb-[10rem]">
-      <h2 className="text-2xl font-bold mb-4">Change Password</h2>
+    <div className="flex flex-col md:flex-row h-screen mb-[6rem] md:mb-[0rem]">
+       <div className="md:w-1/2 bg-blue-500 text-white p-10 flex flex-col justify-center items-center md:items-start">
+       <motion.div
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center md:text-left">
+            Forgot your password?
+          </h1>
+          <p className="mb-4 text-center md:text-left">
+            Don’t worry! Just fill out the fields below to reset your password and regain access to your account.
+          </p>
+        </motion.div>
+      </div>
+      <div className='md:w-1/2 bg-white p-10 flex flex-col justify-center'>
+      <h2 className="text-2xl font-bold mb-4 text-center">Reset Your Password</h2>
+      <p className="text-center text-gray-600 mb-8">
+          Please enter and confirm your new password below to complete the password reset process.
+        </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700">New Password</label>
@@ -101,6 +121,8 @@ const ChangePassword = () => {
           </button>
         </div>
       </form>
+      </div>
+      
     </div>
   );
 };

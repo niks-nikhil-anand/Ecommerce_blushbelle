@@ -1,8 +1,7 @@
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
-import toast, { Toaster } from 'react-hot-toast';
-import 'react-toastify/dist/ReactToastify.css';
+import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
 export default function ForgotPassword() {

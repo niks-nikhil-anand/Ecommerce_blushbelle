@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import connectDB from "@/lib/dbConnect";
 import NewsLetter from "@/models/newsLetter";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+
 
 export async function POST(req) {
   try {
@@ -26,7 +31,17 @@ export async function POST(req) {
     const newSubscription = new NewsLetter({ name, email });
     await newSubscription.save();
 
-    // Return a success response
+
+    await resend.emails.send({
+      from: 'no-reply@cleanveda.com',
+      to: email,
+      subject: 'Welcome to Cleanveda - Enjoy 15% Off Your First Order!',
+      react: (
+        <WelcomeEmail fullName={name} />
+      ),
+    });
+    console.log("Welcome email sent to:", email);
+
     return NextResponse.json({ message: 'Subscription successful!' }, { status: 200 });
   } catch (error) {
     console.error('Error processing subscription:', error);

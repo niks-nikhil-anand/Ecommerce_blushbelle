@@ -1,49 +1,59 @@
+import ForgotPasswordEmail from "@/emails/forgotPasswordEmail";
 import connectDB from "@/lib/dbConnect";
-import partnerApplication from "@/models/partnerApplication";
+import { generateRandomToken, generateResetLink } from "@/lib/forgotPasswordToken";
+import userModels from "@/models/userModels";
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import { Resend } from "resend";
 
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const POST = async (req) => {
   try {
-    console.log("Connecting to database...");
+    console.log("Connecting to the database...");
     await connectDB();
     console.log("Database connected.");
 
     const formData = await req.formData();
-    const newPassword = formData.get("newPassword");
-    const token = formData.get("token");
+    const email = formData.get("email");
+    console.log("Received email:", email);
 
-    if (!newPassword) {
-      console.error("newPassword is required");
-      throw new Error("newPassword is required");
-    }
-    if (!token) {
-      console.error("token is required");
-      throw new Error("token is required");
+    // Validate email input
+    if (!email) {
+      console.error("Email is required");
+      return NextResponse.json({ msg: "Email is required" }, { status: 400 });
     }
 
-    const partner = await partnerApplication.find({resetPasswordToken: token });
-
-    if (!partner) {
-      console.error("Invalid or expired token");
-      return NextResponse.json({ msg: "Invalid or expired token" }, { status: 400 });
+    // Find the user by email
+    const user = await userModels.findOne({ email });
+    if (!user) {
+      console.error("User not found");
+      return NextResponse.json({ msg: "User not found" }, { status: 404 });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    // Assuming you have a method to hash passwords
+    // Generate a random token and set expiration
+    const token = generateRandomToken();
+    const expiration = new Date(Date.now() + 3600000); // 1 hour
 
-    await partnerApplication.updateOne(
-      { resetPasswordToken: token },
-      { $set: { password: hashedPassword ,
-        resetPasswordToken: "",
-        resetPasswordExpires: ""
-      } }
-    );
-    console.log("Password reset successfully");
-    return NextResponse.json({ msg: "Password reset successfully" }, { status: 200 });
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = expiration;
+    await user.save();
+
+    const resetLink = generateResetLink(token);
+    console.log("Generated reset link:", resetLink);
+
+    // Send the password reset email
+    console.log("Sending password reset email to:", email);
+    await resend.emails.send({
+      from: "no-reply@cleanveda.com",
+      to: email,
+      subject: "Password Reset Request",
+      react: ForgotPasswordEmail({ name: user.fullName, resetLink }),
+    });
+
+    console.log("Password reset email sent.");
+    return NextResponse.json({ msg: "Password reset email sent" }, { status: 200 });
   } catch (error) {
-    console.error("Error resetting password:", error);
-    return NextResponse.json({ msg: "Error resetting password", error: error.message }, { status: 500 });
+    console.error("Error requesting password reset:", error);
+    return NextResponse.json({ msg: "Error requesting password reset", error: error.message }, { status: 500 });
   }
 };

@@ -1,12 +1,7 @@
 import connectDB from "@/lib/dbConnect";
 import partnerApplication from "@/models/partnerApplication";
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
-import { generateRandomToken, generateResetLink } from "@/lib/forgotPasswordToken";
-import ForgotPasswordEmail from "@/emails/forgotPasswordEmail";
-
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import bcrypt from "bcrypt";
 
 
 export const POST = async (req) => {
@@ -14,44 +9,41 @@ export const POST = async (req) => {
     console.log("Connecting to database...");
     await connectDB();
     console.log("Database connected.");
+
     const formData = await req.formData();
-    const email = formData.get("email");
-    console.log("Received email:", email);
+    const newPassword = formData.get("newPassword");
+    const token = formData.get("token");
 
-    if (!email) {
-      console.error("Email is required");
-      throw new Error("Email is required");
+    if (!newPassword) {
+      console.error("newPassword is required");
+      throw new Error("newPassword is required");
+    }
+    if (!token) {
+      console.error("token is required");
+      throw new Error("token is required");
     }
 
-    const partner = await partnerApplication.findOne({ email });
+    const partner = await partnerApplication.find({resetPasswordToken: token });
+
     if (!partner) {
-      console.error("Partner not found");
-      throw new Error("Partner Not Found");
+      console.error("Invalid or expired token");
+      return NextResponse.json({ msg: "Invalid or expired token" }, { status: 400 });
     }
 
-    const token = generateRandomToken();
-    const expiration = new Date(Date.now() + 3600000);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Assuming you have a method to hash passwords
 
-    partner.resetPasswordToken = token;
-    partner.resetPasswordExpires = expiration;
-    await partner.save();
-
-    const resetLink = generateResetLink(token);
-    console.log("Generated reset link:", resetLink);
-
-   
-    console.log("Sending password reset email to:", email);
-    await resend.emails.send({
-      from: "no-reply@legal257.in",
-      to: email,
-      subject: "Password Reset Request",
-      react: ForgotPasswordEmail({ username: partner.username, resetLink }),
-    });
-
-    console.log("Password reset email sent.");
-    return NextResponse.json({ msg: "Password reset email sent" }, { status: 200 });
+    await partnerApplication.updateOne(
+      { resetPasswordToken: token },
+      { $set: { password: hashedPassword ,
+        resetPasswordToken: "",
+        resetPasswordExpires: ""
+      } }
+    );
+    console.log("Password reset successfully");
+    return NextResponse.json({ msg: "Password reset successfully" }, { status: 200 });
   } catch (error) {
-    console.error("Error requesting password reset:", error);
-    return NextResponse.json({ msg: "Error requesting password reset", error: error.message }, { status: 500 });
+    console.error("Error resetting password:", error);
+    return NextResponse.json({ msg: "Error resetting password", error: error.message }, { status: 500 });
   }
 };

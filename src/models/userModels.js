@@ -22,16 +22,16 @@ const userSchema = new mongoose.Schema({
     },
     resetPasswordToken:{
         type:String
-      },
-      resetPasswordExpires:{
+     },
+    resetPasswordExpires:{
         type : Date
-      },
-      isLoginOTP:{
+    },
+    isLoginOTP:{
         type:String
       },
-      isLoginOTPExpires:{
+    isLoginOTPExpires:{
         type : Date
-      },
+    },
     profilePic: {
         type: String,
         default: ''

@@ -89,9 +89,7 @@ export default function ForgotPassword() {
           required
         />
           </div>
-          <motion.button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white rounded"
-            disabled={loading}
-            
+          <motion.button type="submit" className={`w-full py-3 mt-2 text-white rounded-2xl ${loading ? 'bg-gray-400' : 'bg-green-700 hover:bg-green-600'} text-sm md:text-base`}
             whileTap={{ scale: 0.95 }}
           >
           {loading ? 'Sending...' : 'Send Reset Link'}

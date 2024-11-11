@@ -37,7 +37,7 @@ export default function ForgotPassword() {
     const formData = new FormData();
     formData.append('email', email);
     setLoading(true);
-    notifyLoading();
+    const toastId = notifyLoading();
     try {
       const response = await fetch('/api/auth/forgotPassword', {
         method: 'POST',
@@ -45,8 +45,9 @@ export default function ForgotPassword() {
       });
       if (response.ok) {
         setEmail('');
-        notifySuccess();
         setLoading(false);
+        toast.dismiss(toastId);
+        notifySuccess();
       } else {
         notifyError('Something went wrong.');
       }

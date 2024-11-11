@@ -7,5 +7,5 @@ export const generateRandomToken = () => {
 
 export const generateResetLink = (token) => {
     const baseUrl = process.env.BASE_URL || "http://localhost:3000"; 
-    return `${baseUrl}auth/forgotPassword/changePassword/?token=${token}`;
+    return `${baseUrl}/auth/forgotPassword/changePassword/?token=${token}`;
 };

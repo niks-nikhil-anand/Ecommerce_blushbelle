@@ -1,8 +1,7 @@
 "use client";
-
 import { useState } from 'react';
 import Link from 'next/link';
-import {  toast } from 'react-toastify';
+import toast, { Toaster } from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
 import { motion } from 'framer-motion';
 
@@ -12,20 +11,20 @@ export default function ForgotPassword() {
 
 
   const notifyLoading = () => {
-    toast.info("Sending email...", {
-      position: "bottom-right"
+    toast.loading("Sending email...", {
+      position: "bottom-right",
     });
   };
 
   const notifySuccess = () => {
     toast.success("Email is sent to reset Password", {
-      position: "bottom-right"
+      position: "bottom-right",
     });
   };
 
   const notifyError = (message) => {
     toast.error(`Error: ${message}`, {
-      position: "bottom-right"
+      position: "bottom-right",
     });
   };
 

@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, Suspense } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
+import Loader from '@/components/loader/loader';
+
 
 const ChangePassword = () => {
   const searchParams = useSearchParams();
@@ -11,18 +13,21 @@ const ChangePassword = () => {
   const [loading, setLoading] = useState(false);
 
   const notifyLoading = () => {
-    toast.info("Changing password...", {
-      position: "bottom-right"
+    toast.loading("Changing password...", {
+      position: "bottom-right",
+      id: 'loadingToast'
     });
   };
 
   const notifySuccess = () => {
+    toast.dismiss('loadingToast');
     toast.success("Password changed successfully!", {
       position: "bottom-right"
     });
   };
 
   const notifyError = (message) => {
+    toast.dismiss('loadingToast');
     toast.error(`Error: ${message}`, {
       position: "bottom-right"
     });
@@ -70,11 +75,10 @@ const ChangePassword = () => {
           <label className="block text-sm font-medium text-gray-700">New Password</label>
           <input
             type="password"
-            className="w-full px-5 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"
-            required
-          
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
+            required
           />
         </div>
         <div>
@@ -102,7 +106,7 @@ const ChangePassword = () => {
 };
 
 const ChangePasswordWrapper = () => (
-  <Suspense fallback={<div>Loading...</div>}>
+  <Suspense fallback={<div><Loader/></div>}>
     <ChangePassword />
   </Suspense>
 );

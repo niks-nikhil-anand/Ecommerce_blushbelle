@@ -32,7 +32,7 @@ export const POST = async (req) => {
 
     // Generate a random token and set expiration
     const token = generateRandomToken();
-    const expiration = new Date(Date.now() + 3600000); // 1 hour
+    const expiration = new Date(Date.now() + 3600000); 
 
     user.resetPasswordToken = token;
     user.resetPasswordExpires = expiration;

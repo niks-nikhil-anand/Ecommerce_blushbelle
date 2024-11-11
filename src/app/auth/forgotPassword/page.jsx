@@ -41,7 +41,7 @@ export default function ForgotPassword() {
     setLoading(true);
     notifyLoading();
     try {
-      const response = await fetch('/api/forgotPassword', {
+      const response = await fetch('/api/auth/forgotPassword', {
         method: 'POST',
         body: formData,
       });

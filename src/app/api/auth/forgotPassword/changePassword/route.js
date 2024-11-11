@@ -41,6 +41,22 @@ export const POST = async (req) => {
         }
       }
     );
+
+    const email = User.email;
+    if (email) {
+      console.log("Sending password reset email to:", email);
+      await resend.emails.send({
+        from: "no-reply@cleanveda.com",
+        to: email,
+        subject: "Password Reset Successful",
+        react: ForgotPasswordEmail({ name: User.fullName }),
+      });
+      console.log("Password reset email sent successfully.");
+    } else {
+      console.warn("User email not found; unable to send confirmation email.");
+    }
+
+    
     console.log("Password reset successfully");
     return NextResponse.json({ msg: "Password reset successfully" }, { status: 200 });
   } catch (error) {

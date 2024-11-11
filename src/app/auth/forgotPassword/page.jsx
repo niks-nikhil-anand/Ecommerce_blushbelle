@@ -7,7 +7,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { motion } from 'framer-motion';
 
 export default function ForgotPassword() {
- 
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -100,7 +99,7 @@ export default function ForgotPassword() {
         </form>
         <p className="mt-4">
           Remembered your password?{' '}
-          <Link href="/partnersignin" className="text-blue-500">
+          <Link href="/auth/signIn" className="text-blue-500">
             Sign In
           </Link>
         </p>

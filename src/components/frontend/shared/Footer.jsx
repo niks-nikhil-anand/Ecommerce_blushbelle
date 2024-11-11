@@ -1,7 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import toast, { Toaster } from 'react-hot-toast';
+
 
 const Footer = () => {
+
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '' });
+  
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await fetch('/api/admin/dashboard/newsLetter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast.success('Subscription successful!');
+        setFormData({ name: '', email: '' });
+      } else {
+        toast.error('Failed to subscribe. Please try again.');
+      }
+    } catch (error) {
+      toast.error('Something went wrong. Please try again.');
+    }
+    setLoading(false);
+  };
+
+  
+
+
   return (
     <footer className="bg-white py-10 shadow-lg">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-6">
@@ -57,7 +96,7 @@ const Footer = () => {
         </motion.div>
 
         {/* Subscription Form */}
-        <motion.div 
+        <motion.div
           className="space-y-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -65,23 +104,32 @@ const Footer = () => {
         >
           <h3 className="text-2xl font-bold text-black text-center">Get 15% Off</h3>
           <p className="text-sm text-black font-medium text-center">Sign up to get 15% off your first order and other great promos, giveaways and news!</p>
-          
-          <form className="space-y-4">
-            <input 
-              type="text" 
-              placeholder="Name" 
-              className="w-full border border-black p-4 rounded-md focus:ring-2 "
+
+          <form className="space-y-4" onSubmit={handleSubscribe}>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Name"
+              className="w-full border border-black p-4 rounded-md focus:ring-2"
+              required
             />
-            <input 
-              type="email" 
-              placeholder="Email" 
-              className="w-full border border-black p-4 rounded-md focus:ring-2 "
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Email"
+              className="w-full border border-black p-4 rounded-md focus:ring-2"
+              required
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="w-full bg-purple-600 text-white p-3 rounded-md font-bold shadow-lg hover:bg-purple-700"
+              disabled={loading}
             >
-              Subscribe
+              {loading ? 'Subscribing...' : 'Subscribe'}
             </button>
           </form>
         </motion.div>

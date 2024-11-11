@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import userModels from "@/models/userModels";
 
-
 export const POST = async (req) => {
   try {
     console.log("Connecting to database...");
@@ -16,29 +15,31 @@ export const POST = async (req) => {
 
     if (!newPassword) {
       console.error("newPassword is required");
-      throw new Error("newPassword is required");
+      return NextResponse.json({ msg: "newPassword is required" }, { status: 400 });
     }
     if (!token) {
       console.error("token is required");
-      throw new Error("token is required");
+      return NextResponse.json({ msg: "token is required" }, { status: 400 });
     }
 
-    const partner = await userModels.find({resetPasswordToken: token });
+    const User = await userModels.findOne({ resetPasswordToken: token });
 
-    if (!partner) {
+    if (!User) {
       console.error("Invalid or expired token");
       return NextResponse.json({ msg: "Invalid or expired token" }, { status: 400 });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    // Assuming you have a method to hash passwords
 
-    await partnerApplication.updateOne(
+    await userModels.updateOne(
       { resetPasswordToken: token },
-      { $set: { password: hashedPassword ,
-        resetPasswordToken: "",
-        resetPasswordExpires: ""
-      } }
+      {
+        $set: {
+          password: hashedPassword,
+          resetPasswordToken: "",
+          resetPasswordExpires: ""
+        }
+      }
     );
     console.log("Password reset successfully");
     return NextResponse.json({ msg: "Password reset successfully" }, { status: 200 });

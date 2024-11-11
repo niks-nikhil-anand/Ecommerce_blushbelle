@@ -50,7 +50,7 @@ const ChangePassword = () => {
     notifyLoading();
 
     try {
-      const response = await fetch('/api/changePassword', {
+      const response = await fetch('/api/auth/forgotPassword/changePassword', {
         method: 'POST',
         body: formData,
       });

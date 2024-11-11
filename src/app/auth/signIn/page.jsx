@@ -41,8 +41,8 @@ const LoginForm = () => {
         if (cookieResponse.status === 200 ) {
           toast.success("Login successful!");
           setEmail(''); setPassword(''); setRememberMe(false);
-          console.log("User ID:", cookieResponse.data._id);
-          router.push(`/users/${cookieResponse.data._id}`);
+          console.log("User ID:", cookieResponse.data[0]._id);
+          router.push(`/users/${cookieResponse.data[0]._id}`);
         }
       }
     } catch (error) {
@@ -72,7 +72,7 @@ const LoginForm = () => {
       if (response.status === 200) {
         toast.success("OTP verified successfully!");
         setOtpInput('');
-        router.push(`/users/${response.data._id}`);
+        router.push(`/users/${response.data[0]._id}`);
       }
     } catch (error) {
       toast.error("Invalid OTP. Please try again.");
@@ -118,19 +118,15 @@ const LoginForm = () => {
               className="w-full px-5 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"
               required
             />
-           {isOtpLogin && (
-            <div className="mb-4">
-              <input
-                type="password" // Make it a secret field
-                value={otpInput}
-                onChange={handleOtpInputChange}
-                maxLength={4} // Limit to 4 digits
-                className="w-full px-5 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"
-                placeholder="Enter 4-digit OTP"
-                required
-              />
-            </div>
-          )}
+            {isOtpLogin && (
+              <button
+                type="button"
+                onClick={handleSendOtp}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-700 underline text-sm md:text-base"
+              >
+                Send OTP
+              </button>
+            )}
           </div>
 
           {!isOtpLogin ? (
@@ -176,7 +172,7 @@ const LoginForm = () => {
         </form>
 
         <div className="flex justify-between mt-4 text-sm md:text-base">
-          <Link href={"/auth/forgotPassword"} className="text-green-700 hover:underline">Forgot password?</Link>
+          <Link href={"/forgotPassword"} className="text-green-700 hover:underline">Forgot password?</Link>
           <Link href={"/auth/register"} className="text-green-700 hover:underline">Create an account</Link>
         </div>
 

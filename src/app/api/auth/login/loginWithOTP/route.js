@@ -1,10 +1,9 @@
-import LoginOtpEmail from "@/emails/loginOTPEmail";
 import connectDB from "@/lib/dbConnect";
 import userModels from "@/models/userModels";
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import jwt from "jsonwebtoken";
+import bcrypt from 'bcrypt';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const POST = async (req) => {
   try {
@@ -12,42 +11,77 @@ export const POST = async (req) => {
     await connectDB();
     console.log("Database connected.");
     
-    const formData = await req.formData();
-    const email = formData.get("email");
+    const { email, otp } = await req.json();  // Parse request as JSON
     console.log("Received email:", email);
+    console.log("Received OTP:", otp);
 
-    if (!email) {
-      console.error("Email is required");
-      return NextResponse.json({ msg: "Email is required" }, { status: 400 });
+    if (!email || !otp) {
+      console.error("Email and OTP are required");
+      return NextResponse.json({ msg: "Email and OTP are required" }, { status: 400 });
     }
 
-    const User = await userModels.findOne({ email });
-    if (!User) {
+    const user = await userModels.findOne({ email });
+    if (!user) {
       console.error("User not found");
       return NextResponse.json({ msg: "User not found" }, { status: 404 });
     }
 
-    // Generate a random 4-digit OTP and expiration time
-    const LoginOTP = Math.floor(1000 + Math.random() * 9000); // 4-digit OTP
-    const expiration = new Date(Date.now() + 3600000); // OTP expires in 1 hour
+    console.log("Checking OTP...");
+    if (user.isLoginOTP !== otp) {
+      console.error("Invalid OTP");
+      return NextResponse.json({ msg: "Invalid OTP" }, { status: 401 });
+    }
 
-    // Save OTP and expiration to the user record
-    User.isLoginOTP = LoginOTP;
-    User.isLoginOTPExpires = expiration;
-    await User.save();
+    console.log("Checking OTP expiration...");
+    if (user.isLoginOTPExpires < new Date()) {
+      console.error("OTP has expired");
+      return NextResponse.json({ msg: "OTP has expired" }, { status: 401 });
+    }
 
-    console.log("Sending OTP email to:", email);
-    await resend.emails.send({
-      from: "no-reply@legal257.in",
-      to: email,
-      subject: "Your OTP for Login",
-      react: LoginOtpEmail({ name: User.fullName, otp: LoginOTP }),
+    console.log("Checking user status...");
+    if (user.status !== 'Active') {
+      console.log("User status is not Active:", user.status);
+      return NextResponse.json({ msg: "Not Authorized" }, { status: 403 });
+    }
+
+    console.log("Checking user role...");
+    if (user.role !== 'User') {
+      console.log("User role is not authorized:", user.role);
+      return NextResponse.json({ msg: "Not Authorized" }, { status: 403 });
+    }
+
+    // Generate a JWT token
+    console.log("Generating token...");
+    const token = generateToken({ id: user._id, email: user.email });
+
+    const response = NextResponse.json({ msg: "Login successful" }, { status: 200 });
+
+    // Set the cookie with the token
+    console.log("Setting cookie with token...");
+    response.cookies.set("userAuthToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", 
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: "/",
     });
 
-    console.log("OTP email sent.");
-    return NextResponse.json({ msg: "OTP email sent" }, { status: 200 });
+    console.log("Response with cookie:", response);
+    console.log("Generated token:", token);
+
+    // Clear OTP fields to invalidate OTP after login
+    user.isLoginOTP = null;
+    user.isLoginOTPExpires = null;
+    await user.save();
+
+    return response;
   } catch (error) {
-    console.error("Error sending OTP:", error);
-    return NextResponse.json({ msg: "Error sending OTP", error: error.message }, { status: 500 });
+    console.error("Error during login:", error);
+    return NextResponse.json({ msg: "Error during login", error: error.message }, { status: 500 });
   }
 };
+
+function generateToken(user) {
+  console.log("Generating token for user:", user);
+  return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1w" });
+}

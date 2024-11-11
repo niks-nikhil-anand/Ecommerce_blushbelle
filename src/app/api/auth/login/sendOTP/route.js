@@ -1,57 +1,52 @@
+import LoginOtpEmail from "@/emails/loginOTPEmail";
 import connectDB from "@/lib/dbConnect";
-import partnerApplication from "@/models/partnerApplication";
+import userModels from "@/models/userModels";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { generateRandomToken, generateResetLink } from "@/lib/forgotPasswordToken";
-import SignupOtpEmail from "@/emails/loginOTPEmail";
-
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
 
 export const POST = async (req) => {
   try {
     console.log("Connecting to database...");
     await connectDB();
     console.log("Database connected.");
-    const formData = await req.formData();
-    const email = formData.get("email");
+    
+    const { email } = await req.json();  // Parse request as JSON
     console.log("Received email:", email);
 
     if (!email) {
       console.error("Email is required");
-      throw new Error("Email is required");
+      return NextResponse.json({ msg: "Email is required" }, { status: 400 });
     }
 
-    const partner = await partnerApplication.findOne({ email });
-    if (!partner) {
-      console.error("Partner not found");
-      throw new Error("Partner Not Found");
+    const User = await userModels.findOne({ email });
+    if (!User) {
+      console.error("User not found");
+      return NextResponse.json({ msg: "User not found" }, { status: 404 });
     }
 
-    const token = generateRandomToken();
-    const expiration = new Date(Date.now() + 3600000);
+    // Generate a random 4-digit OTP and expiration time
+    const LoginOTP = Math.floor(1000 + Math.random() * 9000); // 4-digit OTP
+    const expiration = new Date(Date.now() + 3600000); // OTP expires in 1 hour
 
-    partner.resetPasswordToken = token;
-    partner.resetPasswordExpires = expiration;
-    await partner.save();
+    // Save OTP and expiration to the user record
+    User.isLoginOTP = LoginOTP;
+    User.isLoginOTPExpires = expiration;
+    await User.save();
 
-    const resetLink = generateResetLink(token);
-    console.log("Generated reset link:", resetLink);
-
-   
-    console.log("Sending password reset email to:", email);
+    console.log("Sending OTP email to:", email);
     await resend.emails.send({
-      from: "no-reply@legal257.in",
+      from: "no-reply@cleanveda.com",
       to: email,
-      subject: "Password Reset Request",
-      react: SignupOtpEmail({ username: partner.username, resetLink }),
+      subject: "Your OTP for Login",
+      react: LoginOtpEmail({ name: User.fullName, otp: LoginOTP }),
     });
 
-    console.log("Password reset email sent.");
-    return NextResponse.json({ msg: "Password reset email sent" }, { status: 200 });
+    console.log("OTP email sent.");
+    return NextResponse.json({ msg: "OTP email sent" }, { status: 200 });
   } catch (error) {
-    console.error("Error requesting password reset:", error);
-    return NextResponse.json({ msg: "Error requesting password reset", error: error.message }, { status: 500 });
+    console.error("Error sending OTP:", error);
+    return NextResponse.json({ msg: "Error sending OTP", error: error.message }, { status: 500 });
   }
 };

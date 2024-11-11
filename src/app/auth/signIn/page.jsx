@@ -83,7 +83,7 @@ const LoginForm = () => {
 
   const handleOtpInputChange = (e) => {
     const value = e.target.value;
-    if (/^\d{0,6}$/.test(value)) {
+    if (/^\d{0,4}$/.test(value)) {  // Allow only up to 4 digits
       setOtpInput(value);
     }
   };
@@ -118,15 +118,19 @@ const LoginForm = () => {
               className="w-full px-5 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"
               required
             />
-            {isOtpLogin && (
-              <button
-                type="button"
-                onClick={handleSendOtp}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-700 underline text-sm md:text-base"
-              >
-                Send OTP
-              </button>
-            )}
+           {isOtpLogin && (
+            <div className="mb-4">
+              <input
+                type="password" // Make it a secret field
+                value={otpInput}
+                onChange={handleOtpInputChange}
+                maxLength={4} // Limit to 4 digits
+                className="w-full px-5 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"
+                placeholder="Enter 4-digit OTP"
+                required
+              />
+            </div>
+          )}
           </div>
 
           {!isOtpLogin ? (

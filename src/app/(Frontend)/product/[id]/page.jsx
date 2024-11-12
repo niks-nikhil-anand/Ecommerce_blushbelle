@@ -9,6 +9,7 @@ import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { AiOutlineDown, AiOutlineClose } from 'react-icons/ai';
 import { FaRegArrowAltCircleRight , FaRegArrowAltCircleLeft  } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
+import BlogInProductPage from '@/components/frontend/ui/BlogInProductPage';
 
 
 
@@ -303,6 +304,9 @@ const ProductDetail = () => {
 <FeaturedIngredients ingredients={product.ingredients} />
 )}
           </div> 
+          <div>
+            <BlogInProductPage/>
+          </div>
           <div>
              <ProductBanner/>
           </div>

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import Loader from '@/components/loader/loader';
 
-const ITEMS_PER_PAGE = 6; // Adjust this value based on your preference
+const ITEMS_PER_PAGE = 6; 
 
 const News = () => {
   const [articles, setArticles] = useState([]);

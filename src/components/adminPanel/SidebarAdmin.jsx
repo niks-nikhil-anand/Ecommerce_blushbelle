@@ -5,10 +5,9 @@ import { motion } from 'framer-motion';
 import { TiThMenu } from "react-icons/ti";
 import { ImProfile } from "react-icons/im";
 import Link from 'next/link';
-import { MdOutlineLogout } from "react-icons/md";
+import { MdOutlineLogout , MdOutlineRateReview } from "react-icons/md";
 import { GrArticle } from "react-icons/gr";
 import { useRouter } from 'next/navigation';
-import waveNav from '../../../public/frontend/SvgAssets/wave-nav.svg'; 
 
 
 
@@ -94,6 +93,14 @@ const SidebarAdmin = () => {
           </Link>
           <Link href="/admin/dashboard/blog/allBlog" passHref>
             <SidebarItem icon={<GrArticle />} label="Blogs" isOpen={isOpen} />
+          </Link>
+
+          {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-300">Review</h3>}
+          <Link href="/admin/dashboard/review/addReview" passHref>
+            <SidebarItem icon={<FaPlus />} label="Add Review" isOpen={isOpen} />
+          </Link>
+          <Link href="/admin/dashboard/review/addReview" passHref>
+            <SidebarItem icon={<MdOutlineRateReview />} label="Review" isOpen={isOpen} />
           </Link>
 
           {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-300">Policies</h3>}

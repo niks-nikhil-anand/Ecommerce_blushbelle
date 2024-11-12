@@ -1,3 +1,8 @@
+import connectDB from "@/lib/dbConnect";
+import uploadImage from "@/lib/uploadImages";
+import { Blog } from "@/models/blogModels";
+import { NextResponse } from "next/server";
+
 export const POST = async (req) => {
   try {
     console.log("Connecting to the database...");
@@ -13,7 +18,7 @@ export const POST = async (req) => {
     const category = formData.get("category");
     const author = formData.get("author");
     const featuredImage = formData.get("featuredImage");
-    const product = formData.get("product");
+    const product = formData.get("product"); // Adding product field
 
     console.log("Parsed form data:", { title, content, subtitle, category, author, product });
 
@@ -32,20 +37,9 @@ export const POST = async (req) => {
       return NextResponse.json({ msg: "Image upload failed." }, { status: 500 });
     }
 
+    
     const imageUrl = featuredImageResult.secure_url;
     console.log("Image URL:", imageUrl);
-
-    // Convert product to ObjectId
-    const mongoose = require('mongoose');
-    const productId = mongoose.Types.ObjectId(product);
-
-    // Check if product exists
-    const productExists = await Product.exists({ _id: productId });
-
-    if (!productExists) {
-      console.error("Product not found.");
-      return NextResponse.json({ msg: "Product not found." }, { status: 400 });
-    }
 
     // Prepare blog data with the product field
     const blogData = {
@@ -54,7 +48,7 @@ export const POST = async (req) => {
       subtitle,
       category,
       author,
-      product: productId, // Add product as ObjectId
+      product, // Add product to blog data
       featuredImage: imageUrl,
     };
 
@@ -67,5 +61,21 @@ export const POST = async (req) => {
   } catch (error) {
     console.error("Error adding blog:", error);
     return NextResponse.json({ msg: "Error adding blog", error: error.message }, { status: 500 });
+  }
+};
+
+export const GET = async (req) => {
+  try {
+    console.log("Connecting to the database...");
+    await connectDB();
+    console.log("Connected to the database.");
+
+    // Fetch all blogs from the database
+    const blogs = await Blog.find();
+    console.log("Fetched blogs:", blogs);
+    return NextResponse.json(blogs, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    return NextResponse.json({ msg: "Error fetching blogs", error: error.message }, { status: 500 });
   }
 };

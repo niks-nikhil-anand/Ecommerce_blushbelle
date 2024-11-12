@@ -22,7 +22,7 @@ const ReviewFormComponent = () => {
     const fetchProducts = async () => {
       setFetchingProducts(true);
       try {
-        const response = await axios.get('/api/admin/dashboard/product/addProduct');
+        const response = await axios.get('/api/admin/dashboard/review/addReview');
         if (Array.isArray(response.data)) {
           setProducts(response.data);
         } else {

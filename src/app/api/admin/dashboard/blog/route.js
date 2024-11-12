@@ -1,9 +1,3 @@
-import connectDB from "@/lib/dbConnect";
-import uploadImage from "@/lib/uploadImages";
-import { Blog } from "@/models/blogModels";
-import { NextResponse } from "next/server";
-
-
 export const POST = async (req) => {
   try {
     console.log("Connecting to the database...");
@@ -19,14 +13,17 @@ export const POST = async (req) => {
     const category = formData.get("category");
     const author = formData.get("author");
     const featuredImage = formData.get("featuredImage");
+    const product = formData.get("product");
 
-    console.log("Parsed form data:", { title, content, subtitle, category, author });
+    console.log("Parsed form data:", { title, content, subtitle, category, author, product });
 
-    if (!title || !content || !subtitle || !category || !author || !featuredImage) {
+    // Validate required fields
+    if (!title || !content || !subtitle) {
       console.error("Missing required fields.");
       return NextResponse.json({ msg: "Please provide all the required fields." }, { status: 400 });
     }
 
+    // Upload the featured image
     const featuredImageResult = await uploadImage(featuredImage, "blogImages");
     console.log("Image upload result:", featuredImageResult);
 
@@ -38,37 +35,37 @@ export const POST = async (req) => {
     const imageUrl = featuredImageResult.secure_url;
     console.log("Image URL:", imageUrl);
 
+    // Convert product to ObjectId
+    const mongoose = require('mongoose');
+    const productId = mongoose.Types.ObjectId(product);
+
+    // Check if product exists
+    const productExists = await Product.exists({ _id: productId });
+
+    if (!productExists) {
+      console.error("Product not found.");
+      return NextResponse.json({ msg: "Product not found." }, { status: 400 });
+    }
+
+    // Prepare blog data with the product field
     const blogData = {
       title,
       content,
       subtitle,
       category,
       author,
+      product: productId, // Add product as ObjectId
       featuredImage: imageUrl,
     };
 
-    console.log("Blog data to be saved:");
+    console.log("Blog data to be saved:", blogData);
 
+    // Save the blog data to the database
     await Blog.create(blogData);
     console.log("Blog added successfully.");
     return NextResponse.json({ msg: "Blog added successfully" }, { status: 200 });
   } catch (error) {
     console.error("Error adding blog:", error);
     return NextResponse.json({ msg: "Error adding blog", error: error.message }, { status: 500 });
-  }
-};
-
-export const GET = async (req) => {
-  try {
-    console.log("Connecting to the database...");
-    await connectDB();
-    console.log("Connected to the database.");
-
-    const blogs = await Blog.find();
-    console.log("Fetched blogs:");
-    return NextResponse.json(blogs, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching blogs:", error);
-    return NextResponse.json({ msg: "Error fetching blogs", error: error.message }, { status: 500 });
   }
 };

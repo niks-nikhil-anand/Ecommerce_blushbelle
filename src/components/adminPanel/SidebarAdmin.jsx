@@ -53,7 +53,7 @@ const SidebarAdmin = () => {
           <h2 className={`text-lg font-semibold mb-4 ${isOpen ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
             {isOpen ? 'Dashboard' : ''}
           </h2>
-          <Link href="/admin/dashboard/property/AddProperty" passHref>
+          <Link href="/admin/dashboard" passHref>
             <SidebarItem icon={<FaHome />} label="Home" isOpen={isOpen} />
           </Link>
 

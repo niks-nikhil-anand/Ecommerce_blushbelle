@@ -123,24 +123,8 @@ const AdminLoginForm = () => {
               {loading ? 'Logging in...' : 'Login'}
             </motion.button>
           </form>
-          <div className="mt-6 flex items-center justify-between">
-            <span className="border-b w-1/5 lg:w-1/4"></span>
-            <p className="text-xs text-center text-gray-500 uppercase">or login with</p>
-            <span className="border-b w-1/5 lg:w-1/4"></span>
-          </div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-            className="flex justify-center mt-6"
-          >
-            <button className="bg-red-500 text-white p-2 rounded-full mx-1 hover:bg-red-600">
-              <FaGoogle />
-            </button>
-            <button className="bg-blue-500 text-white p-2 rounded-full mx-1 hover:bg-blue-600">
-              <FaFacebookF />
-            </button>
-          </motion.div>
+          
+          
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

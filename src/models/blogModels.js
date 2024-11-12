@@ -25,6 +25,10 @@ const blogSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
     required: true
   },
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+},
   createdAt: {
     type: Date,
     default: Date.now

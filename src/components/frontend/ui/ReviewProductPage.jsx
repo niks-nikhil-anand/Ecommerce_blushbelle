@@ -1,5 +1,7 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast, Toaster } from 'react-hot-toast';
 
 const ReviewProductPage = ({ productId }) => {
   const [showForm, setShowForm] = useState(false);
@@ -14,11 +16,10 @@ const ReviewProductPage = ({ productId }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-
         const urlPath = window.location.pathname;
         const id = urlPath.substring(urlPath.lastIndexOf('/') + 1);
-        console.log("fetching review...........")
-        console.log(id)
+        console.log("fetching review...........");
+        console.log(id);
         const response = await axios.get(`/api/admin/dashboard/review/${id}`);
         setReviews(response.data);
       } catch (error) {
@@ -47,14 +48,16 @@ const ReviewProductPage = ({ productId }) => {
         reviewTitle: '',
         review: ''
       });
+      toast.success('Review submitted successfully!');
     } catch (error) {
       console.error('Error submitting review:', error);
-      alert('Failed to submit review');
+      toast.error('Failed to submit review');
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-8 p-6 bg-white rounded shadow-lg">
+    <div className="w-full px-4 md:px-[10rem] py-3 md:py-9 mx-auto mt-8 p-6 bg-white rounded shadow-lg ">
+      <Toaster />
       <h2 className="text-2xl font-semibold mb-6">Customer Reviews</h2>
 
       {/* Display Review Summary */}
@@ -64,7 +67,7 @@ const ReviewProductPage = ({ productId }) => {
           onClick={() => setShowForm(!showForm)}
           className="ml-auto p-2 border rounded hover:bg-gray-100"
         >
-          Write a review
+          {showForm ? 'Cancel review' : 'Write a review'}
         </button>
       </div>
 

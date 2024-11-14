@@ -4,12 +4,12 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Loader from '@/components/loader/loader';
-import ProductBanner from '@/components/frontend/ui/(Banners)/ProductBanner';
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { AiOutlineDown, AiOutlineClose } from 'react-icons/ai';
 import { FaRegArrowAltCircleRight , FaRegArrowAltCircleLeft  } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import BlogInProductPage from '@/components/frontend/ui/BlogInProductPage';
+import ReviewProductPage from '@/components/frontend/ui/ReviewProductPage';
 
 
 
@@ -271,6 +271,7 @@ const ProductDetail = () => {
 <ProductHighlights highlights={product.productHighlights} />
 )}
 
+
 </div>
           {/* Additional Banner */}
           <div className="flex flex-col md:flex-row items-center p-4 md:p-8 mt-10 bg-[#e0d2ff]">
@@ -304,12 +305,16 @@ const ProductDetail = () => {
           <FeaturedIngredients ingredients={product.ingredients} />
           )}
           </div> 
-          <div>
+
+
+            <div>
             <BlogInProductPage/>
           </div>
+
           <div>
-             <ProductBanner/>
+            <ReviewProductPage/>
           </div>
+         
 
           {isFullScreen && (
         <motion.div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
@@ -336,38 +341,41 @@ const ProductDetail = () => {
 
 // Place these components outside of ProductDetail to avoid conditional rendering issues
 const ProductHighlights = ({ highlights }) => (
-<div className="flex flex-col items-center justify-center min-h-[75vh] bg-white p-6 sm:p-10">
-  <motion.h2
-    className="text-xl sm:text-2xl font-semibold text-orange-600 mb-6 sm:mb-8"
-    initial={{ opacity: 0, y: -50 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.6 }}
-  >
-    Product Highlights
-  </motion.h2>
-  <div className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-10">
-    {highlights.map((highlight, index) => (
-      <motion.div
-        key={highlight.id}
-        className="flex flex-col items-center max-w-[90%] sm:max-w-xs text-center mt-4 sm:mt-5"
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: index * 0.2 }}
-      >
-        <img
-          src={highlight.icon}
-          alt={highlight.icon}
-          className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-3 sm:mb-4 rounded-full"
-        />
-        <h3 className="text-base sm:text-lg font-bold text-orange-600 mb-1 sm:mb-2">
-          {highlight.title}
-        </h3>
-        <p className="text-sm sm:text-base text-gray-600">{highlight.description}</p>
-      </motion.div>
-    ))}
+  <div className="flex flex-col items-center justify-center min-h-[75vh] bg-white p-6 sm:p-10">
+    <motion.h2
+      className="text-xl sm:text-2xl font-semibold text-orange-600 mb-6 sm:mb-8"
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      Product Highlights
+    </motion.h2>
+    <div className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-10">
+      {highlights.map((highlight, index) => (
+        <motion.div
+          key={highlight.id || index}  
+          className="flex flex-col items-center max-w-[90%] sm:max-w-xs text-center mt-4 sm:mt-5"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: index * 0.2 }}
+        >
+          <img
+            src={highlight.icon}
+            alt={highlight.icon}
+            className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-3 sm:mb-4 rounded-full"
+          />
+          <h3 className="text-base sm:text-lg font-bold text-orange-600 mb-1 sm:mb-2">
+            {highlight.title}
+          </h3>
+          <p className="text-sm sm:text-base text-gray-600">{highlight.description}</p>
+        </motion.div>
+      ))}
+    </div>
   </div>
-</div>
 );
+
+
+
 
 const FeaturedIngredients = ({ ingredients }) => (
 <div className="p-6 sm:p-10 bg-white">

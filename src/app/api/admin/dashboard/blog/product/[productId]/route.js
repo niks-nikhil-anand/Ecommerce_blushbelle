@@ -13,8 +13,8 @@ export const GET = async (request, { params }) => {
     console.log('Database connection successful');
 
     console.log(`Fetching blog with ID: ${productId}`);
-    const blog = await Blog.find({ product: productId }); // Use productId directly in findById
-    console.log('Blog data:', blog); // Log the fetched blog data
+    const blog = await Blog.find({ product: productId }); 
+    console.log('Blog data:', blog); 
 
     if (!blog) {
       console.log('Blog not found');

@@ -301,8 +301,8 @@ const ProductDetail = () => {
 
           <div>
           {product && product.ingredients && (
-<FeaturedIngredients ingredients={product.ingredients} />
-)}
+          <FeaturedIngredients ingredients={product.ingredients} />
+          )}
           </div> 
           <div>
             <BlogInProductPage/>

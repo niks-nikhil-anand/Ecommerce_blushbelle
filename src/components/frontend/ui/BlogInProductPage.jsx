@@ -4,14 +4,19 @@ import { motion } from 'framer-motion';
 import Loader from '@/components/loader/loader';
 
 const BlogInProductPage = () => {
+  const [idFromURL, setIdFromURL] = useState('');
+
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
+        const urlPath = window.location.pathname;
+        const id = urlPath.substring(urlPath.lastIndexOf('/') + 1);
+        setIdFromURL(id);
         console.log('Fetching articles...');
-        const response = await axios.get('/api/admin/dashboard/blog');
+        const response = await axios.get(`/api/admin/dashboard/blog/product/${id}`);
         console.log('Articles fetched:', response.data);
         setArticles(response.data);
       } catch (error) {

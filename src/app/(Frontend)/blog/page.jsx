@@ -46,50 +46,45 @@ const News = () => {
 
   return (
     <div className="flex flex-col px-4 md:px-10 mt-10 mb-10 justify-center md:ml-[90px]">
-      <h1 className="text-3xl font-bold mb-2">Wellness Blog</h1>
-      <h2 className="text-xl mb-4">Explore the latest Grocery Tips & Trends from our curated selection</h2>
-      
-      {loading ? (
-        <Loader />  
-      ) : (
-        <>
-          <div className="flex flex-wrap justify-between">
-            {currentArticles.map((article) => (
-              <motion.div
-                key={article._id}
-                className="p-4 bg-white rounded-lg shadow-md cursor-pointer w-full sm:w-1/2 md:w-[45%] mt-5" // Responsive width classes
-                onClick={() => handleCardClick(article._id)}
-              >
-                <img src={article.featuredImage} alt={article.title} className="w-full h-48 object-cover rounded-t-lg mb-4"/>
-                <h3 className="text-xl md:text-2xl font-semibold textColor hover:underline">{article.title}</h3>
-                <p className="text-gray-600">{article.subtitle}</p>
-                <div className="text-sm text-gray-500 mt-2">By {article.author} in {article.category}</div>
-                <div className="text-xs text-gray-400 mt-1">Published on {new Date(article.createdAt).toLocaleDateString()}</div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Pagination controls */}
-          <div className="flex justify-center mt-6 flex-col sm:flex-row">
-            <button
-              className={`px-4 py-2 mx-2 bg-gray-300 rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <span className="px-4 py-2">Page {currentPage} of {totalPages}</span>
-            <button
-              className={`px-4 py-2 mx-2 bg-gray-300 rounded ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+    <h2 className="text-4xl md:text-5xl lg:text-6xl mb-4 font-bold text-center">
+      Learn why it's good for you.
+    </h2>
+  
+    {loading ? (
+      <Loader />  
+    ) : (
+      <div className="flex flex-wrap justify-start gap-4">
+        {articles.map((article) => (
+          <motion.div
+            key={article._id}
+            className="p-4  cursor-pointer w-full sm:w-[48%] md:w-[30%] lg:w-[30%] mt-5 shadow-sm"
+            onClick={() => handleCardClick(article._id)}
+          >
+            <img
+              src={article.featuredImage}
+              alt={article.title}
+              className="w-full h-44 object-cover rounded-t-lg mb-3"
+            />
+            <h3 className="text-base md:text-xl lg:text-base font-semibold text-center textColor hover:underline">
+              {article.title}
+            </h3>
+            <div className='mt-5 w-25%'>
+            <p className="text-sm md:text-base lg:text-sm text-gray-600 ">
+              {article.subtitle.split(" ").slice(0, 50).join(" ")}{article.subtitle.split(" ").length > 50 ? "..." : ""}
+              </p>    
+              <div className="text-xs md:text-sm lg:text-base text-gray-500 mt-2">
+               {article.category}
+            </div>
+            <div className="text-xs md:text-sm lg:text-base text-gray-400 mt-1">
+              Published on {new Date(article.createdAt).toLocaleDateString()}
+            </div>
+            </div>
+           
+          </motion.div>
+        ))}
+      </div>
+    )}
+  </div>
   );
 };
 

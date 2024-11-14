@@ -22,7 +22,7 @@ const ReviewFormComponent = () => {
     const fetchProducts = async () => {
       setFetchingProducts(true);
       try {
-        const response = await axios.get('/api/admin/dashboard/review/addReview');
+        const response = await axios.get('/api/admin/dashboard/product/addProduct');
         if (Array.isArray(response.data)) {
           setProducts(response.data);
         } else {
@@ -55,7 +55,7 @@ const ReviewFormComponent = () => {
     setLoading(true);
 
     try {
-      await axios.post('/api/admin/dashboard/review', formData);
+      await axios.post('/api/admin/dashboard/review/addReview', formData);
       toast.success('Review submitted successfully!');
       setFormData({
         name: '',

@@ -2,7 +2,6 @@ import Banner1 from "@/components/frontend/ui/(Banners)/Banner1";
 import Banner2 from "@/components/frontend/ui/(Banners)/Banner2";
 import BannerText01 from "@/components/frontend/ui/(Banners)/BannerText01";
 import BannerText02 from "@/components/frontend/ui/(Banners)/BannerText02";
-import GoodnessSection from "@/components/frontend/ui/(Banners)/Labels";
 import CategoriesSection from "@/components/frontend/ui/CategorySection";
 import HeroSection from "@/components/frontend/ui/HeroSection";
 import Marquee from "@/components/frontend/ui/Marquee";
@@ -14,8 +13,9 @@ export default function Home() {
     <>
     <HeroSection/>
     <WhoWeAre/>
-    <GoodnessSection/>
+    {/* <GoodnessSection/> */}
     <ProductCard/>
+    {/* <ProductComponent/> */}
     <CategoriesSection/>
     <Marquee/>
     <Banner1/>

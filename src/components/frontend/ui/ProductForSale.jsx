@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { FaRegHeart } from "react-icons/fa";
 import Image from 'next/image';
 import Loader from '@/components/loader/loader';
-
 const ProductCard = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,6 +24,7 @@ const ProductCard = () => {
 
         axios.get('/api/admin/dashboard/product/addProduct')
             .then(response => {
+                console.log(response.data)
                 setProducts(response.data);
                 setLoading(false);
             })
@@ -36,16 +36,17 @@ const ProductCard = () => {
 
     if (loading) {
         return (
-            <Loader/>
+            <Loader />
         );
     }
 
     if (products.length === 0) {
         return <div>No products found.</div>;
     }
+
     const truncateText = (text, limit) => {
         return text.length > limit ? `${text.substring(0, limit)}...` : text;
-      };
+    };
 
     const handleCardClick = (id) => {
         router.push(`/product/${id}`);
@@ -58,58 +59,80 @@ const ProductCard = () => {
     return (
         <div className="flex flex-col mt-5 mb-4">
             <h2 className="text-xl md:text-4xl mb-4 text-center font-bold text-red-500">Fan Favorites</h2>
-            <div className="flex gap-5 hover:cursor-pointer justify-center px-2 py-3 flex-wrap">
-                {products.map(product => {
-                    const { _id, name, originalPrice, featuredImage, salePrice } = product;
-
-                    return (
-                        <div
+            <div className="flex justify-center px-2 py-3 flex-wrap hover:cursor-pointer relative">
+                {products.map(({ _id, name, originalPrice, featuredImage, salePrice, description, productHighlights }) => (
+                    <div
+                        className="flex flex-col items-center bg-[#FFF6E6] py-12 px-6 rounded-lg shadow-md border-b-2 border-gray-200"
                         key={_id}
-                        className="relative h-[30rem] w-full  md:w-[18rem] lg:h-[30rem] lg:w-[22rem] overflow-hidden rounded-3xl group" 
                         onClick={() => handleCardClick(_id)}
                     >
-                        <div className= "absolute top-0 left-0 bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-br-lg z-10">
-                            Sale
-                        </div>
-                        <div className="absolute top-2 right-4 z-20">
-                            <button
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    handleWishlistClick();
-                                }}
-                                className="text-black font-bold hover:text-red-700 transition-colors"
-                            >
-                                <FaRegHeart size={24} />
-                            </button>
-                        </div>
-                    
-                        {/* Image */}
-                        <div className="relative h-[30rem] w-full overflow-hidden rounded-3xl border border-gray-300">
-                            <img
-                                className="object-fill w-full h-full transition-transform duration-300 ease-in-out transform group-hover:scale-105" // Apply hover scaling on the group
-                                src={featuredImage}
-                                alt={name}
-                            />
-                            <h3 className="absolute bottom-7 left-5 text-center bg-opacity-50 text-red-500 text-lg sm:text-xl md:text-xl font-medium p-1 bg-white px-5 py-2 rounded-lg"> {truncateText(name, 10)} </h3>
-                            <div className="absolute bottom-7 right-5 text-center bg-opacity-50 text-red-500 text-lg sm:text-xl md:text-xl font-medium p-1 bg-white px-5 py-2 rounded-lg">
-                                <div className='flex flex-col'>
-                                    <span className="text-gray-400 line-through mr-2">₹{originalPrice}</span>
-                                    <span className="text-green-500 font-medium ml-4">₹{salePrice}</span>
+                        <div className="flex flex-col lg:flex-row items-center gap-10 justify-center">
+                            <div className="text-left lg:mr-6 max-w-[50%]">
+                                <h1 className="text-3xl font-bold mb-2">{name}</h1>
+                                <p className="text-gray-700 mb-2">{description}</p>
+                                <div className='flex gap-5'>
+                                {originalPrice > salePrice && (
+                            <p className="text-xl md:text-2xl font-bold text-gray-500 mb-2 line-through">₹{originalPrice}0</p>
+                                        )}
+                                        
+                                        {/* Sale Price */}
+                                        <p className="text-2xl md:text-3xl font-bold text-orange-500 mb-4">₹{salePrice}0</p>
                                 </div>
+                                
+                                <button
+                                    className="bg-orange-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-orange-600 transition"
+                                    onClick={() => handleCardClick(_id)}
+                                >
+                                    SHOP NOW
+                                </button>
+                            </div>
+
+                            <div className="mt-8 lg:mt-0 w-[10rem] h-[14rem] relative">
+                                <img
+                                    src={featuredImage}
+                                    alt="Product Image"
+                                    className="w-[20rem] h-full object-cover rounded-3xl shadow-md"
+                                />
                             </div>
                         </div>
-                    
-                        {/* Shop Now button (visible on hover) */}
-                        <div className="absolute inset-0 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <span className="text-black bg-white px-3 py-2 rounded-2xl text-lg font-bold">Shop Now</span>
-                        </div>
+
+                        {productHighlights && productHighlights.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+                                {productHighlights.slice(0, 3).map((highlight) => (
+                                    <FeatureCard
+                                        key={highlight._id}
+                                        icon={highlight.icon}
+                                        title={highlight.title}
+                                        description={highlight.description}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <p>No highlights available</p>
+                        )}
+
                     </div>
-                    
-                    );
-                })}
+                ))}
             </div>
         </div>
     );
 };
+
+const FeatureCard = ({ icon, title, description }) => {
+    const limitedDescription = description.split(" ").slice(0, 15).join(" ") + (description.split(" ").length > 15 ? "..." : "");
+
+    return (
+        <div className="flex flex-col justify-start text-left p-4">
+            <div className="bg-white rounded-b-full w-20 h-20 flex items-start justify-start ml-0 overflow-hidden p-2">
+                <img src={icon} alt={title} className="w-full h-full object-cover" />
+            </div>
+            <h3 className="font-bold mt-2 text-left">{title}</h3>
+            <div className=''>
+                <p className="text-gray-600 text-left font-semibold">{limitedDescription}</p>
+            </div>
+        </div>
+    );
+};
+
 
 export default ProductCard;

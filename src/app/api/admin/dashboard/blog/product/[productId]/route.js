@@ -5,16 +5,14 @@ import { NextResponse } from "next/server";
 export const GET = async (request, { params }) => {
   const { productId } = params; // Correctly destructure 'productId'
   console.log('Request Params:', params); // Log all request params
-  console.log('ID:', productId); // Log the ID parameter
+  console.log('Review Id:', productId); // Log the ID parameter
 
   try {
     console.log('Attempting to connect to the database...');
     await connectDB();
     console.log('Database connection successful');
 
-    console.log(`Fetching blog with ID: ${productId}`);
     const blog = await Blog.find({ product: productId }); 
-    console.log('Blog data:', blog); 
 
     if (!blog) {
       console.log('Blog not found');

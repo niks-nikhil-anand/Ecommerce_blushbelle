@@ -4,10 +4,8 @@ import { NextResponse } from "next/server";
 
 export const GET = async (req, { params }) => { 
     const { productId } = params; 
-    
-    console.log('Request Params:', params); // Log all request params
-    console.log('Product ID:', productId); // Log the product ID
-
+    console.log('Request Params in review :', params); 
+    console.log('Product ID:', productId); 
     try {
       console.log("Attempting to connect to the database...");
       await connectDB();

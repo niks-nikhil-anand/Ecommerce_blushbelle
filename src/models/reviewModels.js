@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-// Define the schema for Review
 const reviewSchema = new Schema({
   name: {
     type: String,

@@ -47,7 +47,7 @@ const News = () => {
   return (
     <div className="flex flex-col px-4 md:px-10 mt-10 mb-10 justify-center md:ml-[90px]">
       <h2 className="text-4xl md:text-5xl lg:text-6xl mb-4 font-bold text-center">
-        Learn why it's good for you.
+        Learn why it&apos;s good for you.
       </h2>
 
       {loading ? (

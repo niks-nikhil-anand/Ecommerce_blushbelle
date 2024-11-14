@@ -1,7 +1,8 @@
 import connectDB from "@/lib/dbConnect";
-import Review from "@/models/reviewModel"; // Import the Review model
-import Product from "@/models/productModel"; // Import the Product model (if needed)
+import productModels from "@/models/productModels";
+import reviewModels from "@/models/reviewModels";
 import { NextResponse } from "next/server";
+
 
 export const POST = async (req) => {
   try {
@@ -29,7 +30,7 @@ export const POST = async (req) => {
     }
 
     // Check if the product exists in the database
-    const existingProduct = await Product.findById(product);
+    const existingProduct = await productModels.findById(product);
     if (!existingProduct) {
       console.error("Product not found.");
       return NextResponse.json({ msg: "Product not found." }, { status: 404 });
@@ -48,7 +49,7 @@ export const POST = async (req) => {
     console.log("Review data to be saved:", reviewData);
 
     // Save the review to the database
-    await Review.create(reviewData);
+    await reviewModels.create(reviewData);
     console.log("Review added successfully.");
 
     return NextResponse.json({ msg: "Review added successfully" }, { status: 200 });

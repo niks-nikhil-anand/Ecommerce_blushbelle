@@ -16,7 +16,7 @@ export default function Home() {
     {/* <GoodnessSection/> */}
     <ProductCard/>
     {/* <ProductComponent/> */}
-    <CategoriesSection/>
+    {/* <CategoriesSection/> */}
     <Marquee/>
     <Banner1/>
     <BannerText01/>

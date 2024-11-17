@@ -97,7 +97,7 @@ const ProductCard = () => {
                         </div>
 
                         {productHighlights && productHighlights.length > 0 ? (
-                            <div className="flex mx-10 gap-6 mt-10">
+                            <div className="flex-col md:flex mx-10 gap-6 mt-10">
                                 {productHighlights.slice(0, 3).map((highlight) => (
                                     <FeatureCard
                                         key={highlight._id}

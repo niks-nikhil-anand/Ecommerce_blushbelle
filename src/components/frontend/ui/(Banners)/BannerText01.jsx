@@ -1,5 +1,5 @@
 import React from 'react';
-import Banner from '../../../../../public/frontend/Banner/Group_520.webp';
+import Banner from '../../../../../public/frontend/Banner/Group_520.jpg';
 import Image from 'next/image';
 
 const BannerText01 = () => {

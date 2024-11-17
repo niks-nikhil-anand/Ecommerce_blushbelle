@@ -58,7 +58,7 @@ const HeroSection = () => {
     animate={{ opacity: 1, x: 0 }}
     transition={{ duration: 1, delay: 1 }}
   >
-    Superfruit max gummies
+    BrainBite -  IQ Max 
   </motion.p>
 </div>
       </motion.div>

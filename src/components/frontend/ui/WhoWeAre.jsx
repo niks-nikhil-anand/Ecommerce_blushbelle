@@ -1,9 +1,9 @@
 import React from 'react';
 import Image from 'next/image';
-import Banner1 from '../../../../public/frontend/WhoWeAre/Banner1.webp';
-import Banner2 from '../../../../public/frontend/WhoWeAre/Banner2.webp';
-import Banner3 from '../../../../public/frontend/WhoWeAre/Banner3.webp';
-import Banner4 from '../../../../public/frontend/WhoWeAre/Banner4.webp';
+import Banner1 from '../../../../public/frontend/WhoWeAre/Banner1.jpg';
+import Banner2 from '../../../../public/frontend/WhoWeAre/Banner2.jpg';
+import Banner3 from '../../../../public/frontend/WhoWeAre/Banner3.jpg';
+import Banner4 from '../../../../public/frontend/WhoWeAre/Banner4.jpg';
 import { MdDirections } from "react-icons/md";
 
 

@@ -1,70 +1,71 @@
-"use client";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import HeroSection01 from "../../../../public/frontend/heroSection01.jpg";
-import HeroSectionMobileView from "../../../../public/frontend/heroSectionMobile01.webp";
-import waveWhite from "../../../../public/frontend/SvgAssets/wave-white.svg";
+"use client"
+"use client"
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
 
-
+const sliderData = [
+  {
+    title: "BrainBite – Genius",
+    description: "Target Audience: Parents of School-going Children, 2-16 years old",
+    backgroundImageUrl: "https://images.unsplash.com/photo-1594608661623-aa0bd3a69d98?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzR8fGNoaWxkcmVufGVufDB8fDB8fHww",
+    buttonText: "Learn More"
+  },
+  {
+    title: "BrainBite – Memory & Focus",
+    description: "Target Audience: Mature Students, Preparing for Exams like IIT, JEE, NEET",
+    backgroundImageUrl: "https://images.unsplash.com/photo-1594608661623-aa0bd3a69d98?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzR8fGNoaWxkcmVufGVufDB8fDB8fHww",
+    buttonText: "Explore Now"
+  },
+  {
+    title: "BrainBite – IQ Max",
+    description: "Target Audience: Modern People, Working Women, Professionals, Stressed Individuals",
+    backgroundImageUrl: "https://images.unsplash.com/photo-1594608661623-aa0bd3a69d98?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzR8fGNoaWxkcmVufGVufDB8fDB8fHww",
+    buttonText: "Start Now"
+  },
+];
 
 const HeroSection = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % sliderData.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + sliderData.length) % sliderData.length);
+  };
+
+  const { title, description, backgroundImageUrl, buttonText } = sliderData[currentSlide];
+
   return (
-    <div className="relative w-full h-[85vh]  sm:h-[55vh] md:h-[75vh] lg:h-[90vh] flex items-center justify-center bg-beige md:flex">
-      <motion.div
-        className="relative w-full h-full"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="hidden md:flex">
-        <Image
-          src={HeroSection01}
-          alt="Hero Image"
-          layout="fill"
-          objectFit="cover"
-          priority
-        />
-        </div>
-        <div className=" md:hidden">
-        <Image
-          src={HeroSectionMobileView}
-          alt="Hero Image"
-          layout="fill"
-          objectFit="cover"
-          priority
-        />
-        </div>
-        
+    <div className="relative w-full h-screen bg-blue-500">
+      {/* Background Image */}
+      <img
+        src={backgroundImageUrl} 
+        alt="Learning Image"
+        className="absolute inset-0 object-cover w-full h-full opacity-60"
+      />
 
-        {/* Text overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-start top-7 sm:items-start sm:justify-center pl-0  sm:pl-12 md:pl-20 lg:pl-28 text-center sm:text-left">
-  <motion.div
-    className="flex flex-col items-center sm:items-start"
-    initial={{ opacity: 0, x: -50 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 1, delay: 0.5 }}
-  >
-    <div className="text-red-500 text-5xl text-[6rem] md:text-[12rem] lg:text-[18rem] font-bold italic leading-none">
-      50%
-      <span className="block text-[0.5em] sm:text-[0.7em] md:text-[1rem] lg:text-[2rem]">
-        Off
-      </span>
-    </div>
-  </motion.div>
+      {/* Content Container */}
+      <div className="flex items-center justify-center w-full h-full px-6">
+        <motion.div
+          className="text-center text-white"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.5 }}
+        >
+          <h1 className="text-5xl font-bold mb-4">{title}</h1>
+          <p className="text-xl mb-6">{description}</p>
+          
+        </motion.div>
+      </div>
 
-  <motion.p
-    className="text-red-500 text-sm sm:text-xl md:text-3xl lg:text-4xl mt-4"
-    initial={{ opacity: 0, x: -50 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 1, delay: 1 }}
-  >
-    BrainBite -  IQ Max 
-  </motion.p>
-</div>
-      </motion.div>
-      {/* Wavy white image */}
-      <div className="absolute w-full md:bottom-[-4rem]  bottom-[-1.7rem] right-0 left-0 z-0">
-        <Image src={waveWhite} alt="Wave" layout="responsive" priority />
+      {/* Navigation Arrows */}
+      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 pl-4">
+        <button onClick={prevSlide} className="text-white text-3xl">{"<"}</button>
+      </div>
+      <div className="absolute top-1/2 right-0 transform -translate-y-1/2 pr-4">
+        <button onClick={nextSlide} className="text-white text-3xl">{">"}</button>
       </div>
     </div>
   );

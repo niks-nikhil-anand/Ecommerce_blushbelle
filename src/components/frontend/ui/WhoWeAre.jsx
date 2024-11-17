@@ -8,11 +8,32 @@ import { MdDirections } from "react-icons/md";
 
 
 const banners = [
-  { src: Banner1, label: 'Clean Ingredients' , description: 'By combining the best of nature’s nutrients with science-backed formulas, we create clean, effective supplements tailored to your unique needs.' , heading: 'We Test' },
-  { src: Banner2, label: 'By Enthusiasts , For Enthusiasts' , description: 'By combining the best of nature’s nutrients with science-backed formulas, we create clean, effective supplements tailored to your unique needs.' , heading: 'Our Standards' },
-  { src: Banner3, label: 'Based on the Heart Of Utah' , description: 'By combining the best of nature’s nutrients with science-backed formulas, we create clean, effective supplements tailored to your unique needs.' , heading: 'Our Home'},
-  { src: Banner4, label: 'Greatness Guaranteed' , description: 'By combining the best of nature’s nutrients with science-backed formulas, we create clean, effective supplements tailored to your unique needs.' , heading: 'Money Back Guarantee'},
+  {
+    src: Banner1,
+    label: 'Natural Formulation',
+    heading: 'Enhance Your Cognitive Power Naturally',
+    description: 'Experience the benefits of a natural cognitive enhancer crafted with high-quality ingredients. BrainBite is free from artificial additives and harmful chemicals, ensuring a safe, natural boost to your mental clarity and focus.',
+  },
+  {
+    src: Banner2,
+    label: 'Convenient and Easy to Use',
+    heading: 'Simplify Your Daily Wellness Routine',
+    description: 'BrainBite’s powder form seamlessly integrates into your lifestyle. Mix it with water or your favorite smoothie for an effortless way to support cognitive health every day.',
+  },
+  {
+    src: Banner3,
+    label: 'Backed by Science',
+    heading: 'Science-Driven Results You Can Trust',
+    description: 'With ingredients supported by extensive research, BrainBite delivers a scientifically validated formula designed to improve memory, focus, and overall brain health effectively.',
+  },
+  {
+    src: Banner4,
+    label: 'Commitment to Quality',
+    heading: 'Unmatched Quality for Your Peace of Mind',
+    description: 'Every ingredient in BrainBite is tested for purity and potency, ensuring the highest standards of quality. Feel confident in choosing a safe, effective product for your brain health.',
+  },
 ];
+
 
 const WhoWeAre = () => {
   return (

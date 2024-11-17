@@ -20,7 +20,7 @@ const BannerText01 = () => {
         Truth. Trust. Transparency.
       </h1>
       <p className='text-gray-600 text-base md:text-lg leading-relaxed'>
-        If it’s going in your body, there should be no question about the contents or quality. That’s why at Zhou Nutrition, we test all of our ingredients at intake as well as all of our finished products to ensure you’re getting exactly what we promise, and nothing more or less.
+      At CleanVeda, we believe you deserve complete confidence in what you put into your body. That’s why BrainBite is crafted with uncompromising quality standards. Every ingredient is rigorously tested at intake, and every finished product is evaluated to ensure you get exactly what we promise — pure, effective, and trustworthy nutrition to enhance your cognitive health.
       </p>
     </div>
   </div>

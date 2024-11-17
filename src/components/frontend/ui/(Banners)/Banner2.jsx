@@ -29,10 +29,10 @@ const Banner2 = () => {
     >
         <div className="absolute inset-0 opacity-50" />
       <div className="absolute md:top-1/2 top-[10rem] md:right-[3rem] transform -translate-y-1/2  p-5">
-        <h1 className="text-3xl md:text-7xl text-[#D07021]">Greatness</h1>
-        <h1 className="text-3xl md:text-4xl ml-5 text-[#D07021]">by Nature</h1>
+      <h1 className="text-3xl md:text-7xl text-[#D07021]">Cognitive Excellence</h1>
+        <h1 className="text-3xl md:text-4xl ml-5 text-[#D07021]">Rooted in Nature</h1>
         <p className="mt-10 text-lg md:text-xl w-[20rem] md:w-[40rem] lg:w-[50rem] text-black">
-        By combining the best of nature’s nutrients with science-backed formulas, we create clean, effective supplements tailored to your unique needs.
+          At CleanVeda, we blend the finest natural ingredients with cutting-edge science to craft BrainBite — a clean, effective supplement designed to unlock your mental potential and elevate your daily performance.
         </p>
       </div>
       <div className="absolute w-full bottom-[-4rem] md:bottom-[-4rem] left-0 right-0 z-0">

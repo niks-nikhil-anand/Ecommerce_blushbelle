@@ -136,10 +136,10 @@ const Footer = () => {
         </motion.div>
       </div>
       <div className="mt-10 text-center text-sm text-black">
-        <p>Copyright © 2024, <a href="#" className="text-black underline">BlushBelle Nutrition</a></p>
+        <p>Copyright © 2024, <a href="#" className="text-black underline">Cleanveda Nutrition</a></p>
         <div className="mt-4  p-4  flex justify-center items-center flex-col ">
           <div className='md:w-[50rem] w-[20rem] rounded-lg border border-gray-200 px-5 md:py-8 py-5'>
-          <p className=' text-center'>50% OFF discount valid on Superfruit Max Gummies at BlushBelle.com. Discount not applicable on repeating subscription orders. Discount automatically applied at checkout. Offer valid until 11/15/24 at 11:59 PM MST. Offer may be modified or terminated at any time. Exclusions apply.</p>
+          <p className=' text-center'>50% OFF discount valid on  at cleanveda.com. Discount not applicable on repeating subscription orders. Discount automatically applied at checkout. Offer valid until 11/15/24 at 11:59 PM MST. Offer may be modified or terminated at any time. Exclusions apply.</p>
           <p className="mt-2  text-center">**These statements have not been evaluated by the Food and Drug Administration. These products are not intended to diagnose, treat, cure or prevent any disease.</p>
           </div>
          

@@ -59,10 +59,10 @@ const ProductCard = () => {
     return (
         <div className="flex flex-col mt-5 mb-4">
             <h2 className="text-xl md:text-4xl mb-4 text-center font-bold text-red-500">Fan Favorites</h2>
-            <div className="flex justify-center px-2 py-3 flex-wrap hover:cursor-pointer relative">
+            <div className="flex justify-center px-2 py-3 flex-wrap hover:cursor-pointer relative ">
                 {products.map(({ _id, name, originalPrice, featuredImage, salePrice, description, productHighlights }) => (
                     <div
-                        className="flex flex-col items-center bg-[#FFF6E6] py-12 px-6 rounded-lg shadow-md border-b-2 border-gray-200"
+                        className="flex flex-col items-center bg-[#F3E3EC] py-12 px-6  shadow-md border-b-2 border-black"
                         key={_id}
                         onClick={() => handleCardClick(_id)}
                     >
@@ -97,7 +97,7 @@ const ProductCard = () => {
                         </div>
 
                         {productHighlights && productHighlights.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+                            <div className="flex mx-10 gap-6 mt-10">
                                 {productHighlights.slice(0, 3).map((highlight) => (
                                     <FeatureCard
                                         key={highlight._id}
@@ -122,11 +122,11 @@ const FeatureCard = ({ icon, title, description }) => {
     const limitedDescription = description.split(" ").slice(0, 15).join(" ") + (description.split(" ").length > 15 ? "..." : "");
 
     return (
-        <div className="flex flex-col justify-start text-left p-4">
+        <div className="flex flex-col justify-start text-left p-4 ">
             <div className="bg-white rounded-b-full w-20 h-20 flex items-start justify-start ml-0 overflow-hidden p-2">
                 <img src={icon} alt={title} className="w-full h-full object-cover" />
             </div>
-            <h3 className="font-bold mt-2 text-left">{title}</h3>
+            <h3 className="font-bold mt-2 text-left text-red-600">{title}</h3>
             <div className=''>
                 <p className="text-gray-600 text-left font-semibold">{limitedDescription}</p>
             </div>

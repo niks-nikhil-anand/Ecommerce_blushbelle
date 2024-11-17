@@ -40,7 +40,7 @@ const Navbar = () => {
   {/* Logo */}
   <div className="flex justify-center md:hidden">
     <Link href={"/"}>
-    <h1>Logo</h1>
+    <h1>Cleanveda</h1>
     </Link>
   </div>
 
@@ -196,11 +196,11 @@ const Navbar = () => {
                   <ul className="space-y-6">
                     <li className="flex items-center space-x-3">
                       <span>♂</span>
-                      <a href="#" className="hover:text-blue-600">Men`&apos;s Health</a>
+                      <a href="#" className="hover:text-blue-600">Men&apos;s Health</a>
                     </li>
                     <li className="flex items-center space-x-3">
                       <span>♀</span>
-                      <a href="#" className="hover:text-blue-600">Women`&apos;s Health</a>
+                      <a href="#" className="hover:text-blue-600">Women&apos;s Health</a>
                     </li>
                     <li className="flex items-center space-x-3">
                       <span>🔥</span>

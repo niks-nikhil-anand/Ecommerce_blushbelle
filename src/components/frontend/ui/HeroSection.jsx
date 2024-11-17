@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import HeroSection01 from "../../../../public/frontend/heroSection01.webp";
+import HeroSection01 from "../../../../public/frontend/heroSection01.jpg";
 import HeroSectionMobileView from "../../../../public/frontend/heroSectionMobile01.webp";
 import waveWhite from "../../../../public/frontend/SvgAssets/wave-white.svg";
 

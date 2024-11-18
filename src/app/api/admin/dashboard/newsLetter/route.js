@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from "@/lib/dbConnect";
 import { Resend } from "resend";
 import NewsLetterEmail from '@/emails/newsLetterEmail';
+import NewsLetter from '@/models/newsLetter';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -17,7 +18,7 @@ export async function POST(req) {
     const { name, email } = await req.json();
 
     // Validate the request data
-    if (!name || !email) {
+    if ( !email) {
       return NextResponse.json({ error: 'Name and email are required' }, { status: 400 });
     }
 

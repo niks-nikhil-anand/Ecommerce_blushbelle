@@ -46,7 +46,7 @@ const AdminLoginForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center bg-white px-4 md:px-0 w-full flex-col my-10">
+    <div className="flex justify-center items-center bg-white px-2 md:px-0 w-full flex-col my-10">
   <div className="w-full md:pl-8 md:w-1/2 ">
     {/* Form Section */}
         <motion.div
@@ -56,21 +56,23 @@ const AdminLoginForm = () => {
           className="p-10  w-full flex flex-col justify-center md:ml-6"
         >
           <motion.h2
-      className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-extrabold mb-6 text-center md:text-left text-green-800 mt-8 tracking-wide"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-    >
-      Welcome Back to CleanVeda Nutrition
-    </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-center text-gray-600 mb-6 underline"
-          >
-            Access your admin dashboard 🚀
-          </motion.p>
+  className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold mb-6 text-center md:text-left text-green-800 mt-6 md:mt-8 tracking-wide"
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8 }}
+>
+  Welcome Back to CleanVeda Nutrition
+</motion.h2>
+
+<motion.p
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ delay: 0.5 }}
+  className="text-sm  md:text-lg text-center text-gray-600 mb-4 md:mb-6 "
+>
+  <span className='underline'>Access your admin dashboard</span> 🚀
+</motion.p>
+
           <form onSubmit={handleLogin}>
             <div className="mb-4">
               <label className="block text-gray-700 mb-2">Email</label>
@@ -131,7 +133,7 @@ const AdminLoginForm = () => {
             transition={{ delay: 1 }}
             className="flex justify-between mt-4"
           >
-            <a href="/forgot-password" className="text-blue-500 hover:underline">Forgot your password?</a>
+            <a href="/auth/forgotPassword" className="text-blue-500 hover:underline">Forgot your password?</a>
           </motion.div>
         </motion.div>
       </div>

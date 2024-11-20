@@ -44,13 +44,13 @@ const FitnessHeroSection = () => {
     <section class=" pb-12 sm:pb-16 lg:pt-8">
         <div class=" mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="grid max-w-lg grid-cols-1 mx-auto lg:max-w-full lg:items-center lg:grid-cols-2 gap-y-12 lg:gap-x-16">
-            <div>
+            <div className=''>
                 <Image
                 src={heroImage}
                 alt="Hero Section"
-                layout="intrinsic" // Maintain aspect ratio
-                width={800} // Set desired width
-                height={400} // Set desired height
+                layout="intrinsic" 
+                width={800} 
+                height={400}
                 className="rounded-lg"
               />
                 </div>

@@ -145,93 +145,121 @@ const CheckoutPage = () => {
 
   return (
     <div className="flex mx-auto justify-center my-10 gap-5">
-      <div className="flex flex-col w-full lg:w-2/5 gap-10">
-        <div className="">
-          <div className="flex mb-6 gap-4 ">
-            <div className="text-sm text-gray-600">
-              <Link href="/cart" className="mr-2 text-blue-500">
-                Cart
-              </Link>
-              &gt;
-              <span className="ml-2 text-blue-500 ">Information</span>
-              &gt;
-              <span className="ml-2 text-blue-500">Shipping</span>
-              &gt;
-              <span className="ml-2 ">Payment</span>
-            </div>
-          </div>
+      <div className="flex flex-col w-full lg:w-2/5 gap-8 p-4">
+  {/* Navigation Breadcrumb */}
+  <div className="mb-6">
+    <div className="flex  text-sm text-gray-600">
+      <Link href="/cart" className="mr-2 text-blue-500 hover:underline">
+        Cart
+      </Link>
+      &gt;
+      <span className="ml-2 text-blue-500">Information</span>
+      &gt;
+      <span className="ml-2 text-blue-500">Shipping</span>
+      &gt;
+      <span className="ml-2">Payment</span>
+    </div>
+  </div>
 
-          <div className="border border-gray-300 rounded-lg px-5 py-10">
-            <div className="mb-4">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Email</span>
-                <span>{contactInfo.email || "Not Available"}</span>
-                <a href="#" className="text-purple-600 hover:underline">Change</a>
-              </div>
-            </div>
+  {/* Contact Information Section */}
+  <div className="border border-gray-300 rounded-lg px-6 py-8">
+    <div className="mb-4">
+    <div className="flex justify-between items-center px-4 py-2">
+  <span className="text-gray-600 text-sm md:text-base mr-4">Email</span>
+  <span className="text-gray-800 text-sm md:text-base mr-4 truncate">
+    {contactInfo.email || "Not Available"}
+  </span>
+  <a href="#" className="text-purple-600 hover:underline text-sm md:text-base">
+    Change
+  </a>
+</div>
 
-            <div className="mb-4">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Mobile No.</span>
-                <span>{contactInfo.mobileNumber || "Not Available"}</span>
-                <a href="#" className="text-purple-600 hover:underline">Change</a>
-              </div>
-            </div>
+    </div>
 
-            <div className="mb-4">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Ship to</span>
-                <span>{contactInfo.address || "Not Available"}</span>
-                <a href="#" className="text-purple-600 hover:underline">Change</a>
-              </div>
-            </div>  
-          </div>
-        </div>
-
-        <div className="w-full p-4 border border-gray-300 rounded-lg">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold">Payment method</h3>
-            <div className="flex items-center p-4 mb-2 border rounded-lg cursor-pointer"
-              onClick={() => setPaymentMethod("Cash on Delivery")}> {/* Updated this line */}
-              <FaMoneyBillWave className="text-purple-600 mr-4" size={24} />
-              <input 
-                type="radio" 
-                name="paymentMethod" 
-                checked={paymentMethod === "Cash on Delivery"} // Match to the state
-                className="form-radio text-purple-600 mr-2" 
-                readOnly 
-              />
-              <label className="cursor-pointer">Cash on Delivery</label>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold">Remember me</h3>
-          <div className="flex items-center mt-2">
-            <input type="checkbox" className="form-checkbox h-5 w-5 text-purple-600" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)} />
-            <label className="ml-3 text-gray-700">Save my information for a faster checkout</label>
-          </div>
-        </div>
-
-        <div className="flex justify-between mt-6">
-          <div className="flex items-center">
-            <MdArrowBackIos />
-            <Link href="/cart">
-              <button className="text-black font-bold py-2 px-6 rounded-md">Return to Checkout</button>
-            </Link>
-          </div>
-          <button
-            onClick={handlePlaceOrder}
-            disabled={placingOrder}
-            className="bg-purple-600 text-white font-bold py-2 px-6 rounded-md flex items-center justify-center"
-          >
-            {placingOrder ? "Loading..." : "Place Order"}
-          </button>
-          </div>
+    <div className="mb-4">
+      <div className="flex justify-between items-center">
+        <span className="text-gray-600 text-sm md:text-base">Mobile No.</span>
+        <span className="text-gray-800 text-sm md:text-base">
+          {contactInfo.mobileNumber || "Not Available"}
+        </span>
+        <a href="#" className="text-purple-600 hover:underline text-sm md:text-base">
+          Change
+        </a>
       </div>
+    </div>
 
-      <div className="w-full border shadow-lg rounded-lg lg:w-5/12 bg-gray-50 p-10">
+    <div className="mb-4">
+      <div className="flex justify-between items-center">
+        <span className="text-gray-600 text-sm md:text-base">Ship to</span>
+        <span className="text-gray-800 text-sm md:text-base">
+          {contactInfo.address || "Not Available"}
+        </span>
+        <a href="#" className="text-purple-600 hover:underline text-sm md:text-base">
+          Change
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {/* Payment Method Section */}
+  <div className="w-full p-4 border border-gray-300 rounded-lg">
+    <div className="mb-6">
+      <h3 className="text-lg md:text-xl font-semibold mb-4">Payment Method</h3>
+      <div
+        className="flex items-center p-4 mb-2 border rounded-lg cursor-pointer hover:shadow transition-shadow"
+        onClick={() => setPaymentMethod("Cash on Delivery")}
+      >
+        <FaMoneyBillWave className="text-purple-600 mr-4" size={24} />
+        <input
+          type="radio"
+          name="paymentMethod"
+          checked={paymentMethod === "Cash on Delivery"}
+          className="form-radio text-purple-600 mr-2"
+          readOnly
+        />
+        <label className="cursor-pointer text-gray-800">Cash on Delivery</label>
+      </div>
+    </div>
+  </div>
+
+  {/* Remember Me Section */}
+  <div className="mb-4">
+    <h3 className="text-lg md:text-xl font-semibold">Remember Me</h3>
+    <div className="flex items-center mt-2">
+      <input
+        type="checkbox"
+        className="form-checkbox h-5 w-5 text-purple-600"
+        checked={rememberMe}
+        onChange={() => setRememberMe(!rememberMe)}
+      />
+      <label className="ml-3 text-gray-700 text-sm md:text-base">
+        Save my information for a faster checkout
+      </label>
+    </div>
+  </div>
+
+  {/* Footer Buttons */}
+  <div className="flex flex-col md:flex-row justify-between mt-6 gap-4">
+    <div className="hidden md:flex items-center gap-2">
+      <MdArrowBackIos className="text-gray-700" />
+      <Link href="/cart">
+        <button className="text-black font-bold py-2 px-6 rounded-md hover:underline">
+          Return to Checkout
+        </button>
+      </Link>
+    </div>
+    <button
+      onClick={handlePlaceOrder}
+      disabled={placingOrder}
+      className="bg-purple-600 text-white font-bold py-2 px-6 rounded-md flex items-center justify-center hover:bg-purple-700 transition-colors"
+    >
+      {placingOrder ? "Loading..." : "Place Order"}
+    </button>
+  </div>
+</div>
+
+
+      <div className="w-full border shadow-lg rounded-lg lg:w-5/12 bg-gray-50 p-10 hidden md:block">
         <table className="w-full table-auto border-collapse text-xs md:text-base">
           <thead>
             <tr>

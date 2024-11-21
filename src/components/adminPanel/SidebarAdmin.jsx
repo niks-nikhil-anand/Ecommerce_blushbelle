@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { FaHome, FaUser, FaCog, FaBuilding, FaPlus, FaShoppingCart, FaListAlt } from 'react-icons/fa';
+import { FaHome, FaTable, FaClock, FaCog, FaBuilding, FaPlus, FaShoppingCart, FaListAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { TiThMenu } from "react-icons/ti";
 import { ImProfile } from "react-icons/im";
@@ -58,11 +58,14 @@ const SidebarAdmin = () => {
 
 
           {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-500">Orders</h3>}
-          <Link href="/admin/dashboard/orders/allOrders" passHref>
-            <SidebarItem icon={<FaShoppingCart />} label="Orders" isOpen={isOpen} />
+          <Link href="/admin/dashboard/orders/orders-cardView" passHref>
+            <SidebarItem icon={<FaShoppingCart />} label="Orders-CardView" isOpen={isOpen} />
           </Link>
-          <Link href="/admin/dashboard/orders/allOrders" passHref>
-            <SidebarItem icon={<FaShoppingCart />} label="Pending Orders" isOpen={isOpen} />
+          <Link href="/admin/dashboard/orders/orders-tableView" passHref>
+            <SidebarItem icon={<FaTable />} label="Orders-TableView" isOpen={isOpen} />
+          </Link>
+          <Link href="/admin/dashboard/orders/pendingOrders" passHref>
+            <SidebarItem icon={<FaClock />} label="Pending Orders" isOpen={isOpen} />
           </Link>
 
           {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-300 ">Products</h3>}

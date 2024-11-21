@@ -8,7 +8,6 @@ export const GET = async (request, { params }) => {
   if (!id) {
     return NextResponse.json({ status: "error", msg: "ID parameter is required" }, { status: 400 });
   }
-
   try {
     await connectDB();
 

@@ -6,14 +6,14 @@ import bottomWave from '../../../../public/frontend/heroSection/children/bottomW
 
 const FeatureHighlights = () => {
   return (
-    <div className="relative bg-[#0D9B4D] text-white">
+    <div className="relative bg-[#0D9B4D] text-white mt-2">
       {/* Top Wave */}
-      <div className="absolute top-0 left-0 w-full">
+      <div className="absolute top-[-25px] left-0 w-full">
         <Image src={topWave} alt="Top Wave" layout="responsive" objectFit="cover" priority />
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6 py-12 flex flex-wrap justify-around items-center space-y-6 md:space-y-0">
+      <div className="container mx-auto px-6 py-7 flex flex-wrap justify-around items-center space-y-6 md:space-y-0">
         {/* Free Shipping */}
         <div className="flex items-center space-x-4">
           <FaShippingFast size={28} />
@@ -52,7 +52,7 @@ const FeatureHighlights = () => {
       </div>
 
       {/* Bottom Wave */}
-      <div className="absolute bottom-0 left-0 w-full">
+      <div className="absolute bottom-[-30px] left-0 w-full">
         <Image src={bottomWave} alt="Bottom Wave" layout="responsive" objectFit="cover" priority />
       </div>
     </div>

@@ -7,6 +7,7 @@ import CTA from "@/components/frontend/ui/CTA";
 import HeroSection from "@/components/frontend/ui/HeroSection";
 import Marquee from "@/components/frontend/ui/Marquee";
 import ProductCard from "@/components/frontend/ui/ProductForSale";
+import ProductIngredients from "@/components/frontend/ui/ProductIngredients";
 import WhoWeAre from "@/components/frontend/ui/WhoWeAre";
 
 export default function Home() {
@@ -22,6 +23,7 @@ export default function Home() {
     <Banner1/>
     <BannerText01/>
     <BannerText02/>
+    <ProductIngredients/>
     <Banner2/>
     <CTA/>
     </>

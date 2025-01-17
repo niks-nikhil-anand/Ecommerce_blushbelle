@@ -30,7 +30,7 @@ const CTA = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center py-7 px-5 bg-gray-100">
+    <div className="flex flex-col md:flex-row items-center justify-center py-5 px-5 bg-gray-100">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -55,12 +55,12 @@ const CTA = () => {
           placeholder="Your email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 px-4 py-3 border border-gray-300 rounded-l-full focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="flex-1 px-4 py-[0.6rem] border border-gray-300 rounded-l-full focus:outline-none focus:ring-2 focus:ring-green-500"
           required
         />
         <button
           type="submit"
-          className="px-6 py-3 bg-green-500 text-white font-medium rounded-full hover:bg-green-600 transition duration-200"
+          className="px-6 py-3 bg-green-500 text-white font-medium rounded-r-full hover:bg-green-600 transition duration-200"
         >
           Subscribe
         </button>
@@ -71,7 +71,7 @@ const CTA = () => {
         transition={{ duration: 0.7 }}
         className="flex space-x-4 text-gray-500 mx-5"
       >
-        <FaFacebook className="cursor-pointer hover:text-green-500 transition duration-200" />
+        <FaFacebook className="cursor-pointer hover:text-green-500  transition duration-200" />
         <FaTwitter className="cursor-pointer hover:text-green-500 transition duration-200" />
         <FaPinterest className="cursor-pointer hover:text-green-500 transition duration-200" />
         <FaInstagram className="cursor-pointer hover:text-green-500 transition duration-200" />

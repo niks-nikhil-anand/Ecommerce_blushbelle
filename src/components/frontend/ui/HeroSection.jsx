@@ -15,6 +15,7 @@ const HeroSection = () => {
   <Image src={leftLeaves} alt="Left Leaves" className="absolute top-12 left-0 w-28 lg:w-16" />
   <Image src={rightLeaves} alt="Right Leaves" className="absolute top-12 right-0 w-28 lg:w-10" />
   <Image src={tablets} alt="Tablets" className="absolute bottom-0 right-0 w-36 lg:w-48 " />
+  <Image src={tablets} alt="Tablets" className="absolute bottom-5 left-[-65px] w-36 lg:w-48 " />
 </div>
 
     <div className="flex flex-col justify-center items-start h-[500px] w-[50%] p-6 lg:p-10 ">

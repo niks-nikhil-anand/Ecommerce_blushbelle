@@ -12,16 +12,16 @@ const HeroSection = () => {
     <div className="relative bg-[#F7F6F2] h-[70vh] flex items-center justify-center px-6 lg:px-16 min-w-full">
     {/* Content Section */}
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-  <Image src={leftLeaves} alt="Left Leaves" className="absolute top-12 left-8 w-28 lg:w-16" />
-  <Image src={rightLeaves} alt="Right Leaves" className="absolute top-12 right-8 w-28 lg:w-10" />
-  <Image src={tablets} alt="Tablets" className="absolute bottom-8 left-12 w-36 lg:w-48 rotate-[-30deg]" />
+  <Image src={leftLeaves} alt="Left Leaves" className="absolute top-12 left-0 w-28 lg:w-16" />
+  <Image src={rightLeaves} alt="Right Leaves" className="absolute top-12 right-0 w-28 lg:w-10" />
+  <Image src={tablets} alt="Tablets" className="absolute bottom-0 right-0 w-36 lg:w-48 " />
 </div>
 
     <div className="flex flex-col justify-center items-start h-[500px] w-[50%] p-6 lg:p-10 ">
-      <h1 className="text-xl lg:text-2xl font-bold text-gray-800 leading-snug lg:leading-tight max-w-[25rem]">
+      <h1 className="text-xl lg:text-3xl font-bold text-gray-800 leading-snug lg:leading-tight max-w-[35rem]">
         Boost Your Brain Power, Enhance Your Immunity, Age Gracefully with Our <span className="text-green-600">Supplements</span>
       </h1>
-      <p className="mt-4 text-gray-600 text-sm lg:text-sm max-w-[23rem] text-start">
+      <p className="mt-4 text-gray-600 text-sm lg:text-base max-w-[28rem] text-start">
         Discover a wide range of authentic Ayurvedic medicines and wellness products, delivered to your doorstep.
       </p>
       <button className="mt-6 px-8 py-3 bg-purple-600 text-white font-medium rounded-full hover:bg-purple-700 shadow-md">
@@ -36,7 +36,7 @@ const HeroSection = () => {
         <Image
           src={EllipseBg}
           alt="Ellipse Background"
-          className="w-[400px] lg:w-[300px]"
+          className="w-[400px] lg:w-[380px]"
           height={600}
         />
       </div>
@@ -45,7 +45,7 @@ const HeroSection = () => {
       <Image
         src={Group1}
         alt="Main Product"
-        className="relative w-40 lg:w-60 z-10"
+        className="relative w-40 lg:w-96 z-10"
       />
     </div>
   </div>

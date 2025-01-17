@@ -15,7 +15,7 @@ export async function POST(req) {
     console.log("Connected to the database.");
 
     // Parse incoming request data
-    const { name, email } = await req.json();
+    const { email } = await req.json();
 
     // Validate the request data
     if ( !email) {
@@ -29,7 +29,7 @@ export async function POST(req) {
     }
 
     // Create a new subscription document and save it to the database
-    const newSubscription = new NewsLetter({ name, email });
+    const newSubscription = new NewsLetter({ email });
     await newSubscription.save();
 
 
@@ -38,7 +38,7 @@ export async function POST(req) {
       to: email,
       subject: 'Welcome to Cleanveda - Enjoy 15% Off Your First Order!',
       react: (
-        <NewsLetterEmail fullName={name} />
+        <NewsLetterEmail />
       ),
     });
     console.log("Welcome email sent to:", email);

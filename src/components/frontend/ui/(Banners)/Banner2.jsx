@@ -35,15 +35,6 @@ const Banner2 = () => {
           At CleanVeda, we blend the finest natural ingredients with cutting-edge science to craft BrainBite — a clean, effective supplement designed to unlock your mental potential and elevate your daily performance.
         </p>
       </div>
-      <div className="absolute w-full bottom-[-4rem] md:bottom-[-4rem] left-0 right-0 z-0">
-        <Image
-          src={waveWhite}
-          alt="Wave"
-          layout="responsive"
-          priority
-          className="md:h-auto h-[3rem]" 
-        />
-      </div>
     </div>
   );
 }

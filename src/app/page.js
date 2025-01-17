@@ -9,6 +9,7 @@ import Marquee from "@/components/frontend/ui/Marquee";
 import ProductCard from "@/components/frontend/ui/ProductForSale";
 import ProductIngredients from "@/components/frontend/ui/ProductIngredients";
 import WhoWeAre from "@/components/frontend/ui/WhoWeAre";
+import WhyChooseBrainbite from "@/components/frontend/ui/WhyChooseBrainbite";
 
 export default function Home() {
   return (
@@ -24,7 +25,7 @@ export default function Home() {
     <BannerText01/>
     <BannerText02/>
     <ProductIngredients/>
-    <Banner2/>
+    <WhyChooseBrainbite/>
     <CTA/>
     </>
   );

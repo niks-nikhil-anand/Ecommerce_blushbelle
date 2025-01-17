@@ -9,7 +9,7 @@ import tablets from '../../../../public/frontend/heroSection/tablets.png';
 
 const HeroSection = () => {
   return (
-    <div className="relative bg-[#F7F6F2] h-[70vh] flex items-center justify-center px-6 lg:px-16 min-w-full">
+    <div className="relative bg-[#F8F5EC] h-[70vh] flex items-center justify-center px-6 lg:px-16 min-w-full">
     {/* Content Section */}
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
   <Image src={leftLeaves} alt="Left Leaves" className="absolute top-12 left-0 w-28 lg:w-16" />

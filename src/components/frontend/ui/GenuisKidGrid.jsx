@@ -5,7 +5,7 @@ import bg from "../../../../public/frontend/products/smartIQ/bg.png";
 import ingredients from "../../../../public/frontend/products/smartIQ/ingredients.png";
 import titleSvg from "../../../../public/frontend/products/smartIQ/title_shape.png";
 
-const SmartIQGrid = () => {
+const GenuisKidGrid = () => {
   return (
     <div className="relative flex items-center justify-between bg-gray-50 p-8 rounded-sm shadow-lg max-w-4xl mx-auto">
       {/* Background Image */}
@@ -66,4 +66,4 @@ const SmartIQGrid = () => {
   );
 };
 
-export default SmartIQGrid;
+export default GenuisKidGrid;

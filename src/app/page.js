@@ -13,6 +13,7 @@ import FeatureHighlights from "@/components/frontend/ui/FeatureHighlights";
 import StaticPlayer from "@/components/frontend/ui/StaticPlayer";
 import ProductFeatures from "@/components/frontend/ui/ProductFeatures";
 import SmartIQGrid from "@/components/frontend/ui/SmartIQGrid";
+import GenuisKidGrid from "@/components/frontend/ui/GenuisKidGrid";
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
     <FeatureHighlights/>
     <WhoWeAre/>
     <SmartIQGrid/>
+    <GenuisKidGrid/>
     <ProductFeatures/>
     <ProductCard/>
     <Marquee/>

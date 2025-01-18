@@ -7,7 +7,7 @@ import titleSvg from "../../../../public/frontend/products/smartIQ/title_shape.p
 
 const SmartIQGrid = () => {
   return (
-    <div className="relative flex items-center justify-between bg-gray-50 p-8 rounded-sm shadow-lg max-w-4xl mx-auto">
+    <div className="relative flex items-center justify-between bg-gray-50 p-8 rounded-sm shadow-lg max-w-4xl mx-auto my-24">
       {/* Background Image */}
       <div
         className="absolute top-[-100px] right-[-100px] w-[330px] h-[330px] bg-no-repeat bg-contain"

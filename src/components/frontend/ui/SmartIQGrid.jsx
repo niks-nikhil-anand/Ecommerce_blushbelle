@@ -2,6 +2,7 @@ import React from "react";
 import productImage from "../../../../public/frontend/products/smartIQ/product.png";
 import bg from "../../../../public/frontend/products/smartIQ/bg.png";
 import ingredients from "../../../../public/frontend/products/smartIQ/ingredients.png";
+import titleSvg from "../../../../public/frontend/products/smartIQ/title_shape.png";
 
 const SmartIQGrid = () => {
   return (
@@ -14,8 +15,16 @@ const SmartIQGrid = () => {
 
       {/* Left Content */}
       <div className="max-w-md z-10">
-        <h2 className="text-3xl font-bold mb-4 text-gray-800">BRAIN BITE</h2>
+        <h2 className="text-3xl font-bold  text-gray-800">BRAIN BITE</h2>
+        <div className="mb-4 ">
+        <img
+          src={titleSvg.src}
+          alt="BrainBite Smart IQ"
+          className="w-10 h-auto drop-shadow-lg"
+        />
+        </div>
         <div className="text-green-500 font-semibold text-lg mb-2">Smart IQ</div>
+        
         <p className="text-gray-600 mb-6">
           BrainBite™ Smart IQ is a 100% plant-based brain supplement, designed with a science-backed formula to elevate your mental performance. Whether you’re a student, professional, or anyone looking to enhance focus, cognitive energy, and mental clarity, BrainBite™ is your go-to solution.
         </p>

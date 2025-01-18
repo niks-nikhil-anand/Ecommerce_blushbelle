@@ -22,10 +22,7 @@ export default function Home() {
     <WhoWeAre/>
     <SmartIQGrid/>
     <ProductFeatures/>
-    {/* <GoodnessSection/> */}
     <ProductCard/>
-    {/* <ProductComponent/> */}
-    {/* <CategoriesSection/> */}
     <Marquee/>
     <Banner1/>
     <BannerText01/>

@@ -23,14 +23,14 @@ export default function Home() {
     <WhoWeAre/>
     <SmartIQGrid/>
     <GenuisKidGrid/>
-    <ProductFeatures/>
-    <ProductCard/>
-    <Marquee/>
-    <Banner1/>
-    <BannerText01/>
-    <BannerText02/>
     <StaticPlayer/>
     <ProductIngredients/>
+    <ProductFeatures/>
+    {/* <ProductCard/> */}
+    {/* <Marquee/> */}
+    {/* <Banner1/> */}
+    {/* <BannerText01/> */}
+    {/* <BannerText02/> */}
     <WhyChooseBrainbite/>
     <CTA/>
     </>

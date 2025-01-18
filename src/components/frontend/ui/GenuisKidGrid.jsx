@@ -21,7 +21,7 @@ const GenuisKidGrid = () => {
           alt="BrainBite Smart IQ"
           width={256}
           height={256}
-          className="w-64 h-auto drop-shadow-lg"
+          className="w-60 h-auto drop-shadow-lg"
         />
         <Image
           src={ingredients}

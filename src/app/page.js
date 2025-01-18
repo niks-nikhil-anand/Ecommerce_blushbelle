@@ -21,11 +21,11 @@ export default function Home() {
     <HeroSection/>
     <FeatureHighlights/>
     <WhoWeAre/>
+    <ProductFeatures/>
     <SmartIQGrid/>
     <GenuisKidGrid/>
     <StaticPlayer/>
     <ProductIngredients/>
-    <ProductFeatures/>
     {/* <ProductCard/> */}
     {/* <Marquee/> */}
     {/* <Banner1/> */}

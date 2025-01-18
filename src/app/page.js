@@ -10,6 +10,7 @@ import ProductIngredients from "@/components/frontend/ui/ProductIngredients";
 import WhoWeAre from "@/components/frontend/ui/WhoWeAre";
 import WhyChooseBrainbite from "@/components/frontend/ui/WhyChooseBrainbite";
 import FeatureHighlights from "@/components/frontend/ui/FeatureHighlights";
+import StaticPlayer from "@/components/frontend/ui/StaticPlayer";
 
 export default function Home() {
   return (
@@ -25,6 +26,7 @@ export default function Home() {
     <Banner1/>
     <BannerText01/>
     <BannerText02/>
+    <StaticPlayer/>
     <ProductIngredients/>
     <WhyChooseBrainbite/>
     <CTA/>

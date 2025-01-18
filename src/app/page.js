@@ -11,6 +11,7 @@ import WhoWeAre from "@/components/frontend/ui/WhoWeAre";
 import WhyChooseBrainbite from "@/components/frontend/ui/WhyChooseBrainbite";
 import FeatureHighlights from "@/components/frontend/ui/FeatureHighlights";
 import StaticPlayer from "@/components/frontend/ui/StaticPlayer";
+import ProductFeatures from "@/components/frontend/ui/ProductFeatures";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
     <HeroSection/>
     <FeatureHighlights/>
     <WhoWeAre/>
+    <ProductFeatures/>
     {/* <GoodnessSection/> */}
     <ProductCard/>
     {/* <ProductComponent/> */}

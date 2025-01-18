@@ -12,6 +12,7 @@ import WhyChooseBrainbite from "@/components/frontend/ui/WhyChooseBrainbite";
 import FeatureHighlights from "@/components/frontend/ui/FeatureHighlights";
 import StaticPlayer from "@/components/frontend/ui/StaticPlayer";
 import ProductFeatures from "@/components/frontend/ui/ProductFeatures";
+import SmartIQGrid from "@/components/frontend/ui/SmartIQGrid";
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
     <HeroSection/>
     <FeatureHighlights/>
     <WhoWeAre/>
+    <SmartIQGrid/>
     <ProductFeatures/>
     {/* <GoodnessSection/> */}
     <ProductCard/>

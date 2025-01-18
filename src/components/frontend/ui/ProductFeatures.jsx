@@ -89,9 +89,10 @@ const ProductFeatures = () => {
 // Feature Component
 const Feature = ({ icon, title, description }) => (
   <div className="flex items-center  max-w-[20rem] ">
-    <div className="flex-shrink-0 mr-5">
-      <Image src={icon} alt={title} width={48} height={48} />
-    </div>
+    <div className="flex-shrink-0 mr-5 p-2 rounded-full border-2 border-dotted border-white">
+        <Image src={icon} alt={title} width={30} height={30} />
+        </div>
+
     <div>
       <h3 className="text-lg font-semibold text-white">{title}</h3>
       <p className="text-sm text-white opacity-80">{description}</p>

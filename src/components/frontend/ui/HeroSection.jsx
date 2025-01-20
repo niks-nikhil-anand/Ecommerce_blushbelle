@@ -9,30 +9,29 @@ import tablets from '../../../../public/frontend/heroSection/tablets.png';
 
 const HeroSection = () => {
   return (
-    <div className="relative bg-[#F8F5EC] h-[70vh] flex items-center justify-center px-6 lg:px-16 min-w-full flex-col md:flex-row">
+    <div className="relative bg-[#F8F5EC] md:h-[70vh] h-[100vh]  flex items-center justify-center px-6 lg:px-16 min-w-full flex-col md:flex-row">
     {/* Content Section */}
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-  <Image src={leftLeaves} alt="Left Leaves" className="absolute top-12 left-0 w-28 lg:w-16 hidden md:block" />
-  <Image src={leftLeaves} alt="Left Leaves" className="absolute top-12 left-0 w-28 lg:w-16 md:hidden" />
-  <Image src={rightLeaves} alt="Right Leaves" className="absolute top-12 right-0 w-28 lg:w-10" />
-  <Image src={tablets} alt="Tablets" className="absolute bottom-0 right-0 w-36 lg:w-48 " />
-  <Image src={tablets} alt="Tablets" className="absolute bottom-5 left-[-65px] w-36 lg:w-48 " />
+  <Image src={leftLeaves} alt="Left Leaves" className="absolute md:top-12 top-2 left-0 w-10 lg:w-16 " />
+  <Image src={rightLeaves} alt="Right Leaves" className="absolute md:top-12 top-12 right-0 w-6 lg:w-10" />
+  <Image src={tablets} alt="Tablets" className="absolute md:bottom-0 bottom-2  right-0 w-22 lg:w-48 " />
+  <Image src={tablets} alt="Tablets" className="absolute bottom-5 md:left-[-65px] left-[-55px] w-28 lg:w-48 " />
 </div>
 
     <div className="flex flex-col justify-center items-start h-[500px] w-full md:w-[50%] p-6 lg:p-10 ">
-      <h1 className="text-sm lg:text-3xl font-bold text-gray-800 leading-snug lg:leading-tight max-w-[35rem]">
+      <h1 className="text-lg lg:text-3xl font-bold text-gray-800 leading-snug lg:leading-tight max-w-[35rem]">
         Boost Your Brain Power, Enhance Your Immunity, Age Gracefully with Our <span className="text-green-600">Supplements</span>
       </h1>
       <p className="mt-4 text-gray-600 text-sm lg:text-base max-w-[28rem] text-start">
         Discover a wide range of authentic Ayurvedic medicines and wellness products, delivered to your doorstep.
       </p>
-      <button className="mt-6 px-8 py-3 bg-purple-600 text-white font-medium rounded-full hover:bg-purple-700 shadow-md">
+      <button className="mt-6 px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 bg-purple-600 text-white text-sm sm:text-base lg:text-lg font-medium rounded-full hover:bg-purple-700 shadow-md transition duration-200">
         Shop Now
       </button>
     </div>
   
     {/* Product Images Section */}
-    <div className="flex justify-center items-center h-[500px] w-[50%] p-6 lg:p-10  relative">
+    <div className="flex justify-center items-center h-[500px] md:w-[50%] w-[75%] mb-8  lg:p-10  relative">
       {/* Ellipse Background */}
       <div className="absolute">
         <Image
@@ -47,7 +46,7 @@ const HeroSection = () => {
       <Image
         src={Group1}
         alt="Main Product"
-        className="relative w-40 lg:w-96 z-10"
+        className="relative w-45 lg:w-96 z-10"
       />
     </div>
   </div>

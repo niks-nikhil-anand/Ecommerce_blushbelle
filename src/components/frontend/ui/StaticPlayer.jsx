@@ -27,7 +27,7 @@ const StaticPlayer = () => {
         </h1>
         {/* Description */}
         <p className="text-sm md:text-base mb-6">
-          Whether you're a student, professional, or anyone looking to enhance
+          Whether you&apos;re a student, professional, or anyone looking to enhance
           focus, cognitive energy, and mental clarity, BrainBite™ is your go-to
           solution.
         </p>

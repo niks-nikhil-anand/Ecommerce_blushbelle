@@ -75,7 +75,7 @@ const WhyChooseBrainbite = () => {
       <div className="text-center text-white mb-8">
         <h2 className="text-3xl font-bold">WHY CHOOSE BRAINBITE?</h2>
         <p className="mt-2 max-w-3xl mx-auto">
-          BrainBite™ SmartTab is a 100% plant-based brain supplement, designed to enhance mental health and elevate your mental performance. Whether you're a student, professional, or anyone seeking to enhance focus, boost energy, and mental clarity, BrainBite™ is your go-to solution.
+          BrainBite™ SmartTab is a 100% plant-based brain supplement, designed to enhance mental health and elevate your mental performance. Whether you&apos;re a student, professional, or anyone seeking to enhance focus, boost energy, and mental clarity, BrainBite™ is your go-to solution.
         </p>
       </div>
 

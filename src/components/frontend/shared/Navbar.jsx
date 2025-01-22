@@ -4,6 +4,7 @@ import { FiShoppingCart, FiSearch, FiMenu, FiX } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import logo from "../../../../public/logo/cleanvedaLogo.png";
+import Link from "next/link";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,7 +34,9 @@ const Navbar = () => {
 
         {/* Desktop Menu Section */}
         <ul className="hidden lg:flex space-x-6 text-gray-700 font-medium">
+          <Link href="/">
           <li className="hover:text-green-600 transition cursor-pointer">Home</li>
+          </Link>
           <li className="hover:text-green-600 transition cursor-pointer">Students</li>
           <li className="hover:text-green-600 transition cursor-pointer">
             Health-Conscious Individuals

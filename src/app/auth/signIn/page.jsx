@@ -90,9 +90,10 @@ const LoginForm = () => {
 
   return (
     <div className="flex justify-center items-center bg-gray-50 px-4 md:px-0 w-full flex-col py-12">
-      <div className="w-full md:w-2/3 lg:w-1/2 bg-white shadow-lg rounded-2xl px-8 py-10">
-        <h2 className="text-3xl font-bold mb-4 text-center md:text-left text-green-900 mt-5">Login</h2>
-
+      <div className="w-full md:w-2/3 lg:w-1/2 bg-white shadow-lg rounded-2xl px-8 pb-10">
+      <div className='flex justify-center items-center flex-col'>
+      <h1 className="text-4xl md:text-5xl text-green-700 font-bold my-6 text-center">SignIn </h1>
+      <p className="text-gray-600 text-center mb-8">Welcome back , Cleanveda</p>      </div>
         <div className="flex justify-center mb-6">
           <button
             onClick={() => setIsOtpLogin(false)}

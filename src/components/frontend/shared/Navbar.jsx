@@ -35,7 +35,7 @@ const Navbar = () => {
         {/* Desktop Menu Section */}
         <ul className="hidden lg:flex space-x-6 text-gray-700 font-medium">
           <Link href="/">
-          <li className="hover:text-green-600 transition cursor-pointer">Home</li>
+            <li className="hover:text-green-600 transition cursor-pointer">Home</li>
           </Link>
           <li className="hover:text-green-600 transition cursor-pointer">Students</li>
           <li className="hover:text-green-600 transition cursor-pointer">
@@ -46,7 +46,7 @@ const Navbar = () => {
           <li className="hover:text-green-600 transition cursor-pointer">Immunity Booster</li>
         </ul>
 
-        {/* Icons Section */}
+        {/* Icons and Sign-In Button Section */}
         <div className="hidden lg:flex items-center space-x-4">
           {/* Cart Icon */}
           <div className="relative">
@@ -58,6 +58,13 @@ const Navbar = () => {
 
           {/* Search Icon */}
           <FiSearch className="text-gray-700 text-2xl cursor-pointer hover:text-green-600 transition" />
+
+          {/* Sign In Button */}
+          <Link href="/signin">
+            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+              Sign In
+            </button>
+          </Link>
         </div>
       </div>
 
@@ -77,7 +84,8 @@ const Navbar = () => {
           <li className="hover:text-green-600 transition cursor-pointer">Parents</li>
           <li className="hover:text-green-600 transition cursor-pointer">Brain Booster</li>
           <li className="hover:text-green-600 transition cursor-pointer">Immunity Booster</li>
-          {/* Icons for mobile */}
+
+          {/* Icons and Sign-In Button for mobile */}
           <div className="flex items-center space-x-4 mt-4">
             {/* Cart Icon */}
             <div className="relative">
@@ -86,9 +94,17 @@ const Navbar = () => {
                 0
               </div>
             </div>
+
             {/* Search Icon */}
             <FiSearch className="text-gray-700 text-2xl cursor-pointer hover:text-green-600 transition" />
           </div>
+
+          {/* Sign In Button */}
+          <Link href="/signin">
+            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition w-full">
+              Sign In
+            </button>
+          </Link>
         </motion.ul>
       )}
     </motion.nav>

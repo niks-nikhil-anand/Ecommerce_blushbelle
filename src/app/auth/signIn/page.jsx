@@ -89,8 +89,8 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center bg-gray-100 px-6 md:px-4 w-full flex-col">
-      <div className="w-full md:w-2/3 lg:w-1/2 md:pl-6 my-5">
+    <div className="flex justify-center items-center bg-gray-50 px-4 md:px-0 w-full flex-col py-12">
+      <div className="w-full md:w-2/3 lg:w-1/2 bg-white shadow-lg rounded-2xl px-8 py-10">
         <h2 className="text-3xl font-bold mb-4 text-center md:text-left text-green-900 mt-5">Login</h2>
 
         <div className="flex justify-center mb-6">

@@ -60,7 +60,7 @@ const Navbar = () => {
           <FiSearch className="text-gray-700 text-2xl cursor-pointer hover:text-green-600 transition" />
 
           {/* Sign In Button */}
-          <Link href="/signin">
+          <Link href="/auth/signIn">
             <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
               Sign In
             </button>
@@ -100,7 +100,7 @@ const Navbar = () => {
           </div>
 
           {/* Sign In Button */}
-          <Link href="/signin">
+          <Link href="/auth/signIn">
             <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition w-full">
               Sign In
             </button>

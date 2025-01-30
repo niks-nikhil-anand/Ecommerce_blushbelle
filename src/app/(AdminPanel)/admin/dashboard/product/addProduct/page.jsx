@@ -617,24 +617,24 @@ const handleSubmit = async (e) => {
             </div>
           
             <div className="flex justify-between mt-14">
-            <motion.button
-               type="button"
-               onClick={prevStep}
-               className="w-40 p-3 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600"
-               whileHover={{ scale: 1.05 }}
-               whileTap={{ scale: 0.95 }}
-             >
-               Previous
-             </motion.button>
-          
-              <button
-                type="submit"
-                className="w-40 p-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-800 mt-6 shadow-md"
-                disabled={loading}
-              >
-                {loading ? 'Submitting...' : 'Submit'}
-              </button>
-            </div>
+        <motion.button
+          type="button"
+          onClick={prevStep}
+          className="w-40 p-3 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Previous
+        </motion.button>
+
+        <button
+          type="submit"
+          className="w-40 p-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-800 shadow-md"
+          disabled={loading}
+        >
+          {loading ? 'Submitting...' : 'Submit'}
+        </button>
+      </div>
           </>
           )}
         </motion.div>

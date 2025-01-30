@@ -16,20 +16,24 @@ export const POST = async (req) => {
     };
 
     const name = getTrimmedValue("name");
-    const collections = getTrimmedValue("collections");
-    const subCategory = getTrimmedValue("subCategory");
-    const description = getTrimmedValue("description");
-    const salePrice = getTrimmedValue("salePrice");
     const originalPrice = getTrimmedValue("originalPrice");
-    const category = getTrimmedValue("category");
+    const salePrice = getTrimmedValue("salePrice");
     const stock = parseInt(getTrimmedValue("stock"), 10);
-    const brand = getTrimmedValue("brand");
+    const isOnSale = formData.get("isOnSale") === 'true';
+    const isFeaturedSale = formData.get("isFeaturedSale") === 'true';
+
+
+    const category = getTrimmedValue("category");
+    const collections = getTrimmedValue("collections");
+
+
     const tags = getTrimmedValue("tags");
     const suggestedUse = getTrimmedValue("suggestedUse");
-    const servingPerBottle = getTrimmedValue("servingPerBottle");
-    const isFanFavourites = formData.get("isFanFavourites") === 'true';
-    const isOnSale = formData.get("isOnSale") === 'true';
 
+
+    const description = getTrimmedValue("description");
+    const additionalInfo = getTrimmedValue("additionalInfo");
+    
     if (!name || !category) {
       return NextResponse.json({ msg: "Please provide all the required fields." }, { status: 400 });
     }
@@ -70,45 +74,6 @@ export const POST = async (req) => {
       descriptionImageUrl = descriptionImageResult.secure_url;
     }
 
-    // Parsing and uploading ingredients
-    const ingredients = [];
-    let ingredientCount = 0;
-    while (formData.has(`ingredients[${ingredientCount}][name]`)) {
-      const ingredientName = formData.get(`ingredients[${ingredientCount}][name]`);
-      const ingredientWeight = formData.get(`ingredients[${ingredientCount}][weightInGram]`);
-      const ingredientImage = formData.get(`ingredients[${ingredientCount}][image]`);
-      
-      if (ingredientName && ingredientWeight) {
-        const ingredientImageUrl = ingredientImage ? await uploadImage(ingredientImage, 'ingredientImages') : null;
-        ingredients.push({ name: ingredientName, weightInGram: ingredientWeight, image: ingredientImageUrl.secure_url });
-      }
-      ingredientCount++;
-    }
-
-    // Log ingredients to check if they are captured correctly
-    console.log("Parsed ingredients:", ingredients);
-
-    // Process product highlights
-    const productHighlights = [];
-    let highlightCount = 0;
-    while (formData.has(`productHighlights[${highlightCount}][title]`)) {
-      const highlightTitle = formData.get(`productHighlights[${highlightCount}][title]`);
-      const highlightDescription = formData.get(`productHighlights[${highlightCount}][description]`);
-      const highlightIcon = formData.get(`productHighlights[${highlightCount}][icon]`);
-
-      if (highlightTitle) {
-        const highlightIconUrl = highlightIcon ? await uploadImage(highlightIcon, 'highlightIcons') : null;
-        productHighlights.push({ title: highlightTitle, description: highlightDescription, icon: highlightIconUrl.secure_url });
-      }
-      highlightCount++;
-    }
-
-    // Log product highlights to ensure they are captured correctly
-    console.log("Parsed product highlights:", productHighlights);
-
-    // Log product highlights to ensure they are captured correctly
-    console.log("Parsed product highlights:", productHighlights);
-
     const productData = {
       name,
       description,
@@ -116,9 +81,6 @@ export const POST = async (req) => {
       originalPrice,
       category,
       collections,
-      subCategory,
-      stock,
-      brand,
       suggestedUse,
       servingPerBottle,
       isFanFavourites,

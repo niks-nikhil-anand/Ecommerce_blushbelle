@@ -96,9 +96,14 @@ const handleCollectionSelect = (collection) => {
 
 
 
-const handleQuillChange = (content) => {
-  setFormData({ ...formData, content });
+const handleQuillChange = (description) => {
+  setFormData({ ...formData, description });
 };
+
+const handleQuillInfoChange = (additionalInfo) => {
+  setFormData({ ...formData, additionalInfo });
+};
+
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -589,8 +594,9 @@ const handleSubmit = async (e) => {
                   <label className="block mb-3 text-gray-700 font-bold">Additional Information</label>
                   <ReactQuill
                     value={formData.additionalInfo}
-                    onChange={handleQuillChange}
+                    onChange={handleQuillInfoChange}
                     className="w-full h-80 rounded"
+                    readOnly={false} 
                   />
                 </div>
               

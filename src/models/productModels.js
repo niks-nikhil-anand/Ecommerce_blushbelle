@@ -11,7 +11,6 @@ const productSchema = new mongoose.Schema({
         required: [true, 'Product SKU is required'],
         unique: true,
     },
-
     stock: {
         type: Number,
         required: function () {
@@ -41,7 +40,10 @@ const productSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
         required: [true, 'Category is required'],
-    }],   
+    }],  
+    collection: {
+        type: String,
+    }, 
     featuredImage: {
         type: String,
         required: [true, 'Featured image URL is required'],
@@ -58,14 +60,6 @@ const productSchema = new mongoose.Schema({
         default: false,
     },
     isOnSale: {
-        type: Boolean,
-        default: false,
-    },
-    isClearance:{
-        type: Boolean,
-        default: false,
-    },
-    isHotDeal:{
         type: Boolean,
         default: false,
     },

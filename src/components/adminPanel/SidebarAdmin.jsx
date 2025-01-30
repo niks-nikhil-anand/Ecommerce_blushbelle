@@ -34,7 +34,7 @@ const SidebarAdmin = () => {
   return (
     <div className="flex">
     <motion.div
-  className="bg-gray-100 text-black h-screen p-5  overflow-y-auto"
+  className="bg-gray-150 text-black h-screen p-5  overflow-y-auto"
   style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(0, 0, 0, 0.5) rgba(255, 255, 255, 0.3)" }}
 >
         <div className="flex flex-col space-y-4">

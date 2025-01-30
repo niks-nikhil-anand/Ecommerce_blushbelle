@@ -47,7 +47,7 @@ const AdminLoginForm = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-100 via-green-50 to-green-200 px-6 md:px-12">
-    <div className="w-full md:w-2/3 lg:w-1/2 bg-white shadow-2xl rounded-xl p-8 md:p-10">
+    <div className="w-full md:w-2/3 lg:w-1/2 bg-white shadow-2xl rounded-xl p-8 md:p-10 my-5">
       {/* Animated Section */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}

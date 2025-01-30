@@ -1,44 +1,17 @@
 import mongoose from "mongoose";
 
-const featuredIngredientsSchema = new mongoose.Schema({
-    name: {
-        type: String,
-    },
-    description:{
-        type: String,
-    },
-    weightInGram: {
-       type:String
-    },
-    image: {
-        type:String
-     }
-});
-const productHighlightsSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: [true, 'Color name is required'],
-    },
-    description: {
-       type:String
-    },
-    icon: {
-        type:String
-     }
-});
-
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Product name is required'],
         trim: true,
     },
-    ingredients: {
-        type: [featuredIngredientsSchema],
+    sku:{
+        type: String,
+        required: [true, 'Product SKU is required'],
+        unique: true,
     },
-    productHighlights: {
-        type: [productHighlightsSchema],
-    },
+
     stock: {
         type: Number,
         required: function () {
@@ -51,6 +24,9 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Product description is required'],
     },
+    additionalInfo: {
+        type: String,
+    },
     salePrice: {
         type: Number,
         required: [true, 'Product price is required'],
@@ -61,20 +37,11 @@ const productSchema = new mongoose.Schema({
         required: [true, 'Product price is required'],
         min: [0, 'Price cannot be negative'],
     },
-    category: {
-        type: String,
+    category: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
         required: [true, 'Category is required'],
-    },
-    collections: {
-        type: String,
-        enum: ['Men_Health', 'Women_Health', 'Others'],
-        default: 'Others'
-    },
-    subCategory: {
-        type: String,
-        enum: ['Gummies', 'Liquids', 'Powders', 'Capsules', 'Others'],
-        default: 'Others'
-    },    
+    }],   
     featuredImage: {
         type: String,
         required: [true, 'Featured image URL is required'],
@@ -86,26 +53,7 @@ const productSchema = new mongoose.Schema({
     images: [{
         type: String
     }],
-    
-    ratings: {
-        average: {
-            type: Number,
-            default: 0,
-            min: [0, 'Rating cannot be less than 0'],
-            max: [5, 'Rating cannot be more than 5'],
-        },
-        numberOfRatings: {
-            type: Number,
-            default: 0,
-        }
-    },
-    suggestedUse: {
-        type: String,
-    },
-    servingPerBottle:{
-        type: String,
-    },
-    isFanFavourites: {
+    isFeaturedSale: {
         type: Boolean,
         default: false,
     },
@@ -113,9 +61,22 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isClearance:{
+        type: Boolean,
+        default: false,
+    },
+    isHotDeal:{
+        type: Boolean,
+        default: false,
+    },
     tags: [{
         type: String,
     }],
+    status: {
+        type: String,
+        enum: ['Active', 'Inactive', 'Out of stock'],
+        default: 'Inactive',  
+    },
 }, {
     timestamps: true
 });

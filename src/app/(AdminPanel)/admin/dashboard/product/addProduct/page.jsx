@@ -2,8 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { FaPlus, FaMinus } from 'react-icons/fa'
+import dynamic from 'next/dynamic';
+import 'react-quill/dist/quill.snow.css';
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from 'react-icons/ai';
+
+
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+
 
 
 const ProductForm = () => {
@@ -88,7 +94,9 @@ const handleCollectionSelect = (collection) => {
 
 
 
-  
+const handleQuillChange = (content) => {
+  setFormData({ ...formData, content });
+};
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -514,10 +522,33 @@ const handleSubmit = async (e) => {
         
          
           )}
-          {currentStep === 4 && (
-            <>
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">Step 4: Additional Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
+{currentStep === 4 && (
+           <>
+           <motion.h3
+             className="text-xl font-semibold mb-4 text-blue-600"
+             initial={{ opacity: 0, x: -100 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ duration: 0.5 }}
+           >
+             Step 4: Add Tags and Suggested Use
+           </motion.h3>
+       
+           <motion.div
+                className="mb-4"
+                
+              >
+                <label className="block text-gray-700 font-bold mb-2" htmlFor="tags">Tags (comma separated)</label>
+                <input
+                  className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  type="text"
+                  name="tags"
+                  id="tags"
+                  value={formData.tags}
+                  onChange={handleInputChange}
+                />
+              </motion.div>
+
               <motion.div
                 className="mb-4"
                 
@@ -532,43 +563,61 @@ const handleSubmit = async (e) => {
                 />
               </motion.div>
 
-              {/* Description */}
+
+              {/* Flexbox for buttons with Previous on the left and Next on the right */}
+           <div className="flex justify-between">
+             <motion.button
+               type="button"
+               onClick={prevStep}
+               className="w-40 p-3 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600"
+               whileHover={{ scale: 1.05 }}
+               whileTap={{ scale: 0.95 }}
+             >
+               Previous
+             </motion.button>
+       
+             <motion.button
+               type="button"
+               onClick={nextStep}
+               className="w-40 p-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600"
+               whileHover={{ scale: 1.05 }}
+               whileTap={{ scale: 0.95 }}
+             >
+               Next
+             </motion.button>
+            </div>
+
+         </>
+        
+         
+          )}
+
+          {currentStep === 5 && (
+            <>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Step 5: Additional Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              
               <div>
-                 <label className="block text-pink-600 font-bold mb-3" htmlFor="description">
-                   Description
-                 </label>
-                 <motion.textarea
-                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
-                   name="description"
-                   id="description"
-                   value={formData.description}
-                   onChange={handleInputChange}
-                   required
-                   initial={{ opacity: 0, scale: 0.8 }}
-                   animate={{ opacity: 1, scale: 1 }}
-                   transition={{ duration: 0.4 }}
-                 />
-               </div>
-          
-              <motion.div
-                className="mb-4"
-                
-              >
-                <label className="block text-gray-700 font-bold mb-2" htmlFor="tags">Tags (comma separated)</label>
-                <input
-                  className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  type="text"
-                  name="tags"
-                  id="tags"
-                  value={formData.tags}
-                  onChange={handleInputChange}
-                />
-              </motion.div>
-          
+                  <label className="block mb-3 text-gray-700 font-bold">Description</label>
+                  <ReactQuill
+                    value={formData.description}
+                    onChange={handleQuillChange}
+                    className="w-full h-80 rounded"
+                  />
+                </div>
+
+              <div>
+                  <label className="block mb-3 text-gray-700 font-bold">Additional Information</label>
+                  <ReactQuill
+                    value={formData.additionalInfo}
+                    onChange={handleQuillChange}
+                    className="w-full h-80 rounded"
+                  />
+                </div>
               
             </div>
           
-            <div className="flex justify-between">
+            <div className="flex justify-between mt-14">
               <motion.button
                 type="button"
                 onClick={prevStep}

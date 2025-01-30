@@ -25,7 +25,6 @@ const productSchema = new mongoose.Schema({
     },
     additionalInfo: {
         type: mongoose.Schema.Types.Mixed,
-        
     },
     salePrice: {
         type: Number,

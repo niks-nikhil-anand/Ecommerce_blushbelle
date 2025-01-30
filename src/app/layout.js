@@ -3,7 +3,6 @@ import "./globals.css";
 
 import 'react-toastify/dist/ReactToastify.css';
 import toast, { Toaster } from 'react-hot-toast';
-import ogImage from '../../public/logo/og-image.jpg'; // Local image import
 import EgoisticNavbar from "@/components/utils/EgosticNavbar";
 import EgoisticFooter from "@/components/utils/EgosticFooter";
 
@@ -20,14 +19,6 @@ export const metadata = {
     type: "website",
     url: "https://www.cleanveda.com",
     description: "Discover effective, plant-based formulations crafted for holistic health and beauty at CleanVeda. Elevate your wellness with our natural supplements and personal care products.",
-    images: [
-      {
-        url: "/public/logo/og-image.jpg", // Adjusted to use the public path
-        width: 1200,
-        height: 630,
-        alt: "CleanVeda - Natural Health & Herbal Solutions",
-      },
-    ],
   },
 };
 
@@ -44,7 +35,6 @@ export default function RootLayout({ children }) {
         <meta property="og:type" content={metadata.openGraph.type} />
         <meta property="og:url" content={metadata.openGraph.url} />
         <meta property="og:description" content={metadata.openGraph.description} />
-        <meta property="og:image" content={metadata.openGraph.images[0].url} />
       </head>
       <body className={inter.className}>
         <EgoisticNavbar />

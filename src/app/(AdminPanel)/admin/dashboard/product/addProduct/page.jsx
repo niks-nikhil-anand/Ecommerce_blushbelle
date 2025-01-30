@@ -222,23 +222,7 @@ const handleSubmit = async (e) => {
                  />
                </div>
          
-               {/* Description */}
-               <div>
-                 <label className="block text-pink-600 font-bold mb-3" htmlFor="description">
-                   Description
-                 </label>
-                 <motion.textarea
-                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
-                   name="description"
-                   id="description"
-                   value={formData.description}
-                   onChange={handleInputChange}
-                   required
-                   initial={{ opacity: 0, scale: 0.8 }}
-                   animate={{ opacity: 1, scale: 1 }}
-                   transition={{ duration: 0.4 }}
-                 />
-               </div>
+               
          
                {/* Sale Price */}
                <div>
@@ -296,6 +280,28 @@ const handleSubmit = async (e) => {
                    transition={{ duration: 0.4 }}
                  />
                </div>
+
+               <motion.div className="flex items-center mb-4">
+                <input
+                  type="checkbox"
+                  name="isFeaturedSale"
+                  checked={formData.isFeaturedSale}
+                  onChange={handleInputChange}
+                  id="isFeaturedSale"
+                />
+                <label htmlFor="isFanFavourites" className="ml-2 text-gray-700">Featured Sale</label>
+              </motion.div>
+          
+              <motion.div className="flex items-center mb-4" >
+                <input
+                  type="checkbox"
+                  name="isOnSale"
+                  checked={formData.isOnSale}
+                  onChange={handleInputChange}
+                  id="isOnSale"
+                />
+                <label htmlFor="isOnSale" className="ml-2 text-gray-700">On Sale</label>
+              </motion.div>
          
                
              </div>
@@ -525,6 +531,24 @@ const handleSubmit = async (e) => {
                   onChange={handleInputChange}
                 />
               </motion.div>
+
+              {/* Description */}
+              <div>
+                 <label className="block text-pink-600 font-bold mb-3" htmlFor="description">
+                   Description
+                 </label>
+                 <motion.textarea
+                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
+                   name="description"
+                   id="description"
+                   value={formData.description}
+                   onChange={handleInputChange}
+                   required
+                   initial={{ opacity: 0, scale: 0.8 }}
+                   animate={{ opacity: 1, scale: 1 }}
+                   transition={{ duration: 0.4 }}
+                 />
+               </div>
           
               <motion.div
                 className="mb-4"
@@ -541,27 +565,7 @@ const handleSubmit = async (e) => {
                 />
               </motion.div>
           
-              <motion.div className="flex items-center mb-4">
-                <input
-                  type="checkbox"
-                  name="isFeaturedSale"
-                  checked={formData.isFeaturedSale}
-                  onChange={handleInputChange}
-                  id="isFeaturedSale"
-                />
-                <label htmlFor="isFanFavourites" className="ml-2 text-gray-700">Featured Sale</label>
-              </motion.div>
-          
-              <motion.div className="flex items-center mb-4" >
-                <input
-                  type="checkbox"
-                  name="isOnSale"
-                  checked={formData.isOnSale}
-                  onChange={handleInputChange}
-                  id="isOnSale"
-                />
-                <label htmlFor="isOnSale" className="ml-2 text-gray-700">On Sale</label>
-              </motion.div>
+              
             </div>
           
             <div className="flex justify-between">

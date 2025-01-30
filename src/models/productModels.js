@@ -20,11 +20,12 @@ const productSchema = new mongoose.Schema({
         default: 0,
     },
     description: {
-        type: String,
+        type: mongoose.Schema.Types.Mixed,
         required: [true, 'Product description is required'],
     },
     additionalInfo: {
-        type: String,
+        type: mongoose.Schema.Types.Mixed,
+        
     },
     salePrice: {
         type: Number,

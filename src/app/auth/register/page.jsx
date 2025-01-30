@@ -105,7 +105,7 @@ const CreateAccountForm = () => {
     <div className="flex justify-center items-center bg-gray-50 px-4 md:px-0 w-full flex-col py-12">
     
   
-    <div className="w-full md:w-2/3 lg:w-1/2 bg-white shadow-lg rounded-2xl px-8 py-10">
+    <div className="w-full md:w-2/3 lg:w-1/2 bg-white shadow-lg rounded-2xl px-8 pb-10">
     <div>
       <h1 className="text-4xl md:text-5xl text-green-700 font-bold my-6 text-center">Create Account</h1>
       <p className="text-gray-600 text-center mb-8">Join us and start your journey today!</p>

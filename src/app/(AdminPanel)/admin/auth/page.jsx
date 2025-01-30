@@ -56,7 +56,7 @@ const AdminLoginForm = () => {
         className="flex flex-col items-center md:items-start"
       >
         <motion.h2
-          className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 text-center md:text-left text-green-800 tracking-wide"
+          className="text-xl sm:text-sm md:text-2xl font-extrabold mb-6 text-center md:text-left text-green-800 tracking-wide"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -68,7 +68,7 @@ const AdminLoginForm = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-base md:text-lg text-center md:text-left text-gray-600 mb-8"
+          className="text-base md:text-md text-center md:text-left text-gray-600 mb-8"
         >
           <span className="underline decoration-dotted text-green-600">
             Access your admin dashboard
@@ -111,11 +111,11 @@ const AdminLoginForm = () => {
             required
           />
           <div
-            className="absolute inset-y-0 right-4 flex items-center cursor-pointer"
+            className="absolute inset-y-0 right-4 flex items-center cursor-pointer mt-7"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? (
-              <FaEye className="text-gray-500" />
+              <FaEye className="text-gray-500 " />
             ) : (
               <FaEyeSlash className="text-gray-500" />
             )}
@@ -157,11 +157,11 @@ const AdminLoginForm = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
-        className="flex justify-between mt-6 text-sm text-gray-600"
+        className="flex justify-between mt-6 text-sm text-gray-600 font-semibold"
       >
         <a
           href="/auth/forgotPassword"
-          className="hover:text-green-700 hover:underline transition"
+          className="hover:text-green-700 hover:underline transition font-semibold"
         >
           Forgot your password?
         </a>

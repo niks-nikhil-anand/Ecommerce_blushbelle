@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Loader from '@/components/loader/loader';
 import { FiArrowRight } from 'react-icons/fi'; // Importing the arrow icon from react-icons
 import Image from 'next/image';
+import AbsoluteImage from '../../../../public/frontend/others/category.png';
 
 const CategoriesSection = () => {
   const [categories, setCategories] = useState([]);
@@ -40,10 +41,7 @@ const CategoriesSection = () => {
 
 
   return (
-    <div className="my-20 flex flex-col ">
-
-
-
+    <div className="my-20 flex flex-col  w-full relative"> 
       <div className='flex gap-4 hover:cursor-pointer px-22 py-3 w-full justify-between'>
       <h2 className="text-sm sm:text-xl md:text-2xl mb-4 font-bold text-gray-900">
       Popular Categories
@@ -54,7 +52,7 @@ const CategoriesSection = () => {
     </div>
       </div>
    
-    <div className="flex gap-4 hover:cursor-pointer justify-center px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:flex-wrap">
+    <div className="flex gap-4 hover:cursor-pointer justify-center px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:flex-wrap  ">
       {displayedCategories.map((category) => (
         <motion.div
           key={category.id}
@@ -73,6 +71,18 @@ const CategoriesSection = () => {
         </motion.div>
       ))}
     </div>
+
+    {/* <div className="absolute bottom-0 right-0 w-full h-full ">
+  <Image 
+    src={AbsoluteImage}
+    alt="Category background"
+    width={100} 
+    height={100} 
+    className="object-cover"
+  />
+</div> */}
+
+
   </div>
   );
 };

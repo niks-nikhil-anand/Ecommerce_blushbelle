@@ -1,23 +1,19 @@
 "use client";
 import React, { useState } from 'react';
-import { FaHome, FaTable, FaClock, FaCog, FaBuilding, FaPlus, FaShoppingCart, FaListAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import { TiThMenu } from "react-icons/ti";
+import { FaAppleAlt, FaCarrot, FaPlus, FaShoppingCart, FaListUl, FaCog, FaSearch, FaHome } from "react-icons/fa";
+import { FaTable, FaProductHunt } from "react-icons/fa6";
+import { GiOpenBook } from "react-icons/gi";
+import { MdOutlineLogout, MdPendingActions, MdOutlineRateReview } from "react-icons/md";
 import { ImProfile } from "react-icons/im";
 import Link from 'next/link';
-import { MdOutlineLogout , MdOutlineRateReview } from "react-icons/md";
-import { GrArticle } from "react-icons/gr";
 import { useRouter } from 'next/navigation';
-
-
+import { MdAdd } from "react-icons/md";
+import { toast } from 'react-hot-toast';
 
 const SidebarAdmin = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const router = useRouter();
-
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
 
   const handleLogout = async () => {
     try {
@@ -37,103 +33,93 @@ const SidebarAdmin = () => {
 
   return (
     <div className="flex">
-      <motion.div
-        animate={{ width: isOpen ? '250px' : '90px' }}
-        className="bg-gradient-to-r from-black to-gray-800 text-white dark:bg-gray-900 dark:text-gray-200 h-screen p-5 transition-width duration-300 shadow-xl overflow-y-auto"
-        style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255, 255, 255, 0.5) rgba(0, 0, 0, 0.3)' }}
-      >
-        <button
-          onClick={toggleSidebar}
-          className="bg-white text-black p-2 rounded mb-4 shadow-md transition-transform transform hover:scale-110"
-        >
-          <TiThMenu />
-        </button>
-        <div className={`flex flex-col space-y-4`}>
-          <h2 className={`text-lg font-semibold mb-4 ${isOpen ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
-            {isOpen ? 'Dashboard' : ''}
+    <motion.div
+  className="bg-gray-100 text-black h-screen p-5  overflow-y-auto"
+  style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(0, 0, 0, 0.5) rgba(255, 255, 255, 0.3)" }}
+>
+        <div className="flex flex-col space-y-4">
+          <h2 className="text-lg font-semibold mb-4">
+            CleanVeda Dashboard
           </h2>
+
           <Link href="/admin/dashboard" passHref>
-            <SidebarItem icon={<FaHome />} label="Home" isOpen={isOpen} />
+            <SidebarItem icon={<FaHome />} label="Home" selected={selectedItem === 'Home'} onClick={() => setSelectedItem('Home')} />
+          </Link>
+
+          <h3 className="text-sm font-medium mt-4 mb-2 text-black">Orders</h3>
+          <Link href="/admin/dashboard/orders" passHref>
+            <SidebarItem icon={<FaShoppingCart />} label="All Orders" selected={selectedItem === 'All Orders'} onClick={() => setSelectedItem('All Orders')} />
           </Link>
 
 
-          {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-500">Orders</h3>}
-          <Link href="/admin/dashboard/orders/orders-cardView" passHref>
-            <SidebarItem icon={<FaShoppingCart />} label="Orders-CardView" isOpen={isOpen} />
-          </Link>
-          <Link href="/admin/dashboard/orders/orders-tableView" passHref>
-            <SidebarItem icon={<FaTable />} label="Orders-TableView" isOpen={isOpen} />
-          </Link>
-          <Link href="/admin/dashboard/orders/pendingOrders" passHref>
-            <SidebarItem icon={<FaClock />} label="Pending Orders" isOpen={isOpen} />
+          <Link href="/admin/dashboard/orders/searchOrders" passHref>
+            <SidebarItem icon={<MdPendingActions />} label="Search Orders" selected={selectedItem === 'Pending Orders'} onClick={() => setSelectedItem('Pending Orders')} />
           </Link>
 
-          {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-300 ">Products</h3>}
-
+          <h3 className="text-sm font-medium mt-4 mb-2 text-black">Products</h3>
           <Link href="/admin/dashboard/product/addProduct" passHref>
-            <SidebarItem icon={<FaPlus />} label="Add Product" isOpen={isOpen} />
+            <SidebarItem icon={<MdAdd />} label="Add Product" selected={selectedItem === 'Add Product'} onClick={() => setSelectedItem('Add Product')} />
           </Link>
+
+
           <Link href="/admin/dashboard/product/allProduct" passHref>
-            <SidebarItem icon={<FaBuilding />} label="Products" isOpen={isOpen} />
+            <SidebarItem icon={<FaProductHunt />} label="Products" selected={selectedItem === 'Products'} onClick={() => setSelectedItem('Products')} />
           </Link>
 
-          
-
-          {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-300">Categories</h3>}
+          <h3 className="text-sm font-medium mt-4 mb-2 text-black">Categories</h3>
           <Link href="/admin/dashboard/category/addCategory" passHref>
-            <SidebarItem icon={<FaPlus />} label="Add Categories" isOpen={isOpen} />
+            <SidebarItem icon={<MdAdd />} label="Add Categories" selected={selectedItem === 'Add Categories'} onClick={() => setSelectedItem('Add Categories')} />
           </Link>
+
+
+          <Link href="/admin/dashboard/category/addSubCategory" passHref>
+            <SidebarItem icon={<FaListUl />} label="Add Sub_subCategories" selected={selectedItem === 'Sub_subCategories'} onClick={() => setSelectedItem('Sub_subCategories')} />
+          </Link>
+
+
           <Link href="/admin/dashboard/category/allCategory" passHref>
-            <SidebarItem icon={<FaListAlt />} label="All Categories" isOpen={isOpen} />
+            <SidebarItem icon={<FaListUl />} label="All Categories" selected={selectedItem === 'All Categories'} onClick={() => setSelectedItem('All Categories')} />
           </Link>
 
-          
-          
-
-          {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-300">Blog</h3>}
+          <h3 className="text-sm font-medium mt-4 mb-2 text-black">Blog</h3>
           <Link href="/admin/dashboard/blog/addBlog" passHref>
-            <SidebarItem icon={<FaPlus />} label="Add Blog" isOpen={isOpen} />
+            <SidebarItem icon={<MdAdd />} label="Add Blog" selected={selectedItem === 'Add Blog'} onClick={() => setSelectedItem('Add Blog')} />
           </Link>
+          
           <Link href="/admin/dashboard/blog/allBlog" passHref>
-            <SidebarItem icon={<GrArticle />} label="Blogs" isOpen={isOpen} />
+            <SidebarItem icon={<GiOpenBook />} label="Blogs" selected={selectedItem === 'Blogs'} onClick={() => setSelectedItem('Blogs')} />
           </Link>
 
-          {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-300">Review</h3>}
+          <h3 className="text-sm font-medium mt-4 mb-2 text-black">Users</h3>
+          <Link href="/admin/dashboard/users" passHref>
+            <SidebarItem icon={<FaTable />} label="Table View" selected={selectedItem === 'Table View'} onClick={() => setSelectedItem('Table View')} />
+          </Link>
+          <Link href="/admin/dashboard/user/search" passHref>
+            <SidebarItem icon={<FaSearch />} label="Search Users" selected={selectedItem === 'Search Users'} onClick={() => setSelectedItem('Search Users')} />
+          </Link>
+
+          <h3 className="text-sm font-medium mt-4 mb-2 text-black">Review</h3>
           <Link href="/admin/dashboard/review/addReview" passHref>
-            <SidebarItem icon={<FaPlus />} label="Add Review" isOpen={isOpen} />
+            <SidebarItem icon={<FaPlus />} label="Add Review" />
           </Link>
           <Link href="/admin/dashboard/review/addReview" passHref>
-            <SidebarItem icon={<MdOutlineRateReview />} label="Review" isOpen={isOpen} />
+            <SidebarItem icon={<MdOutlineRateReview />} label="Review" />
           </Link>
 
-          {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-300">Policies</h3>}
-          <Link href="/admin/dashboard/policy/termsAndCondition" passHref>
-            <SidebarItem icon={<GrArticle />} label="Terms&Cond.." isOpen={isOpen} />
-          </Link>
-          <Link href="/admin/dashboard/policy/privacyPolicy" passHref>
-            <SidebarItem icon={<GrArticle />} label="Privacy Policy" isOpen={isOpen} />
-          </Link>
-          <Link href="/admin/dashboard/policy/returnPolicy" passHref>
-            <SidebarItem icon={<GrArticle />} label="Return Policy" isOpen={isOpen} />
-          </Link>
-          <Link href="/admin/dashboard/policy/shippingPolicy" passHref>
-            <SidebarItem icon={<GrArticle />} label="Shipping Policy" isOpen={isOpen} />
-          </Link>
-          {isOpen && <h3 className="text-sm font-medium mt-4 mb-2 text-yellow-300">Account</h3>}
-
+          <h3 className="text-sm font-medium mt-4 mb-2 text-black">Account</h3>
           <Link href="/admin/dashboard/profile" passHref>
-            <SidebarItem icon={<ImProfile />} label="Profile" isOpen={isOpen} />
+            <SidebarItem icon={<ImProfile />} label="Profile" selected={selectedItem === 'Profile'} onClick={() => setSelectedItem('Profile')} />
           </Link>
           <Link href="/settings" passHref>
-            <SidebarItem icon={<FaCog />} label="Settings" isOpen={isOpen} />
+            <SidebarItem icon={<FaCog />} label="Settings" selected={selectedItem === 'Settings'} onClick={() => setSelectedItem('Settings')} />
           </Link>
 
           <button
-            className="mt-6 flex items-center rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors duration-300 hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-500 focus:ring-opacity-50 shadow-md"
+            className="mt-6 flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:bg-red-700 shadow-md"
             onClick={handleLogout}
           >
-            <MdOutlineLogout className="h-5 w-5" aria-hidden="true" />
-            {isOpen && <span>Logout</span>}
+            <MdOutlineLogout className="h-4 w-4" aria-hidden="true" />
+            <span className="ml-2">Logout</span>
           </button>
         </div>
       </motion.div>
@@ -141,14 +127,15 @@ const SidebarAdmin = () => {
   );
 };
 
-const SidebarItem = ({ icon, label, isOpen }) => {
+const SidebarItem = ({ icon, label, selected, onClick }) => {
   return (
     <motion.div
-      whileHover={{ scale: 1.1 }}
-      className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-800 hover:px-5 dark:hover:bg-gray-700 transition-colors duration-300"
+      onClick={onClick}
+      whileHover={{ scale: 1.05 }}
+      className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-300 shadow-sm cursor-pointer ${selected ? "bg-gray-600 text-white" : "hover:bg-green-500 border-gray-200 border-2 hover:text-white"}`}
     >
-      <div className="text-xl">{icon}</div>
-      {isOpen && <span className="text-sm font-medium">{label}</span>}
+      <div className="w-4 h-4">{icon}</div>
+      <span className="font-semibold text-sm">{label}</span>
     </motion.div>
   );
 };

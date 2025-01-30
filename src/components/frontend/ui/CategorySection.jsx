@@ -4,6 +4,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import Loader from '@/components/loader/loader';
 import Container from '@/components/utils/Container';
+import Image from 'next/image';
 
 const CategoriesSection = () => {
   const [categories, setCategories] = useState([]);
@@ -35,33 +36,34 @@ const CategoriesSection = () => {
     return <p className="text-center">No categories available.</p>;
   }
 
+  const displayedCategories = categories.slice(0, 6);
+
+
   return (
-<div className="flex flex-col">
-  <h2 className="text-xl sm:text-2xl md:text-4xl mb-4 text-center font-bold text-red-500">
-    Shop By Health Focus
-  </h2>
-  <div className="flex gap-4 hover:cursor-pointer justify-center shadow-lg px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:flex-wrap">
-    {categories.map((category) => (
-      <motion.div
-        key={category._id}
-        className="relative flex-shrink-0 snap-center flex flex-col items-center h-[20rem] w-[17rem] sm:h-[24rem] sm:w-[24rem] md:w-[30rem] md:h-[30rem] rounded-md"
-      >
-        <div className="relative w-full overflow-hidden rounded-3xl">
-          <img
-            src={category.image}
-            alt={category.name}
-            className="object-cover w-full h-full transition-transform duration-300 ease-in-out transform hover:scale-105"
-            onError={(e) => (e.target.src = '/path/to/fallback-image.jpg')}
-          />
-          {/* Name over the image */}
-          <p className="absolute top-10 left-0 right-0 text-center bg-opacity-50 text-red-500 text-base sm:text-lg md:text-xl lg:text-2xl font-medium p-1">
-            {category.name}
-          </p>
-        </div>
-      </motion.div>
-    ))}
+    <div className="my-20 px-10">
+    <h2 className="text-sm sm:text-xl md:text-2xl mb-4 font-bold text-gray-900">
+      Popular Categories
+    </h2>
+    <div className="flex gap-4 hover:cursor-pointer justify-center px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:flex-wrap">
+      {displayedCategories.map((category) => (
+        <motion.div
+          key={category.id}
+          className="relative flex-shrink-0 snap-center flex flex-col items-center bg-white shadow-md rounded-xl p-4 border hover:shadow-lg transition-all duration-300"
+        >
+          <div className="flex flex-col items-center">
+          <Image
+          src={category.image}
+          alt={category.name}
+          width={100} // adjust width based on your design
+          height={100} // adjust height based on your design
+          className="rounded-full" // optional: add styles to the image (e.g., rounded corners)
+        />
+            <p className="mt-2 text-lg font-medium text-gray-700">{category.name}</p>
+          </div>
+        </motion.div>
+      ))}
+    </div>
   </div>
-</div>
   );
 };
 

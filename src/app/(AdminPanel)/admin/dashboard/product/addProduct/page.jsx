@@ -596,7 +596,6 @@ const handleSubmit = async (e) => {
             <>
             <h3 className="text-xl font-semibold mb-4 text-gray-800">Step 5: Additional Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              
               <div>
                   <label className="block mb-3 text-gray-700 font-bold">Description</label>
                   <ReactQuill
@@ -618,15 +617,15 @@ const handleSubmit = async (e) => {
             </div>
           
             <div className="flex justify-between mt-14">
-              <motion.button
-                type="button"
-                onClick={prevStep}
-                className="w-40 p-3 bg-gray-500 text-white font-bold rounded hover:bg-gray-700"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Previous
-              </motion.button>
+            <motion.button
+               type="button"
+               onClick={prevStep}
+               className="w-40 p-3 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600"
+               whileHover={{ scale: 1.05 }}
+               whileTap={{ scale: 0.95 }}
+             >
+               Previous
+             </motion.button>
           
               <button
                 type="submit"

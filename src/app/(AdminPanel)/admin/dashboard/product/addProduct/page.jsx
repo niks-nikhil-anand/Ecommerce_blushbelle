@@ -236,20 +236,19 @@ const handleSubmit = async (e) => {
                    transition={{ duration: 0.4 }}
                  />
                </div>
-         
-               
-         
-               {/* Sale Price */}
-               <div>
-                 <label className="block text-teal-600 font-bold mb-3" htmlFor="salePrice">
-                   Sale Price
+
+
+                {/* Stock */}
+                <div>
+                 <label className="block text-green-600 font-bold mb-3" htmlFor="stock">
+                   Stock
                  </label>
                  <motion.input
-                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
+                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
                    type="number"
-                   name="salePrice"
-                   id="salePrice"
-                   value={formData.salePrice}
+                   name="stock"
+                   id="stock"
+                   value={formData.stock}
                    onChange={handleInputChange}
                    required
                    initial={{ opacity: 0, scale: 0.8 }}
@@ -257,9 +256,12 @@ const handleSubmit = async (e) => {
                    transition={{ duration: 0.4 }}
                  />
                </div>
-         
-               {/* Original Price */}
-               <div>
+
+
+
+
+                {/* Original Price */}
+                <div>
                  <label className="block text-orange-600 font-bold mb-3" htmlFor="originalPrice">
                    Original Price
                  </label>
@@ -277,17 +279,19 @@ const handleSubmit = async (e) => {
                  />
                </div>
          
-               {/* Stock */}
+               
+         
+               {/* Sale Price */}
                <div>
-                 <label className="block text-green-600 font-bold mb-3" htmlFor="stock">
-                   Stock
+                 <label className="block text-teal-600 font-bold mb-3" htmlFor="salePrice">
+                   Sale Price(Discounted Price)
                  </label>
                  <motion.input
-                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
                    type="number"
-                   name="stock"
-                   id="stock"
-                   value={formData.stock}
+                   name="salePrice"
+                   id="salePrice"
+                   value={formData.salePrice}
                    onChange={handleInputChange}
                    required
                    initial={{ opacity: 0, scale: 0.8 }}
@@ -295,6 +299,10 @@ const handleSubmit = async (e) => {
                    transition={{ duration: 0.4 }}
                  />
                </div>
+         
+              
+         
+              
 
                <motion.div className="flex items-center mb-4">
                 <input

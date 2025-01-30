@@ -6,6 +6,11 @@ const productSchema = new mongoose.Schema({
         required: [true, 'Product name is required'],
         trim: true,
     },
+    sku:{
+        type: String,
+        required: [true, 'Product sku is required'],
+        trim: true,
+    },
     stock: {
         type: Number,
         required: function () {

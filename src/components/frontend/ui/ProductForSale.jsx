@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation';
 import { FaRegHeart } from "react-icons/fa";
 import Image from 'next/image';
 import Loader from '@/components/loader/loader';
+import { FiArrowRight } from 'react-icons/fi'; // Importing the arrow icon from react-icons
+import { motion } from 'framer-motion';
+
+
+
 const ProductCard = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -57,86 +62,39 @@ const ProductCard = () => {
     };
 
     return (
-        <div className="flex flex-col mt-5 ">
-        <h2 className="text-xl md:text-4xl mb-4 text-center font-bold text-red-500">Fan Favorites</h2>
-        <div className="flex justify-center py-3 flex-wrap hover:cursor-pointer relative">
-          {products.map(({ _id, name, originalPrice, featuredImage, salePrice, description, productHighlights }, index) => (
-            <div
-              key={_id}
-              className={`flex flex-col items-center py-6 px-4 md:px-6 shadow-md border-b-2 border-black w-full lg:w-full ${
-                index % 2 === 0 ? 'bg-[#F3E3EC]' : 'bg-[#D0D2ED]'
-              }`}
-              onClick={() => handleCardClick(_id)}
-            >
-              <div className="flex flex-col lg:flex-row items-center gap-6 justify-center w-full">
-                <div className="text-left lg:mr-6 max-w-full lg:max-w-[50%]">
-                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2">{name}</h1>
-                  <p className="text-gray-700 text-sm md:text-base lg:text-lg mb-4">{description}</p>
-                  <div className="flex gap-4 items-center">
-                    {originalPrice > salePrice && (
-                      <p className="text-base md:text-xl font-bold text-gray-500 line-through">
-                        ₹{originalPrice}0
-                      </p>
-                    )}
-                    <p className="text-lg md:text-2xl font-bold text-orange-500">₹{salePrice}0</p>
-                  </div>
-                  <button
-                    className="bg-orange-500 text-white font-semibold py-2 px-4 mt-4 rounded-full hover:bg-orange-600 transition"
-                    onClick={() => handleCardClick(_id)}
-                  >
-                    SHOP NOW
-                  </button>
-                </div>
-      
-                <div className="mt-6 lg:mt-0 w-full md:w-[10rem] h-auto relative">
-                  <img
-                    src={featuredImage}
-                    alt="Product Image"
-                    className="w-full lg:w-[20rem] h-auto object-cover shadow-md"
-                    style={{
-                      borderRadius: "0 0 3rem 3rem",
-                      clipPath: "inset(0px 0px 0px 0px round 0px 0px 3rem 3rem)",
-                    }}
-                  />
-                </div>
-              </div>
-      
-              {productHighlights && productHighlights.length > 0 ? (
-                <div className="flex gap-6 mt-8 justify-center w-full flex-wrap lg:flex-nowrap">
-                  {productHighlights.slice(0, 3).map((highlight) => (
-                    <FeatureCard
-                      key={highlight._id}
-                      icon={highlight.icon}
-                      title={highlight.title}
-                      description={highlight.description}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-sm md:text-base mt-4">No highlights available</p>
-              )}
-            </div>
-          ))}
-        </div>
+      <div className="my-20 flex flex-col  w-full relative"> 
+      <div className='flex gap-4 hover:cursor-pointer px-22 py-3 w-full justify-between'>
+      <h2 className="text-sm sm:text-xl md:text-2xl mb-4 font-bold text-gray-900">
+      Top Selling Products
+    </h2>
+    <div className="flex items-center justify-center text-blue-500 hover:text-blue-700">
+      <p className="mr-2 text-sm font-medium">View All</p>
+      <FiArrowRight className="text-lg" /> {/* Add the arrow icon */}
+    </div>
       </div>
+   
+    <div className="flex gap-4 hover:cursor-pointer justify-center px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:flex-wrap  ">
+      {products.map((product) => (
+        <motion.div
+          key={product.id}
+          className="relative flex-shrink-0 snap-center flex flex-col items-center bg-white  rounded-xl p-4 border hover:shadow-lg transition-all duration-300"
+        >
+          <div className="flex flex-col items-center">
+          <Image
+          src={product.featuredImage}
+          alt={product.name}
+          width={100} // adjust width based on your design
+          height={100} // adjust height based on your design
+          className="rounded-full" // optional: add styles to the image (e.g., rounded corners)
+        />
+            <p className="mt-2 text-lg font-medium text-gray-700">{product.name}</p>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+    </div>
       
 
-    );
-};
-
-const FeatureCard = ({ icon, title, description }) => {
-    const limitedDescription = description.split(" ").slice(0, 15).join(" ") + (description.split(" ").length > 15 ? "..." : "");
-
-    return (
-        <div className="flex flex-col justify-start text-left p-4 ">
-            <div className="bg-white rounded-b-full w-20 h-20 flex items-start justify-start ml-0 overflow-hidden p-2">
-                <img src={icon} alt={title} className="w-full h-full object-cover" />
-            </div>
-            <h3 className="font-bold mt-2 text-left text-red-600">{title}</h3>
-            <div className=''>
-                <p className="text-gray-600 text-left font-semibold">{limitedDescription}</p>
-            </div>
-        </div>
     );
 };
 

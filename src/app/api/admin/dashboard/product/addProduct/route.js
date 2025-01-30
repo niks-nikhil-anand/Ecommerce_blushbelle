@@ -63,8 +63,16 @@ export const POST = async (req) => {
       descriptionImageUrl = descriptionImageResult.secure_url;
     }
 
+
+    // Generate a unique 6-digit SKU
+    let sku = generateSKU();
+    while (!(await checkUniqueSKU(sku))) {
+      sku = generateSKU();  // Regenerate if the SKU is not unique
+    }
+
     const productData = {
       name,
+      sku,
       stock,
       description,
       additionalInfo,
@@ -104,4 +112,17 @@ export const GET = async (req) => {
     console.error("Error fetching products:", error);
     return NextResponse.json({ msg: "Error fetching products", error: error.message }, { status: 500 });
   }
+};
+
+
+// Function to generate a random 6-digit SKU
+const generateSKU = () => {
+  const sku = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit number
+  return sku.toString();  // Return as a string to ensure consistency
+};
+
+// Function to check if the SKU is unique
+const checkUniqueSKU = async (sku) => {
+  const existingProduct = await productModels.findOne({ sku });
+  return existingProduct ? false : true; // Return false if SKU exists
 };

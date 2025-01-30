@@ -9,6 +9,7 @@ import ProductFeatures from "@/components/frontend/ui/ProductFeatures";
 import SmartIQGrid from "@/components/frontend/ui/SmartIQGrid";
 import GenuisKidGrid from "@/components/frontend/ui/GenuisKidGrid";
 import CategoriesSection from "@/components/frontend/ui/CategorySection";
+import ProductCard from "@/components/frontend/ui/ProductForSale";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
     <HeroSection/>
     <FeatureHighlights/>
     <CategoriesSection/>
+    <ProductCard/>
     <ProductFeatures/>
     <SmartIQGrid/>
     <GenuisKidGrid/>

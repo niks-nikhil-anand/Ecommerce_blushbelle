@@ -6,11 +6,6 @@ const productSchema = new mongoose.Schema({
         required: [true, 'Product name is required'],
         trim: true,
     },
-    sku:{
-        type: String,
-        required: [true, 'Product SKU is required'],
-        unique: true,
-    },
     stock: {
         type: Number,
         required: function () {
@@ -41,7 +36,7 @@ const productSchema = new mongoose.Schema({
         ref: 'Category',
         required: [true, 'Category is required'],
     },  
-    collection: {
+    subCatgeory: {
         type: String,
     }, 
     featuredImage: {

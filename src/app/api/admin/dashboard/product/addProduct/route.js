@@ -3,10 +3,6 @@ import uploadImage from "@/lib/uploadImages";
 import productModels from "@/models/productModels";
 import { NextResponse } from "next/server";
 
-import { NextResponse } from "next/server";
-import connectDB from "../../utils/connectDB";
-import Product from "../../models/Product";
-import uploadImage from "../../utils/uploadImage";
 
 export const POST = async (req) => {
   try {
@@ -20,21 +16,22 @@ export const POST = async (req) => {
     };
 
     const name = getTrimmedValue("name");
-    const sku = getTrimmedValue("sku");
     const stock = parseInt(getTrimmedValue("stock"), 10) || 0;
     const originalPrice = parseFloat(getTrimmedValue("originalPrice")) || 0;
     const salePrice = parseFloat(getTrimmedValue("salePrice")) || 0;
     const category = getTrimmedValue("category");
-    const collection = getTrimmedValue("collection");
+    const collection = getTrimmedValue("collections");
     const tags = getTrimmedValue("tags");
     const description = getTrimmedValue("description");
     const additionalInfo = getTrimmedValue("additionalInfo");
     const isOnSale = formData.get("isOnSale") === "true";
     const isFeaturedSale = formData.get("isFeaturedSale") === "true";
 
-    if (!name || !sku || !category || !originalPrice || !salePrice) {
+    if (!name || !category || !originalPrice || !salePrice) {
       return NextResponse.json({ msg: "Please provide all required fields." }, { status: 400 });
     }
+
+
 
     const images = formData.getAll("images");
     const featuredImage = formData.get("featuredImage");
@@ -68,14 +65,13 @@ export const POST = async (req) => {
 
     const productData = {
       name,
-      sku,
       stock,
       description,
       additionalInfo,
       salePrice,
       originalPrice,
       category,
-      collection,
+      subCatgeory:collection,
       isOnSale,
       isFeaturedSale,
       tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],
@@ -85,7 +81,8 @@ export const POST = async (req) => {
       status: stock > 0 ? "Active" : "Out of stock",
     };
 
-    await Product.create(productData);
+    console.log("Adding product:", productData);
+    await productModels.create(productData);
     return NextResponse.json({ msg: "Product added successfully" }, { status: 200 });
   } catch (error) {
     console.error("Error adding product:", error);

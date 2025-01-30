@@ -147,9 +147,31 @@ const handleSubmit = async (e) => {
     // ✅ API Call
     await axios.post('/api/admin/dashboard/product/addProduct', data);
 
-    // ✅ Success Notification
-    toast.success('Product created successfully!');
-    console.log('Product created successfully:', data);
+    if (response.status === 200) {
+      // ✅ Success Notification
+      toast.success('Product created successfully!');
+      console.log('Product created successfully:', data);
+
+      // ✅ Clear the form
+      setFormData({
+        name: '',
+        originalPrice: '',
+        salePrice: '',
+        stock: '',
+        isFeaturedSale: false,
+        isOnSale: false,
+        category: '',
+        tags: '',
+        suggestedUse: '',
+        description: '',
+        additionalInfo: '',
+      });
+
+      setImages([]);
+      setFeaturedImage(null);
+      setDescriptionImage(null);
+      setSelectedCollection('');
+    }
 
   } catch (error) {
     console.error('Error creating product:', error);

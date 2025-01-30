@@ -66,20 +66,11 @@ const SidebarAdmin = () => {
             <SidebarItem icon={<FaProductHunt />} label="Products" selected={selectedItem === 'Products'} onClick={() => setSelectedItem('Products')} />
           </Link>
 
-          <h3 className="text-sm font-medium mt-4 mb-2 text-black">Categories</h3>
           <Link href="/admin/dashboard/category/addCategory" passHref>
-            <SidebarItem icon={<MdAdd />} label="Add Categories" selected={selectedItem === 'Add Categories'} onClick={() => setSelectedItem('Add Categories')} />
+            <SidebarItem icon={<MdAdd />} label=" Category" selected={selectedItem === 'Add Categories'} onClick={() => setSelectedItem('Add Categories')} />
           </Link>
 
-
-          <Link href="/admin/dashboard/category/addSubCategory" passHref>
-            <SidebarItem icon={<FaListUl />} label="Add Sub_subCategories" selected={selectedItem === 'Sub_subCategories'} onClick={() => setSelectedItem('Sub_subCategories')} />
-          </Link>
-
-
-          <Link href="/admin/dashboard/category/allCategory" passHref>
-            <SidebarItem icon={<FaListUl />} label="All Categories" selected={selectedItem === 'All Categories'} onClick={() => setSelectedItem('All Categories')} />
-          </Link>
+          
 
           <h3 className="text-sm font-medium mt-4 mb-2 text-black">Blog</h3>
           <Link href="/admin/dashboard/blog/addBlog" passHref>

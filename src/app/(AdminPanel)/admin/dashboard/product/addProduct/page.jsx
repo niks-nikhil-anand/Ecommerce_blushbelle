@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
 import { AiOutlineMinusCircle, AiOutlinePlusCircle } from 'react-icons/ai';
+import { toast } from 'react-hot-toast';
+
 
 
 
@@ -101,74 +103,52 @@ const handleQuillChange = (content) => {
 const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
-  
-  const data = new FormData();
-
-  // Log formData for debugging
-  console.log('Form Data:', formData);
-
-  // Append basic product details from formData
-  data.append('name', formData.name);
-  data.append('description', formData.description);
-  data.append('salePrice', formData.salePrice);
-  data.append('originalPrice', formData.originalPrice);
-  data.append('category', formData.category);
-  data.append('collections', selectedCollection);
-  data.append('subCategory', selectedSubCategory);
-  data.append('stock', formData.stock);
-  data.append('suggestedUse', formData.suggestedUse);
-  data.append('servingPerBottle', formData.servingPerBottle);
-  data.append('isFanFavourites', formData.isFanFavourites);
-  data.append('isOnSale', formData.isOnSale);
-  data.append('tags', formData.tags);
-
-  // Log images for debugging
-  console.log('Images:', images);
-
-  // Append images
-  images.forEach((file) => {
-    if (file) {
-      data.append('images', file);
-    }
-  });
-
-  if (featuredImage) {
-    data.append('featuredImage', featuredImage);
-  }
-  if (descriptionImage) {
-    data.append('descriptionImage', descriptionImage);
-  }
-
-  // Log ingredients for debugging
-  console.log('Ingredients:', ingredients);
-
-  // Append ingredients
-  ingredients.forEach((ingredient, index) => {
-    data.append(`ingredients[${index}][name]`, ingredient.name);
-    data.append(`ingredients[${index}][weightInGram]`, ingredient.weightInGram);
-    if (ingredient.image) {
-      data.append(`ingredients[${index}][image]`, ingredient.image);
-    }
-  });
-
-  // Log product highlights for debugging
-  console.log('Product Highlights:', productHighlights);
-
-  // Append product highlights
-  productHighlights.forEach((highlight, index) => {
-    data.append(`productHighlights[${index}][title]`, highlight.title);
-    data.append(`productHighlights[${index}][description]`, highlight.description);
-    if (highlight.icon) {
-      data.append(`productHighlights[${index}][icon]`, highlight.icon);
-    }
-  });
 
   try {
-    console.log('Sending data to API:', Array.from(data.entries())); // Log FormData entries
+    const data = new FormData();
+
+    // ✅ First Step: Basic Product Details
+    data.append('name', formData.name);
+    data.append('originalPrice', formData.originalPrice);
+    data.append('salePrice', formData.salePrice);
+    data.append('stock', formData.stock);
+    data.append('isFeaturedSale', formData.isFeaturedSale);
+    data.append('isOnSale', formData.isOnSale);
+
+    // ✅ Second Step: Category & Collections
+    data.append('category', formData.category);
+    data.append('collections', selectedCollection);
+
+    // ✅ Third Step: Images
+    if (images.length > 0) {
+      images.forEach((file) => {
+        if (file) data.append('images', file);
+      });
+    }
+
+    if (featuredImage) data.append('featuredImage', featuredImage);
+    if (descriptionImage) data.append('descriptionImage', descriptionImage);
+
+    // ✅ Fourth Step: Additional Fields
+    data.append('tags', formData.tags);
+    data.append('suggestedUse', formData.suggestedUse);
+
+    // ✅ Fifth Step: Description & Additional Info
+    data.append('description', formData.description);
+    data.append('additionalInfo', formData.additionalInfo);
+
+    console.log('Sending data to API:', Array.from(data.entries())); // Debugging log
+
+    // ✅ API Call
     await axios.post('/api/admin/dashboard/product/addProduct', data);
+
+    // ✅ Success Notification
+    toast.success('Product created successfully!');
     console.log('Product created successfully:', data);
+
   } catch (error) {
     console.error('Error creating product:', error);
+    toast.error('Failed to create product. Please try again!');
   } finally {
     setLoading(false);
   }

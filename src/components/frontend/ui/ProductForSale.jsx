@@ -78,9 +78,7 @@ const ProductCard = () => {
       {products.map((product) => (
         <motion.div
           key={product.id}
-          className={`relative flex-shrink-0 snap-center flex flex-col items-center bg-white rounded-xl p-4 border 
-          ${product.isSelected ? "border-blue-500" : "border-gray-200"} 
-          hover:shadow-lg transition-all duration-300`}
+           className="relative flex-shrink-0 snap-center flex flex-col items-center bg-white  rounded-xl p-4 border hover:shadow-lg transition-all duration-300"
         >
           {/* Discount Badge */}
           {product.discount && (

@@ -216,7 +216,7 @@ const ProductDetail = () => {
 
   <div className="flex items-center mb-2  bg-white rounded-3xl">
     <span className="text-green-500 text-lg font-bold">★ ★ ★ ★ ★</span>
-    <span className="text-gray-500 ml-2">{ratings.numberOfRatings} Reviews</span>
+    {/* <span className="text-gray-500 ml-2">{ratings.numberOfRatings} Reviews</span> */}
   </div>
 
   <h2 className="text-purple-500 mb-2 text-xs sm:text-sm">SERVINGS PER BOTTLE: {servingPerBottle}</h2>
@@ -337,78 +337,6 @@ const ProductDetail = () => {
       </div>
   );
 };
-
-
-// Place these components outside of ProductDetail to avoid conditional rendering issues
-const ProductHighlights = ({ highlights }) => (
-  <div className="flex flex-col items-center justify-center min-h-[75vh] bg-white p-6 sm:p-10">
-    <motion.h2
-      className="text-xl sm:text-2xl font-semibold text-orange-600 mb-6 sm:mb-8"
-      initial={{ opacity: 0, y: -50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      Product Highlights
-    </motion.h2>
-    <div className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-10">
-      {highlights.map((highlight, index) => (
-        <motion.div
-          key={highlight.id || index}  
-          className="flex flex-col items-center max-w-[90%] sm:max-w-xs text-center mt-4 sm:mt-5"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: index * 0.2 }}
-        >
-          <img
-            src={highlight.icon}
-            alt={highlight.icon}
-            className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-3 sm:mb-4 rounded-full"
-          />
-          <h3 className="text-base sm:text-lg font-bold text-orange-600 mb-1 sm:mb-2">
-            {highlight.title}
-          </h3>
-          <p className="text-sm sm:text-base text-gray-600">{highlight.description}</p>
-        </motion.div>
-      ))}
-    </div>
-  </div>
-);
-
-
-
-
-const FeaturedIngredients = ({ ingredients }) => (
-<div className="p-6 sm:p-10 bg-white">
-  <h2 className="text-center text-2xl sm:text-3xl font-semibold text-orange-600 mb-6 sm:mb-10">
-    Featured Ingredients
-  </h2>
-  <div className="flex justify-center items-start flex-wrap gap-5 sm:space-x-5">
-    {ingredients.map((ingredient, index) => (
-      <motion.div
-        key={index}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="bg-green-100 rounded-xl p-4 sm:p-6 shadow-md w-full sm:w-[45%] lg:w-[20%] mt-5"
-      >
-        <img
-          src={ingredient.image}
-          alt={ingredient.name}
-          className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-3 sm:mb-4 rounded-full"
-        />
-        <h3 className="text-orange-600 text-center font-semibold text-base sm:text-lg mb-1 sm:mb-2">
-          {ingredient.name}
-        </h3>
-        <p className="text-center text-sm sm:text-base text-gray-700 mb-2">
-          {ingredient.description}
-        </p>
-        <p className="text-center font-semibold text-gray-800">
-          {ingredient.weightInGram}mg
-        </p>
-      </motion.div>
-    ))}
-  </div>
-</div>
-);
 
 
 export default ProductDetail;

@@ -63,7 +63,7 @@ const ProductCard = () => {
     };
 
     return (
-      <div className="my-20 flex flex-col  w-full relative"> 
+      <div className="my-7 flex flex-col  w-full relative"> 
       <div className='flex gap-4 hover:cursor-pointer px-22 py-3 w-full justify-between'>
       <h2 className="text-sm sm:text-xl md:text-2xl mb-4 font-bold text-gray-900">
       Top Selling Products
@@ -79,7 +79,8 @@ const ProductCard = () => {
         <motion.div
           key={product.id}
            className="relative flex-shrink-0 snap-center flex flex-col items-center bg-white  rounded-xl p-4 border hover:shadow-lg transition-all duration-300"
-        >
+           onClick={() => handleCardClick(product._id)} 
+           >
           {/* Discount Badge */}
           {product.discount && (
             <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
@@ -132,7 +133,7 @@ const ProductCard = () => {
       ))}
     </div>
 
-    
+
     </div>
       
 

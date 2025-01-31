@@ -4,8 +4,6 @@ import { NextResponse } from "next/server";
 
 export const GET = async (request, { params }) => {
   const { id } = params;
-  
-
   if (!id) {
     return NextResponse.json({ msg: "ID parameter is required" }, { status: 400 });
   }
@@ -13,12 +11,12 @@ export const GET = async (request, { params }) => {
   try {
     await connectDB();
 
-    const product = await productModels.findById(id);
+    const product = await productModels.findById(id).populate('category');
     
     if (!product) {
       return NextResponse.json({ msg: "Product not found" }, { status: 404 });
     }
-
+    console.log(product)
     return NextResponse.json(product, { status: 200 });
   } catch (error) {
     console.error('Error fetching product:', error);

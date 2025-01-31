@@ -9,7 +9,6 @@ import { AiOutlineDown, AiOutlineClose } from 'react-icons/ai';
 import { FaFacebook, FaTwitter, FaPinterest, FaInstagram } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
-
 import { AiOutlineHeart } from "react-icons/ai";
 import ReviewProductPage from '@/components/frontend/ui/ReviewProductPage';
 
@@ -44,6 +43,7 @@ const ProductDetail = () => {
             axios.get(`/api/admin/dashboard/product/${id}`)
                 .then(response => {
                     clearInterval(interval);
+                    console.log(response.data)
                     setProduct(response.data);
                     setLoading(false);
                 })
@@ -142,6 +142,9 @@ const ProductDetail = () => {
     const currentImage = images[currentImageIndex];
 
 
+    const percentageOff = ((originalPrice - salePrice) / originalPrice) * 100;
+
+
     
 
     return (
@@ -152,40 +155,21 @@ const ProductDetail = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
 >
-<div className="flex flex-col md:flex-row w-full px-6 lg:px-12  bg-white">
-<div className="w-full md:w-[49%] h-full flex flex-col items-center ">
-        {/* Preview Image */}
-        <div className="w-full md:w-[30rem] h-[20rem] md:h-[40rem] flex justify-center items-center overflow-hidden mb-4  rounded-lg relative">
-          <img
-            src={currentImage}
-            alt={name}
-            className="object-contain w-full h-full cursor-pointer"
-            
-            onClick={toggleFullScreen} // Open full-screen on click
-            
-          />
-        </div>
-
-        {/* Manual Image Slider Controls */}
-                  <div className="flex justify-between w-full md:hidden absolute top-1/2 transform -translate-y-1/2 left-0 right-0">
-          <button onClick={prevImage} className="p-2 rounded-l text-black text-2xl">
-            <FaRegArrowAltCircleLeft />
-          </button>
-          <button onClick={nextImage} className="p-2 rounded-l text-black text-2xl">
-            <FaRegArrowAltCircleRight />
-          </button>
-        </div>
+<div className="flex  md:flex-row w-full px-6 lg:px-12  bg-white">
+        <div className="w-full md:w-[49%] h-full flex justify-start ">
 
 
         {/* Thumbnail Images (Optional) */}
-        <div className="md:flex gap-2 overflow-x-auto w-full hidden">
+        <div className="md:flex flex-col gap-5  hidden">
           {images.length > 0 ? (
             images.map((image, index) => (
               <div key={index} className="w-[5rem] h-[5rem] sm:w-[6rem] sm:h-[6rem] overflow-hidden rounded-lg shadow-lg cursor-pointer">
-                <img
+                <Image
                   src={image}
                   alt={`Product Image ${index + 1}`}
-                  className="w-full h-full object-cover rounded"
+                  width={240}  // Adjust width as per your requirement
+                  height={240} // Adjust height as per your requirement
+                  className="rounded object-cover p-5" // This ensures the image covers the box without distortion
                   onClick={() => setCurrentImageIndex(index)}
                 />
               </div>
@@ -196,33 +180,66 @@ const ProductDetail = () => {
             </div>
           )}
         </div>
+
+
+
+
+        {/* Preview Image */}
+
+        <div className="w-full md:w-[30rem] h-[10rem] md:h-[20rem] flex justify-center items-center overflow-hidden mb-4  rounded-lg relative">
+          <img
+            src={currentImage}
+            alt={name}
+            className="object-contain w-full h-full cursor-pointer"
+            
+            onClick={toggleFullScreen} // Open full-screen on click
+          />
+        </div>
+
+
+         
+
+        {/* Manual Image Slider Controls */}
+                  <div className="flex justify-between w-full md:hidden absolute top-1/2 transform -translate-y-1/2 left-0 right-0">
+          <button onClick={prevImage} className="p-2 rounded-l text-black text-2xl">
+            <FaRegArrowAltCircleLeft />
+          </button>
+          <button onClick={nextImage} className="p-2 rounded-l text-black text-2xl">
+            <FaRegArrowAltCircleRight />
+          </button>
+        </div>
       </div>
 
       {/* Product Details */}
       <div className="w-full md:w-1/2 max-w-xl lg:max-w-3xl bg-white rounded-3xl px-6 sm:px-10 py-6">
         <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           {/* Product Title */}
-          <h1 className="text-3xl font-bold mb-2">Brain Bite</h1>
-          <span className="text-green-600 text-sm font-semibold bg-green-100 px-2 py-1 rounded-lg">In Stock</span>
-
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2 sm:mb-0">{product.name}</h1>
+            <span 
+              className={`text-sm font-semibold px-3 py-1 rounded-lg shadow-md ${
+                product.stock > 0
+                  ? "text-green-600 bg-green-100"
+                  : "text-red-600 bg-red-100"
+              }`}
+            >
+              {product.stock > 0 ? "In Stock" : "Out of Stock"}
+            </span>
+          </div>
           {/* Ratings & Reviews */}
           <div className="flex items-center mt-2">
             <span className="text-yellow-500 text-lg">★★★★★</span>
             <span className="text-gray-500 ml-2">10 Reviews</span>
           </div>
+          
 
           {/* Price */}
-          <div className="flex items-center mt-3">
-            <span className="text-gray-400 text-xl line-through">$48.00</span>
-            <span className="text-red-500 text-xl font-semibold ml-2">64% Off</span>
-          </div>
-          <h1 className="text-3xl font-bold text-green-600">$17.28</h1>
-
-          {/* Brand */}
-          <div className="flex items-center mt-4">
-            <span className="text-gray-700 font-medium">Brand:</span>
-            <span className="ml-2 bg-gray-100 px-3 py-1 rounded-md">HealthGenix</span>
-          </div>
+          <div className="flex items-center mt-3 gap-2">
+            <span className="text-gray-400 text-sm line-through">₹{product.originalPrice}</span>
+           <h1 className="text-xl font-bold text-green-600">₹{product.salePrice}</h1>
+           <span className="text-red-500 text-lg font-semibold ml-2">{Math.round(percentageOff)}% Off</span>
+           </div>
+           <hr/>
 
           {/* Share Icons */}
           <div className="flex items-center mt-4 space-x-3">
@@ -238,7 +255,10 @@ const ProductDetail = () => {
             Brain Bite is a powerful supplement designed to boost cognitive function, memory, and focus. Made with natural ingredients.
           </p>
 
+          
+
           {/* Quantity & Add to Cart */}
+          <div className='flex '>
           <div className="flex items-center mt-6">
             <span className="text-gray-700 font-medium">Quantity:</span>
             <div className="flex items-center border rounded-full py-2 px-5 mx-4">
@@ -249,7 +269,7 @@ const ProductDetail = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center mt-6">
+          <div className="flex items-center mt-6 ">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -257,17 +277,16 @@ const ProductDetail = () => {
             >
               Add to Cart
             </motion.button>
-            <AiOutlineHeart className="text-3xl ml-4 text-gray-500 cursor-pointer" />
           </div>
-
+          </div>
           {/* Categories & Tags */}
           <div className="mt-6">
-            <span className="text-gray-700 font-medium">Category:</span>
-            <span className="ml-2 text-gray-600">Supplements</span>
+            <span className="text-gray-700 font-medium">Category: {product.category.name}</span>
           </div>
           <div className="mt-2">
-            <span className="text-gray-700 font-medium">Tags:</span>
-            <span className="ml-2 text-gray-600">Health, Brain Booster</span>
+          <span className="text-gray-700 font-normal">
+            Tags: {product.tags.join(', ')}
+          </span>
           </div>
         </motion.div>
       </div>

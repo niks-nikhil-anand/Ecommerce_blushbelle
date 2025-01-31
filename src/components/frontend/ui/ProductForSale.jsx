@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Loader from '@/components/loader/loader';
 import { FiArrowRight } from 'react-icons/fi'; // Importing the arrow icon from react-icons
 import { motion } from 'framer-motion';
+import { FaHeart, FaEye, FaLock } from 'react-icons/fa';
 
 
 
@@ -73,21 +74,61 @@ const ProductCard = () => {
     </div>
       </div>
    
-    <div className="flex gap-4 hover:cursor-pointer justify-center px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:flex-wrap  ">
+      <div className="flex gap-4 hover:cursor-pointer px-22 py-3 overflow-x-auto snap-x snap-mandatory sm:flex-wrap">
       {products.map((product) => (
         <motion.div
           key={product.id}
-          className="relative flex-shrink-0 snap-center flex flex-col items-center bg-white  rounded-xl p-4 border hover:shadow-lg transition-all duration-300"
+          className={`relative flex-shrink-0 snap-center flex flex-col items-center bg-white rounded-xl p-4 border 
+          ${product.isSelected ? "border-blue-500" : "border-gray-200"} 
+          hover:shadow-lg transition-all duration-300`}
         >
-          <div className="flex flex-col items-center">
-          <Image
-          src={product.featuredImage}
-          alt={product.name}
-          width={100} // adjust width based on your design
-          height={100} // adjust height based on your design
-          className="rounded-full" // optional: add styles to the image (e.g., rounded corners)
-        />
-            <p className="mt-2 text-lg font-medium text-gray-700">{product.name}</p>
+          {/* Discount Badge */}
+          {product.discount && (
+            <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+              {product.discount}
+            </span>
+          )}
+
+          {/* Product Image */}
+          <div className="relative">
+            <Image
+              src={product.featuredImage}
+              alt={product.name}
+              width={80}
+              height={80}
+              className="object-contain"
+            />
+          </div>
+
+          {/* Product Details */}
+          <p className="mt-2 text-sm font-semibold text-gray-800">{product.name}</p>
+
+          {/* Price Section */}
+          <div className="flex items-center gap-2 mt-1">
+            
+            <span className="text-base font-bold text-black">₹{product.salePrice}</span>
+            <span className="text-xs font-bold text-[#999999] line-through">
+            ₹{product.originalPrice}</span>
+          </div>
+
+          {/* Rating */}
+          <div className="flex mt-1">
+            {"★".repeat(product.rating).padEnd(5, "☆").split("").map((star, index) => (
+              <span key={index} className="text-yellow-400  text-sm">{star}</span>
+            ))}
+          </div>
+
+          {/* Lock Icon */}
+          {product.locked && (
+            <div className="absolute bottom-2 right-2 text-gray-400">
+              <FaLock size={14} />
+            </div>
+          )}
+
+          {/* Hover Icons */}
+          <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <FaHeart className="text-gray-500 hover:text-red-500 cursor-pointer" />
+            <FaEye className="text-gray-500 hover:text-blue-500 cursor-pointer" />
           </div>
         </motion.div>
       ))}

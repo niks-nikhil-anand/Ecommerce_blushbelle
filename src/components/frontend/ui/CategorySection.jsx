@@ -71,17 +71,10 @@ const CategoriesSection = () => {
         </motion.div>
       ))}
     </div>
-
-    {/* <div className="absolute bottom-0 right-0 w-full h-full ">
-  <Image 
-    src={AbsoluteImage}
-    alt="Category background"
-    width={100} 
-    height={100} 
-    className="object-cover"
-  />
-</div> */}
-
+       {/* Absolute Positioned Image */}
+       <div className="absolute bottom-[-105px] right-[-18px] p-4">
+        <Image src={AbsoluteImage} alt="Category Image" width={150} height={150} />
+      </div>
 
   </div>
   );

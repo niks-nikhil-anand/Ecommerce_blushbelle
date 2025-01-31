@@ -6,9 +6,11 @@ import Image from 'next/image';
 import Loader from '@/components/loader/loader';
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { AiOutlineDown, AiOutlineClose } from 'react-icons/ai';
-import { FaRegArrowAltCircleRight , FaRegArrowAltCircleLeft  } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaPinterest, FaInstagram } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
-import BlogInProductPage from '@/components/frontend/ui/BlogInProductPage';
+import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
+
+import { AiOutlineHeart } from "react-icons/ai";
 import ReviewProductPage from '@/components/frontend/ui/ReviewProductPage';
 
 
@@ -145,13 +147,13 @@ const ProductDetail = () => {
     return (
       <div>
       <motion.div 
-            className="flex flex-col lg:flex-row  p-4 sm:p-6 bg-[#e0d2ff] w-full h-full mt-5"
+            className="flex flex-col lg:flex-row  p-4 sm:p-6 bg-white w-full h-full"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
 >
-      {/* Product Images */}
-      <div className="w-full md:w-[49%] h-full flex flex-col items-center ">
+<div className="flex flex-col md:flex-row w-full px-6 lg:px-12  bg-white">
+<div className="w-full md:w-[49%] h-full flex flex-col items-center ">
         {/* Preview Image */}
         <div className="w-full md:w-[30rem] h-[20rem] md:h-[40rem] flex justify-center items-center overflow-hidden mb-4  rounded-lg relative">
           <img
@@ -196,80 +198,85 @@ const ProductDetail = () => {
         </div>
       </div>
 
+      {/* Product Details */}
+      <div className="w-full md:w-1/2 max-w-xl lg:max-w-3xl bg-white rounded-3xl px-6 sm:px-10 py-6">
+        <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          {/* Product Title */}
+          <h1 className="text-3xl font-bold mb-2">Brain Bite</h1>
+          <span className="text-green-600 text-sm font-semibold bg-green-100 px-2 py-1 rounded-lg">In Stock</span>
 
-{/* Product Details */}
-<div className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl bg-white rounded-3xl px-6 sm:px-10 py-10">
-<motion.div 
-  className="flex flex-col justify-start mb-2"
-  initial={{ opacity: 0, y: 50 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.5 }}
->
-  <motion.h1 
-    className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4"
-    initial={{ opacity: 0, x: -50 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.5 }}
-  >
-    {name}
-  </motion.h1>
+          {/* Ratings & Reviews */}
+          <div className="flex items-center mt-2">
+            <span className="text-yellow-500 text-lg">★★★★★</span>
+            <span className="text-gray-500 ml-2">10 Reviews</span>
+          </div>
 
-  <div className="flex items-center mb-2  bg-white rounded-3xl">
-    <span className="text-green-500 text-lg font-bold">★ ★ ★ ★ ★</span>
-    {/* <span className="text-gray-500 ml-2">{ratings.numberOfRatings} Reviews</span> */}
-  </div>
+          {/* Price */}
+          <div className="flex items-center mt-3">
+            <span className="text-gray-400 text-xl line-through">$48.00</span>
+            <span className="text-red-500 text-xl font-semibold ml-2">64% Off</span>
+          </div>
+          <h1 className="text-3xl font-bold text-green-600">$17.28</h1>
 
-  <h2 className="text-purple-500 mb-2 text-xs sm:text-sm">SERVINGS PER BOTTLE: {servingPerBottle}</h2>
+          {/* Brand */}
+          <div className="flex items-center mt-4">
+            <span className="text-gray-700 font-medium">Brand:</span>
+            <span className="ml-2 bg-gray-100 px-3 py-1 rounded-md">HealthGenix</span>
+          </div>
 
-  <h1 className="text-2xl sm:text-3xl font-bold mb-4">
-    ₹{salePrice || originalPrice}
-  </h1>
+          {/* Share Icons */}
+          <div className="flex items-center mt-4 space-x-3">
+            <span className="text-gray-700 font-medium">Share item:</span>
+            <FaFacebook className="text-blue-600 cursor-pointer" />
+            <FaTwitter className="text-blue-400 cursor-pointer" />
+            <FaPinterest className="text-red-500 cursor-pointer" />
+            <FaInstagram className="text-pink-500 cursor-pointer" />
+          </div>
 
-  <div className="flex flex-col sm:flex-row justify-start  gap-4 mb-4">
-    <span className="text-gray-700">Quantity</span>
-    <div className="flex items-center border rounded-3xl py-3 px-5 w-full sm:w-1/4 justify-between">
-      <button className="px-3 py-1" onClick={decreaseQuantity}>-</button>
-      <input type="number" className="w-12 text-center" value={quantity} readOnly />
-      <button className="px-3 py-1" onClick={increaseQuantity}>+</button>
-    </div>
-  </div>
+          {/* Description */}
+          <p className="text-gray-600 text-sm mt-4">
+            Brain Bite is a powerful supplement designed to boost cognitive function, memory, and focus. Made with natural ingredients.
+          </p>
 
-  <div className="flex flex-col border-y-2 my-5 border-gray-150">
-    <div className="flex justify-between hover:cursor-pointer py-5" onClick={toggleOpen}>
-      <h3 className="text-orange-600 font-bold mb-2">Suggested Use</h3>
-      <AiOutlineDown className="cursor-pointer text-2xl text-orange-600" />
-    </div>
-    {isOpen && (
-      <div className="mb-5 mt-2 px-3">
-        <p className="text-gray-700">{suggestedUse}</p>
+          {/* Quantity & Add to Cart */}
+          <div className="flex items-center mt-6">
+            <span className="text-gray-700 font-medium">Quantity:</span>
+            <div className="flex items-center border rounded-full py-2 px-5 mx-4">
+              <button className="px-3 py-1">-</button>
+              <input type="number" className="w-8 text-center bg-transparent border-none" value={1} readOnly />
+              <button className="px-3 py-1">+</button>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center mt-6">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition text-lg font-semibold"
+            >
+              Add to Cart
+            </motion.button>
+            <AiOutlineHeart className="text-3xl ml-4 text-gray-500 cursor-pointer" />
+          </div>
+
+          {/* Categories & Tags */}
+          <div className="mt-6">
+            <span className="text-gray-700 font-medium">Category:</span>
+            <span className="ml-2 text-gray-600">Supplements</span>
+          </div>
+          <div className="mt-2">
+            <span className="text-gray-700 font-medium">Tags:</span>
+            <span className="ml-2 text-gray-600">Health, Brain Booster</span>
+          </div>
+        </motion.div>
       </div>
-    )}
-  </div>
-</motion.div>
-
-{/* Action Buttons */}
-<motion.div 
-  className="flex flex-col gap-4 w-full"
-  initial={{ opacity: 0, y: 50 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.5 }}
->
-  <motion.button 
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    className="px-4 py-3 bg-[#6a0dad] text-white rounded-full shadow-lg hover:bg-[#4b0082] transition text-sm sm:text-base"
-    onClick={handleAddToCart} 
-  >
-    {addedToCart ? 'Go to Cart' : 'Add to Cart'}
-  </motion.button>
-</motion.div>
-</div>
+    </div>
+      
 
 </motion.div>
 <div>
-{product && product.productHighlights && (
-<ProductHighlights highlights={product.productHighlights} />
-)}
+
 
 
 </div>
@@ -298,19 +305,6 @@ const ProductDetail = () => {
   </div>
 </div>
 </div>
-
-
-          <div>
-          {product && product.ingredients && (
-          <FeaturedIngredients ingredients={product.ingredients} />
-          )}
-          </div> 
-
-
-            <div>
-            <BlogInProductPage/>
-          </div>
-
           <div>
             <ReviewProductPage/>
           </div>

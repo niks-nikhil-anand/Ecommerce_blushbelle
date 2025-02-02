@@ -41,42 +41,43 @@ const CategoriesSection = () => {
 
 
   return (
-    <div className="my-20 flex flex-col  w-full relative"> 
-      <div className='flex gap-4 hover:cursor-pointer px-22 py-3 w-full justify-between'>
-      <h2 className="text-sm sm:text-xl md:text-2xl mb-4 font-bold text-gray-900">
+    <div className="my-20 flex flex-col w-full relative px-4 sm:px-8">
+  {/* Header Section */}
+  <div className="flex items-center justify-between w-full py-3">
+    <h2 className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900">
       Popular Categories
     </h2>
-    <div className="flex items-center justify-center text-blue-500 hover:text-blue-700">
+    <div className="flex items-center text-blue-500 hover:text-blue-700 cursor-pointer">
       <p className="mr-2 text-sm font-medium">View All</p>
-      <FiArrowRight className="text-lg" /> {/* Add the arrow icon */}
+      <FiArrowRight className="text-lg" />
     </div>
-      </div>
-   
-    <div className="flex gap-4 hover:cursor-pointer justify-center px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:flex-wrap  ">
-      {displayedCategories.map((category) => (
-        <motion.div
-          key={category.id}
-          className="relative flex-shrink-0 snap-center flex flex-col items-center bg-white  rounded-xl p-4 border hover:shadow-lg transition-all duration-300"
-        >
-          <div className="flex flex-col items-center">
-          <Image
-          src={category.image}
-          alt={category.name}
-          width={100} // adjust width based on your design
-          height={100} // adjust height based on your design
-          className="rounded-full" // optional: add styles to the image (e.g., rounded corners)
-        />
-            <p className="mt-2 text-lg font-medium text-gray-700">{category.name}</p>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-       {/* Absolute Positioned Image */}
-       <div className="absolute bottom-[-105px] right-[-18px] p-4">
-        <Image src={AbsoluteImage} alt="Category Image" width={150} height={150} />
-      </div>
-
   </div>
+
+  {/* Categories Section */}
+  <div className="flex gap-4 px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:overflow-visible sm:flex-wrap sm:justify-center">
+    {displayedCategories.map((category) => (
+      <motion.div
+        key={category.id}
+        className="relative flex-shrink-0 snap-center flex flex-col items-center bg-white rounded-xl p-4 border hover:shadow-lg transition-all duration-300 w-[40%]  sm:w-auto"
+      >
+       <Image
+        src={category.image}
+        alt={category.name}
+        width={100}
+        height={100}
+        className="rounded-full w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24"
+      />
+        <p className="mt-2 text-sm sm:text-lg font-medium text-gray-700 text-center">{category.name}</p>
+      </motion.div>
+    ))}
+  </div>
+
+  {/* Absolute Positioned Image */}
+  <div className="absolute bottom-[-60px] right-2 sm:right-[-18px] p-4 w-[80px] sm:w-[150px]">
+    <Image src={AbsoluteImage} alt="Category Image" width={150} height={150} />
+  </div>
+</div>
+
   );
 };
 

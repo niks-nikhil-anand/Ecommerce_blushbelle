@@ -92,13 +92,11 @@ const ReviewProductPage = ({ productId }) => {
   
 
   return (
-    <div className="w-full px-4 md:px-[10rem] py-3 md:py-9 mx-auto mt-8 p-6 bg-white rounded shadow-lg ">
+    <div className="w-full px-4 md:px-[10rem] py-3 md:py-9 mx-auto mt-8 p-2  ">
       <Toaster />
-      <h2 className="text-2xl font-semibold mb-6">Customer Reviews</h2>
-
       {/* Display Review Summary */}
       <div className="flex items-center mb-4">
-        <span className="text-lg font-bold">Based on {reviews.length} reviews</span>
+        <span className="text-lg font-bold"> {reviews.length} reviews</span>
         <button
           onClick={() => setShowForm(!showForm)}
           className="ml-auto p-2 border rounded hover:bg-gray-100"

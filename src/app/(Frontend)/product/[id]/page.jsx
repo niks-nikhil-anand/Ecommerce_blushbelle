@@ -11,6 +11,8 @@ import { useRouter } from 'next/navigation';
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { AiOutlineHeart } from "react-icons/ai";
 import ReviewProductPage from '@/components/frontend/ui/ReviewProductPage';
+import { FaCheckCircle, FaCheckSquare } from "react-icons/fa";
+
 
 
 
@@ -24,6 +26,7 @@ const ProductDetail = () => {
     const [progress, setProgress] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
+    const [activeTab, setActiveTab] = useState("Descriptions");
 
     const [quantity, setQuantity] = useState(1);
     const [addedToCart, setAddedToCart] = useState(false);
@@ -291,8 +294,6 @@ const ProductDetail = () => {
         </motion.div>
       </div>
     </div>
-      
-
 </motion.div>
 <div>
 
@@ -300,33 +301,83 @@ const ProductDetail = () => {
 
 </div>
           {/* Additional Banner */}
-          <div className="flex flex-col md:flex-row items-center p-4 md:p-8 mt-10 bg-[#e0d2ff]">
-<div className="flex w-full flex-col md:flex-row justify-between">
-  {/* Image Section */}
-  <div className="w-full md:w-1/2 mb-6 md:mb-0 md:mr-8">
-    <Image
-      src={descriptionImage}
-      alt="Banner Image"
-      className="w-full h-[20rem] md:h-[30rem] object-cover rounded-xl"
-      width={500}
-      height={300}
-    />
-  </div>
+          <div className="p-4 md:p-8 bg-white max-w-5xl mx-auto">
+      {/* Toggle Menu - Responsive */}
+      <div className="flex flex-col md:flex-row items-center justify-between border-b border-gray-300 mb-6">
+        {["Descriptions", "Additional Information", "Customer Feedback"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`w-full md:w-auto px-4 py-2 text-lg font-medium transition-all ${
+              activeTab === tab ? "border-b-2 border-green-500 text-green-600" : "text-gray-600"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-  {/* Text Section */}
-  <div className="flex flex-col justify-start w-full md:w-1/2">
-    <h1 className="text-xl md:text-3xl lg:text-4xl text-[#D07021] mb-4">
-      {name}
-    </h1>
-    <p className="text-black-100 text-base md:text-lg lg:text-xl leading-relaxed">
-      {description}
-    </p>
-  </div>
-</div>
-</div>
-          <div>
-            <ReviewProductPage/>
+      {/* Section Content */}
+      {activeTab === "Descriptions" && (
+        <div className="flex flex-col md:flex-row items-start">
+          {/* Left Section - Text */}
+          <div className="flex-1">
+            <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-4">
+              BrainBite™ Smart IQ
+            </h2>
+            <p className="text-gray-700 mb-4"
+            dangerouslySetInnerHTML={{ __html: product.description }}
+            >
+           
+            </p>
+           
+
+            {/* Badges */}
+            <div className="grid grid-cols-2 gap-4 ">
+              <div className="flex items-center space-x-2 bg-gray-100 p-3 rounded-md">
+                <FaCheckCircle className="text-green-500" />
+                <span className="text-gray-800 font-medium">{Math.round(percentageOff)}% Discount</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-gray-100 p-3 rounded-md">
+                <FaCheckCircle className="text-green-500" />
+                <span className="text-gray-800 font-medium">100% Organic</span>
+              </div>
+            </div>
           </div>
+
+          {/* Right Section - Image */}
+          <div className="flex-1 flex justify-center mt-6 md:mt-0">
+            <Image
+              src={product.descriptionImage}
+              alt="BrainBite Supplement"
+              width={400}
+              height={300}
+              className="rounded-lg object-cover w-full md:w-auto"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Additional Information Section */}
+      {activeTab === "Additional Information" && (
+        <div className="text-gray-700 p-4 md:p-6">
+          <h3 className="text-2xl font-semibold mb-4">Additional Information</h3>
+          <p 
+          dangerouslySetInnerHTML={{ __html: product.additionalInfo }}
+          >
+          </p>
+        </div>
+      )}
+
+      {/* Customer Feedback Section */}
+      {activeTab === "Customer Feedback" && (
+        <div className="text-gray-700 p-4 md:p-6">
+          <h3 className="text-2xl font-semibold mb-4">Customer Feedback</h3>
+          <ReviewProductPage/>
+
+        </div>
+      )}
+    </div>
          
 
           {isFullScreen && (

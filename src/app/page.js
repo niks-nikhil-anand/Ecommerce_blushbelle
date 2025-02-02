@@ -19,8 +19,8 @@ export default function Home() {
     <CategoriesSection/>
     <ProductCard/>
     <ProductFeatures/>
-    <SmartIQGrid/>
     <GenuisKidGrid/>
+    <SmartIQGrid/>
     <StaticPlayer/>
     <ProductIngredients/>
     <WhyChooseBrainbite/>

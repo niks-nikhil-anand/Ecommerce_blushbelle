@@ -7,7 +7,7 @@ import titleSvg from "../../../../public/frontend/products/smartIQ/title_shape.p
 
 const SmartIQGrid = () => {
   return (
-    <div className="relative flex flex-col sm:flex-row items-center justify-between bg-gray-50 p-6 sm:p-8 rounded-sm shadow-lg max-w-4xl mx-auto my-12 sm:my-24">
+    <div className="relative flex flex-col-reverse sm:flex-row items-center justify-between bg-gray-50 p-6 sm:p-8 rounded-sm shadow-lg max-w-4xl mx-auto my-12 sm:my-24">
   {/* Background Image */}
   <div
     className="absolute top-[-50px] sm:top-[-100px] right-[-50px] sm:right-[-100px] w-[200px] sm:w-[330px] h-[200px] sm:h-[330px] bg-no-repeat bg-contain hidden sm:block"
@@ -15,7 +15,7 @@ const SmartIQGrid = () => {
   ></div>
 
   {/* Left Content */}
-  <div className="max-w-md z-10 text-center sm:text-left">
+  <div className="max-w-md z-10 text-center sm:text-left mt-6 sm:mt-0">
     <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">BRAIN BITE</h2>
     <div className="mb-3 sm:mb-4 flex justify-center sm:justify-start">
       <Image
@@ -46,13 +46,13 @@ const SmartIQGrid = () => {
   </div>
 
   {/* Right Content */}
-  <div className="relative z-10 mt-6 sm:mt-0">
+  <div className="relative z-10">
     <Image
       src={productImage}
       alt="BrainBite Smart IQ"
       width={256}
       height={256}
-      className="w-48 sm:w-60 h-auto drop-shadow-lg"
+      className="w-48 sm:w-60 h-auto drop-shadow-lg mx-auto sm:mx-0"
     />
     <Image
       src={ingredients}
@@ -63,6 +63,7 @@ const SmartIQGrid = () => {
     />
   </div>
 </div>
+
 
   );
 };

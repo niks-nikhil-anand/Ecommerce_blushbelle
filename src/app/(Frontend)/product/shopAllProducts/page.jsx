@@ -6,6 +6,8 @@ import Image from "next/image";
 import { FaCartPlus } from "react-icons/fa";
 import banner from '../../../../../public/frontend/Banner/AllProductPageBannerlg.jpg';
 import { FaStar, FaLock } from "react-icons/fa";
+import { useRouter } from 'next/navigation';
+
 
 
 const AllProducts = () => {
@@ -15,6 +17,8 @@ const AllProducts = () => {
   const [filters, setFilters] = useState({ availability: "", price: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 9;
+  const router = useRouter();
+
 
   // Fetch products whenever sort option, filters, or current page changes
   useEffect(() => {
@@ -34,6 +38,10 @@ const AllProducts = () => {
       setLoading(false);
     }
   };
+
+  const handleCardClick = (id) => {
+    router.push(`/product/${id}`);
+};
 
   // Handle sort change
   const handleSortChange = (e) => setSortOption(e.target.value);
@@ -73,6 +81,9 @@ const AllProducts = () => {
     return (
       <motion.div
         className="relative flex-shrink-0 snap-center flex flex-col items-center justify-center bg-white rounded-xl p-6 border hover:shadow-lg transition-all duration-300 w-[80%] sm:w-[220px] md:w-[250px] lg:w-[280px] h-[250px] md:h-[300px] text-center group cursor-pointer"
+
+        onClick={() => handleCardClick(product._id)}
+
       >
         {/* Product Image */}
         <div className="overflow-hidden h-[15rem] flex justify-center">
@@ -155,7 +166,8 @@ const AllProducts = () => {
           transition={{ delay: 0.5, duration: 0.5 }}
         >
           {displayedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product}     
+            />
           ))}
         </motion.div>
       </div>

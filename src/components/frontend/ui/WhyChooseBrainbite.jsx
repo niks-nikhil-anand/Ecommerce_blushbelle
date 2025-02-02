@@ -6,6 +6,7 @@ import step1 from '../../../../public/frontend/WhyChooseBrainbite/01.png';
 import step2 from '../../../../public/frontend/WhyChooseBrainbite/02.png';
 import step3 from '../../../../public/frontend/WhyChooseBrainbite/03.png';
 import step4 from '../../../../public/frontend/WhyChooseBrainbite/04.png';
+import vector from '../../../../public/frontend/WhyChooseBrainbite/vector.png';
 
 const steps = [
   {
@@ -80,22 +81,28 @@ const WhyChooseBrainbite = () => {
       </div>
 
       <div className="flex items-center justify-center gap-8 max-w-5xl mx-auto px-4">
-        <div className="flex items-center justify-between w-full">
-          {steps.map((step, index) => (
-            <React.Fragment key={step.id}>
-              <StepCard
-                icon={step.icon}
-                id={step.id}
-                title={step.title}
-                description={step.description}
-              />
-              {index < steps.length - 1 && (
-                <div className="border-l-2 border-dotted border-gray-400 h-32 mx-4"></div>
-              )}
-            </React.Fragment>
+        <div className="flex items-center justify-between w-full relative">
+        {steps.map((step, index) => (
+            <StepCard
+              key={step.id}
+              icon={step.icon}
+              id={step.id}
+              title={step.title}
+              description={step.description}
+              className="relative"
+            />
           ))}
+          <div className=" absolute mt-[-75px] flex justify-center ml-[10rem] mr-[10rem]">
+        <Image
+          src={vector}
+          alt="Vector Image"
+          objectFit="contain"
+        />
+      </div>
         </div>
       </div>
+       {/* Add Vector Image Below the Steps */}
+       
     </div>
   );
 };

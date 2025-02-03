@@ -186,6 +186,12 @@ const handleSubmit = async (e) => {
     setImageInputs([...imageInputs, imageInputs.length]);
   };
 
+  const removeImage = (index) => {
+    if (index === 0) return; // Prevent removing the image at index 1
+    setImageInputs((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+  
+
   const nextStep = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };

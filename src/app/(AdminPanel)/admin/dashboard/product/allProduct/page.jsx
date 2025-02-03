@@ -5,6 +5,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import Loader from "@/components/loader/loader";
 import toast, { Toaster } from "react-hot-toast"; // Import toast and Toaster
+import Image from "next/image";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -132,11 +133,14 @@ const Products = () => {
             {currentProducts.map((product) => (
               <tr key={product._id} className="hover:bg-gray-100">
                 <td className="border px-2 py-1 text-center flex justify-center">
-                  <img
-                    src={product.featuredImage}
-                    alt={product.name}
-                    className="w-12 h-12 object-cover rounded-2xl"
-                  />
+                <Image
+                  src={product.featuredImage}
+                  alt={product.name}
+                  width={48} // Adjust based on design
+                  height={48} // Adjust based on design
+                  className=" shadow-lg object-cover cursor-pointer"
+                  style={{ width: "30px", height: "60px" }}
+                />
                 </td>
                 <td className="border px-2 py-1">{truncateName(product.name)}</td>
                 <td className="border px-2 py-1 text-center">{product.stock}</td>

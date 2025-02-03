@@ -105,8 +105,8 @@ const BlogFormComponent = () => {
 
 
   return (
-    <div className="w-full p-6 mx-auto ">
-    <h1 className="text-2xl font-bold mb-6">Add Blog</h1>
+    <div className="max-w-full mx-auto p-4 bg-gray-50  rounded-lg w-full h-[90vh]  overflow-y-auto max-h-[80vh] custom-scrollbar ">
+     <h1 className="text-2xl font-bold mb-6">Add Blog</h1>
     <form onSubmit={handleSubmit} className="space-y-6">
         <motion.div
           className="flex flex-col space-y-4"
@@ -133,15 +133,17 @@ const BlogFormComponent = () => {
                     className="w-full h-80 rounded"
                   />
                 </div>
-                <div className='mt-5'>
-                  <button
-                    type="button"
-                    onClick={handleNextStep}
-                    className="w-full p-2 mt-6 text-white bg-blue-500 rounded hover:bg-blue-600"
-                  >
-                    Next
-                  </button>
-                </div>
+                <div className="mt-5 flex justify-end">
+              <motion.button
+                type="button"
+                onClick={handleNextStep}
+                whileHover={{ scale: 1.05, rotate: 1 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-2 mt-6 text-white bg-blue-500 rounded hover:bg-blue-600 transition-all duration-300"
+              >
+                Next
+              </motion.button>
+            </div>
               </div>
             </>
           )}
@@ -218,21 +220,26 @@ const BlogFormComponent = () => {
                 />
               </div>
               <div className="flex justify-between mt-6">
-                <button
-                  type="button"
-                  onClick={handlePrevStep}
-                  className="w-1/2 p-2 text-white bg-gray-500 rounded hover:bg-gray-600"
-                >
-                  Previous
-                </button>
-                <button
-                  type="submit"
-                  className={`w-1/2 p-2 ml-2 text-white ${loading ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
-                  disabled={loading}
-                >
-                  {loading ? 'Submitting...' : 'Submit'}
-                </button>
-              </div>
+              <motion.button
+                type="button"
+                onClick={handlePrevStep}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-3/20 p-2 text-white bg-gray-500 rounded hover:bg-gray-600"
+              >
+                Previous
+              </motion.button>
+
+              <motion.button
+                type="submit"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`w-3/20 p-2 ml-2 text-white ${loading ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
+                disabled={loading}
+              >
+                {loading ? 'Submitting...' : 'Submit'}
+              </motion.button>
+            </div>
             </>
           )}
         </motion.div>

@@ -126,7 +126,7 @@ const Products = () => {
               <th className="border px-2 py-1 text-left">Price</th>
               <th className="border px-2 py-1 text-left">Category</th>
               <th className="border px-2 py-1 text-left">SubCategory</th>
-              <th className="border px-2 py-1 text-left">Price</th>
+              <th className="border px-2 py-1 text-left">Is-Featured</th>
               <th className="border px-2 py-1 text-center">On Sale</th>
               <th className="border px-2 py-1 text-center">Status</th>
               <th className="border px-2 py-1 text-center">Actions</th>
@@ -154,16 +154,9 @@ const Products = () => {
                     <span className="text-red-500 text-sm font-semibold ml-2">
                       {Math.round(((product.originalPrice - product.salePrice) / product.originalPrice) * 100)}% Off
                     </span>
-                    <h1 className="text-xl font-bold text-green-600">₹{product.salePrice}</h1>
                   </td>
                 <td className="border px-2 py-1">{product.category?.name || "N/A"}</td>
                 <td className="border px-2 py-1">{product.subCatgeory || "N/A"}</td>
-                <td className="border px-2 py-1">
-                  {product.users?.[0]?.fullName || "N/A"}
-                  <span className="font-medium">
-                    ({product.users?.[0]?.role || "N/A"})
-                    </span>
-                </td>
                 
                 <td className="border px-2 py-1 text-center">
                   {product.isOnSale ? (
@@ -176,6 +169,19 @@ const Products = () => {
                     </span>
                   )}
                 </td>
+
+                <td className="border px-2 py-1 text-center">
+                  {product.isFeaturedSale ? (
+                    <span className="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">
+                      Yes
+                    </span>
+                  ) : (
+                    <span className="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs">
+                      No
+                    </span>
+                  )}
+                </td>
+                
               <td className="border px-2 py-1 text-center">
               <div className="flex items-center justify-center gap-2">
                 {/* Toggle Switch */}
@@ -201,29 +207,32 @@ const Products = () => {
                 </label>
               </div>
               </td>
+              <td className="border px-2 py-1 text-center">
+                <div className="flex gap-4 justify-center">
+                  {/* View Button */}
+                  <motion.button
+                    onClick={() => console.log("View product", product._id)}
+                    whileHover={{ scale: 1.1, rotate: 2 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-xl shadow-lg hover:bg-blue-600 transition-all duration-300"
+                  >
+                    <FaEye className="text-lg drop-shadow-md" />
+                  </motion.button>
 
-
-
-                <td className="border px-2 py-1 text-center">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => console.log("View product", product._id)}
-                      className="flex items-center px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
-                    >
-                      <FaEye className="mr-1" />
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setProductToDelete(product._id); // Set the product ID to delete
-                        setShowDeleteModal(true);
-                      }}
-                      className="flex items-center px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
-                    >
-                      <FaTrash className="mr-1" />
-                    </button>
-                  </div>
-                </td>
+                  {/* Delete Button */}
+                  <motion.button
+                    onClick={() => {
+                      setProductToDelete(product._id);
+                      setShowDeleteModal(true);
+                    }}
+                    whileHover={{ scale: 1.1, rotate: -2 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-xl shadow-lg hover:bg-red-600 transition-all duration-300"
+                  >
+                    <FaTrash className="text-lg drop-shadow-md" />
+                  </motion.button>
+                </div>
+              </td>
               </tr>
             ))}
           </tbody>

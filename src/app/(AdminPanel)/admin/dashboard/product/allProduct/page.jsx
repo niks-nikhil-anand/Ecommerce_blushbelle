@@ -75,6 +75,9 @@ const Products = () => {
     }
   };
 
+  // const percentageOff = ((originalPrice - salePrice) / originalPrice) * 100;
+
+
 
   
 
@@ -120,7 +123,7 @@ const Products = () => {
               <th className="border px-2 py-1 text-left">Featured Image</th>
               <th className="border px-2 py-1 text-left">Name</th>
               <th className="border px-2 py-1 text-center">Stock</th>
-              <th className="border px-2 py-1 text-left">Weight</th>
+              <th className="border px-2 py-1 text-left">Price</th>
               <th className="border px-2 py-1 text-left">Category</th>
               <th className="border px-2 py-1 text-left">Vendor</th>
               <th className="border px-2 py-1 text-left">Price</th>
@@ -145,8 +148,14 @@ const Products = () => {
                 <td className="border px-2 py-1">{truncateName(product.name)}</td>
                 <td className="border px-2 py-1 text-center">{product.stock}</td>
                 <td className="border px-2 py-1">
-                  {product.weight?.value} {product.weight?.unit}
-                </td>
+                    <span className="text-gray-400 text-sm line-through">
+                      ₹{product.originalPrice}
+                    </span>
+                    <span className="text-red-500 text-sm font-semibold ml-2">
+                      {Math.round(((product.originalPrice - product.salePrice) / product.originalPrice) * 100)}% Off
+                    </span>
+                    <h1 className="text-xl font-bold text-green-600">₹{product.salePrice}</h1>
+                  </td>
                 <td className="border px-2 py-1">{product.category?.name || "N/A"}</td>
                 <td className="border px-2 py-1">
                   {product.users?.[0]?.fullName || "N/A"}

@@ -32,6 +32,9 @@ const ProductDetail = () => {
     const [addedToCart, setAddedToCart] = useState(false);
 
 
+    
+
+
 
     useEffect(() => {
         const urlPath = window.location.pathname;
@@ -150,6 +153,9 @@ const ProductDetail = () => {
 
     
 
+
+    
+
     return (
       <div>
       <motion.div 
@@ -199,9 +205,7 @@ const ProductDetail = () => {
           />
         </div>
 
-
-         
-
+        
         {/* Manual Image Slider Controls */}
                   <div className="flex justify-between w-full md:hidden absolute top-1/2 transform -translate-y-1/2 left-0 right-0">
           <button onClick={prevImage} className="p-2 rounded-l text-black text-2xl">
@@ -401,9 +405,5 @@ const ProductDetail = () => {
       </div>
   );
 };
-
-
 export default ProductDetail;
-
-
 

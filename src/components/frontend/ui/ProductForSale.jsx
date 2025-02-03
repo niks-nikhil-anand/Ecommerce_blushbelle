@@ -80,7 +80,7 @@ const ProductCard = () => {
         {products.map((product) => (
           <motion.div
             key={product.id}
-            className="relative flex-shrink-0 snap-center flex flex-col items-center justify-center bg-white rounded-xl p-6 border hover:shadow-lg transition-all duration-300 w-[80%] sm:w-[220px] md:w-[250px] lg:w-[280px] h-[250px] md:h-[300px] text-center group"
+            className="relative flex-shrink-0 snap-center flex flex-col items-center justify-center bg-white rounded-xl p-6 border hover:shadow-lg transition-all duration-300 w-[80%] sm:w-[220px] md:w-[250px] lg:w-[280px] h-[250px] md:h-[300px] text-center group cursor-pointer"
             onClick={() => handleCardClick(product._id)}
           >
             {/* Discount Badge */}

@@ -125,7 +125,7 @@ const Products = () => {
               <th className="border px-2 py-1 text-center">Stock</th>
               <th className="border px-2 py-1 text-left">Price</th>
               <th className="border px-2 py-1 text-left">Category</th>
-              <th className="border px-2 py-1 text-left">Vendor</th>
+              <th className="border px-2 py-1 text-left">SubCategory</th>
               <th className="border px-2 py-1 text-left">Price</th>
               <th className="border px-2 py-1 text-center">On Sale</th>
               <th className="border px-2 py-1 text-center">Status</th>
@@ -157,16 +157,14 @@ const Products = () => {
                     <h1 className="text-xl font-bold text-green-600">₹{product.salePrice}</h1>
                   </td>
                 <td className="border px-2 py-1">{product.category?.name || "N/A"}</td>
+                <td className="border px-2 py-1">{product.subCatgeory || "N/A"}</td>
                 <td className="border px-2 py-1">
                   {product.users?.[0]?.fullName || "N/A"}
                   <span className="font-medium">
                     ({product.users?.[0]?.role || "N/A"})
                     </span>
                 </td>
-                <td className="border px-2 py-1">
-                  ₹{product.salePrice}{" "}
-                  <span className="line-through text-gray-500">₹{product.originalPrice}</span>
-                </td>
+                
                 <td className="border px-2 py-1 text-center">
                   {product.isOnSale ? (
                     <span className="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">

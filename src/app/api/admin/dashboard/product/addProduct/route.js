@@ -105,14 +105,19 @@ export const GET = async (req) => {
     await connectDB();
     console.log("Connected to the database.");
 
-    const products = await productModels.find();
-    console.log("Fetched products:", products);
+    const products = await productModels.find().populate("category"); // Populate category field
+
+    console.log("Fetched products with categories:", products);
     return NextResponse.json(products, { status: 200 });
   } catch (error) {
     console.error("Error fetching products:", error);
-    return NextResponse.json({ msg: "Error fetching products", error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { msg: "Error fetching products", error: error.message },
+      { status: 500 }
+    );
   }
 };
+
 
 
 // Function to generate a random 6-digit SKU

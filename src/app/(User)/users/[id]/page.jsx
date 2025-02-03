@@ -1,26 +1,29 @@
-import Banner1 from '@/components/frontend/ui/(Banners)/Banner1'
-import Banner2 from '@/components/frontend/ui/(Banners)/Banner2'
-import BannerText01 from '@/components/frontend/ui/(Banners)/BannerText01'
-import BannerText02 from '@/components/frontend/ui/(Banners)/BannerText02'
+
 import CategoriesSection from '@/components/frontend/ui/CategorySection'
+import FeatureHighlights from '@/components/frontend/ui/FeatureHighlights'
+import GenuisKidGrid from '@/components/frontend/ui/GenuisKidGrid'
 import HeroSection from '@/components/frontend/ui/HeroSection'
-import Marquee from '@/components/frontend/ui/Marquee'
-import WhoWeAre from '@/components/frontend/ui/WhoWeAre'
-import ProductCardUser from '@/components/users/ui/ProductForSaleUser'
+import ProductFeatures from '@/components/frontend/ui/ProductFeatures'
+import ProductCard from '@/components/frontend/ui/ProductForSale'
+import ProductIngredients from '@/components/frontend/ui/ProductIngredients'
+import SmartIQGrid from '@/components/frontend/ui/SmartIQGrid'
+import StaticPlayer from '@/components/frontend/ui/StaticPlayer'
+import WhyChooseBrainbite from '@/components/frontend/ui/WhyChooseBrainbite'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-     <HeroSection/>
-    <WhoWeAre/>
-    <ProductCardUser/>
+      <HeroSection/>
+    <FeatureHighlights/>
     <CategoriesSection/>
-    <Marquee/>
-    <Banner1/>
-    <BannerText01/>
-    <BannerText02/>
-    <Banner2/>
+    <ProductCard/>
+    <ProductFeatures/>
+    <GenuisKidGrid/>
+    <SmartIQGrid/>
+    <StaticPlayer/>
+    <ProductIngredients/>
+    <WhyChooseBrainbite/>
     </div>
   )
 }

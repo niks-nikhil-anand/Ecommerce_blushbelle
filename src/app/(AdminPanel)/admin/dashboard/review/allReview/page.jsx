@@ -5,7 +5,8 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import Loader from "@/components/loader/loader";
 import toast, { Toaster } from "react-hot-toast";
-import Image from "next/image";
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -128,7 +129,7 @@ const Reviews = () => {
               <tr key={review._id} className="hover:bg-gray-100">
                 <td className="border px-2 py-1">{review.name}</td>
                 <td className="border px-2 py-1">{review.email}</td>
-                <td className="border px-2 py-1">{review.rating}</td>
+                <td className="border px-2 py-1">{renderStars(review.rating)}</td>
                 <td className="border px-2 py-1">
                   <div dangerouslySetInnerHTML={{ __html: truncateContent(review.reviewTitle) }} />
                 </td>
@@ -214,3 +215,61 @@ const Reviews = () => {
 };
 
 export default Reviews;
+
+
+const renderStars = (rating) => {
+  const fullStars = Math.floor(rating); // Full stars
+  const halfStars = rating % 1 >= 0.5 ? 1 : 0; // Half stars
+  const emptyStars = 5 - fullStars - halfStars; // Empty stars
+
+  const stars = [];
+
+  // Push full stars
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(
+      <motion.span
+        key={`full-${i}`}
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.9 }}
+        className="text-yellow-500"
+      >
+        <FaStar />
+      </motion.span>
+    );
+  }
+
+  // Push half stars
+  for (let i = 0; i < halfStars; i++) {
+    stars.push(
+      <motion.span
+        key={`half-${i}`}
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.9 }}
+        className="text-yellow-500"
+      >
+        <FaStarHalfAlt />
+      </motion.span>
+    );
+  }
+
+  // Push empty stars
+  for (let i = 0; i < emptyStars; i++) {
+    stars.push(
+      <motion.span
+        key={`empty-${i}`}
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.9 }}
+        className="text-gray-300"
+      >
+        <FaRegStar />
+      </motion.span>
+    );
+  }
+
+  return (
+    <div className="flex space-x-1"> {/* This wraps the stars in a flex container */}
+      {stars}
+    </div>
+  );
+};
+

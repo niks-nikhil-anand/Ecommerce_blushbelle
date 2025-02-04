@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import Image from 'next/image';
 import EllipseBg from '../../../../public/frontend/heroSection/EllipseBg.png';
@@ -5,6 +6,9 @@ import Group1 from '../../../../public/frontend/heroSection/Group1.png';
 import leftLeaves from '../../../../public/frontend/heroSection/leftLeaves.png';
 import rightLeaves from '../../../../public/frontend/heroSection/rightLeaves.png';
 import tablets from '../../../../public/frontend/heroSection/tablets.png';
+import Link from 'next/link';
+import { motion } from "framer-motion";
+
 {/* Background Elements */}
 
 const HeroSection = () => {
@@ -25,9 +29,21 @@ const HeroSection = () => {
       <p className="mt-4 text-gray-600 text-sm lg:text-base max-w-[28rem] text-start">
         Discover a wide range of authentic Ayurvedic medicines and wellness products, delivered to your doorstep.
       </p>
-      <button className="mt-6 px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 bg-purple-600 text-white text-sm sm:text-base lg:text-lg font-medium rounded-full hover:bg-purple-700 shadow-md transition duration-200">
+      <Link href={"/product/shopAllProducts"}>
+      <motion.button
+        className="mt-6 px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 bg-purple-600 text-white text-sm sm:text-base lg:text-lg font-medium rounded-full hover:bg-purple-700 shadow-md transition duration-200 cursor-pointer"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        animate={{
+          scale: [1, 1.2, 1], 
+          boxShadow: ["0px 0px 10px rgba(128, 0, 128, 0.5)", "0px 0px 20px rgba(128, 0, 128, 0.8)", "0px 0px 10px rgba(128, 0, 128, 0.5)"]
+        }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+      >
         Shop Now
-      </button>
+      </motion.button>
+    </Link>
+      
     </div>
   
     {/* Product Images Section */}

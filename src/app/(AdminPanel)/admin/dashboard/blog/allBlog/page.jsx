@@ -189,7 +189,7 @@ const Products = () => {
             </h2>
             <div className="flex justify-center gap-4">
               <button
-                onClick={deleteProduct}
+                onClick={deleteArticle}
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
               >
                 Yes, Delete

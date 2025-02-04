@@ -75,12 +75,12 @@ const Navbar = () => {
           <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="relative"
+            className="relative cursor-pointer"
           >
+            <Link href={"/product/cart"}>
             <FiShoppingCart className="text-gray-700 text-2xl cursor-pointer" />
-            <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
-              0
-            </div>
+            </Link>
+            
           </motion.div>
           
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
@@ -109,7 +109,9 @@ const Navbar = () => {
           className="lg:hidden mt-4"
         >
           <ul className="flex flex-col space-y-4 text-gray-700 font-medium">
+            <Link href={"/"}>
             <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Home</motion.li>
+            </Link>
             <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Students</motion.li>
             <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">
               Health-Conscious Individuals

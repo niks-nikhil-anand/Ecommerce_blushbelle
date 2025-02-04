@@ -350,6 +350,7 @@ const ProductDetail = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="w-full md:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition text-sm sm:text-base md:text-lg font-semibold"
+          onClick={handleAddToCart}
         >
           Add to Cart
         </motion.button>

@@ -49,14 +49,8 @@ export const GET = async (req) => {
     await connectDB();
     console.log("Database connected.");
 
-    const { productId } = req.query; // Get productId from query string
-
-    if (!productId) {
-      return NextResponse.json({ msg: "Product ID is required" }, { status: 400 });
-    }
-
     // Fetch reviews and populate product details
-    const reviews = await reviewModels.find({ product: productId })
+    const reviews = await reviewModels.find()
       .populate("product") // Populate the product field with product details
       .exec();
 

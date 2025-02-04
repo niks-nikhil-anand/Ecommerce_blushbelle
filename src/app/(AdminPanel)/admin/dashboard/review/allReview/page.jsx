@@ -114,12 +114,11 @@ const Reviews = () => {
         <table className="border-collapse border border-gray-300 min-w-[1300px] text-sm">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border px-2 py-1 text-left">Featured Image</th>
+              <th className="border px-2 py-1 text-left">Name</th>
+              <th className="border px-2 py-1 text-left">Email</th>
+              <th className="border px-2 py-1 text-left">Rating</th>
               <th className="border px-2 py-1 text-left">Title</th>
-              <th className="border px-2 py-1 text-left">SubTitle</th>
-              <th className="border px-2 py-1 text-left">Content</th>
-              <th className="border px-2 py-1 text-left">Category</th>
-              <th className="border px-2 py-1 text-left">Author</th>
+              <th className="border px-2 py-1 text-left">Review</th>
               <th className="border px-2 py-1 text-left">Product</th>
               <th className="border px-2 py-1 text-center">Actions</th>
             </tr>
@@ -127,23 +126,15 @@ const Reviews = () => {
           <tbody>
             {reviews.map((review) => (
               <tr key={review._id} className="hover:bg-gray-100">
-                <td className="border px-2 py-1 text-center flex justify-center">
-                  <Image
-                    src={review.featuredImage}
-                    alt={review.name}
-                    width={48} // Adjust based on design
-                    height={48} // Adjust based on design
-                    className="shadow-lg object-cover cursor-pointer rounded-full"
-                    style={{ width: "60px", height: "60px" }}
-                  />
-                </td>
-                <td className="border px-2 py-1">{truncateName(review.title)}</td>
-                <td className="border px-2 py-1">{truncateContent(review.subtitle)}</td>
+                <td className="border px-2 py-1">{review.name}</td>
+                <td className="border px-2 py-1">{review.email}</td>
+                <td className="border px-2 py-1">{review.rating}</td>
                 <td className="border px-2 py-1">
-                  <div dangerouslySetInnerHTML={{ __html: truncateContent(review.content) }} />
+                  <div dangerouslySetInnerHTML={{ __html: truncateContent(review.reviewTitle) }} />
                 </td>
-                <td className="border px-2 py-1">{review.category}</td>
-                <td className="border px-2 py-1">{review.author}</td>
+                <td className="border px-2 py-1">
+                  <div dangerouslySetInnerHTML={{ __html: truncateContent(review.review) }} />
+                </td>
                 <td className="border px-2 py-1">{review.product?.name}</td>
                 <td className="border px-2 py-1 text-center">
                   <div className="flex gap-4 justify-center">

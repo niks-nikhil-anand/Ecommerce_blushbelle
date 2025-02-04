@@ -22,8 +22,9 @@ const Products = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get("/api/admin/dashboard/orders");
-        if (Array.isArray(response.data)) {
-          setOrders(response.data);
+        if (Array.isArray(response.data.data)) {
+          console.log("Orders fetched successfully:", response.data.data);
+          setOrders(response.data.data);
         } else {
           console.error("Unexpected response format:", response);
         }

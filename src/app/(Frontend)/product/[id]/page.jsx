@@ -257,17 +257,6 @@ const ProductDetail = () => {
         </motion.span>
       </div>
 
-      {/* Ratings */}
-      <motion.div 
-        className="flex items-center mt-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-      >
-        <span className="text-yellow-500 text-lg">★★★★★</span>
-        <span className="text-gray-500 ml-2">10 Reviews</span>
-      </motion.div>
-
       {/* Price Section */}
       <motion.div 
         className="flex items-center mt-3 gap-2"
@@ -367,7 +356,6 @@ const ProductDetail = () => {
     </motion.button>
   </motion.div>
 </div>
-
       {/* Categories & Tags */}
       <motion.div 
         className="mt-6 space-y-2"

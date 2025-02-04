@@ -92,7 +92,7 @@ const ReviewProductPage = ({ productId }) => {
   
 
   return (
-    <div className="w-full px-4 md:px-[10rem] py-3 md:py-9 mx-auto mt-8 p-2  ">
+    <div className="w-full px-4 md:px-[2rem] py-3 md:py-9 mx-auto mt-8 p-2  ">
       <Toaster />
       {/* Display Review Summary */}
       <div className="flex items-center mb-4">

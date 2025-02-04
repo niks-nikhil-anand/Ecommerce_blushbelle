@@ -5,6 +5,10 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
+    invoiceNo:{
+        type: String,
+        required: [true, 'Invoice number is required'],
+    },
     cart:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -20,12 +24,17 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['Credit Card', 'Debit Card', 'PayPal', 'Cash on Delivery'],
+        enum: ['Cash on Delivery' , 'Online'],
         required: [true, 'Payment method is required'],
     },
     paymentStatus: {
         type: String,
-        enum: ['Pending', 'Completed', 'Failed'],
+        enum: ['Paid', 'UnPaid'],
+        default: 'UnPaid',
+    },
+    orderStatus: {
+        type: String,
+        enum: ['Pending', 'OrderPlaced', 'Processing', 'PickedUp', 'OutForDelivery' , 'Delivered', 'Cancelled'],
         default: 'Pending',
     },
     orderStatus: {
@@ -40,10 +49,12 @@ const orderSchema = new mongoose.Schema({
     deliveryDate: {
         type: Date,
     },
-    isPaid: {
-        type: Boolean,
-        default: false,
-    }
+    razorpay_order_id: {
+        type: String, // Changed from Boolean to String
+    },
+    razorpay_payment_id: {
+        type: String, // Changed from Boolean to String
+    },
 }, {
     timestamps: true
 });

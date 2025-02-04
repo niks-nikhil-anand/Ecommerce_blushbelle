@@ -70,12 +70,14 @@ export const GET = async (req) => {
     await connectDB();
     console.log("Connected to the database.");
 
-    // Fetch all blogs from the database
-    const blogs = await Blog.find();
+    // Fetch all blogs and populate the 'product' field
+    const blogs = await Blog.find().populate("product");
     console.log("Fetched blogs:", blogs);
+
     return NextResponse.json(blogs, { status: 200 });
   } catch (error) {
     console.error("Error fetching blogs:", error);
     return NextResponse.json({ msg: "Error fetching blogs", error: error.message }, { status: 500 });
   }
 };
+

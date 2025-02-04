@@ -46,6 +46,14 @@ const Products = () => {
     const words = name.split(" ");
     return words.length > wordLimit ? words.slice(0, wordLimit).join(" ") + "..." : name;
   };
+  const truncateContent = (content, wordLimit = 20) => {
+    const words = content.split(" ");
+    return words.length > wordLimit ? words.slice(0, wordLimit).join(" ") + "..." : name;
+  };
+  const truncateSubtitle = (subtitle, wordLimit = 8) => {
+    const words = subtitle.split(" ");
+    return words.length > wordLimit ? words.slice(0, wordLimit).join(" ") + "..." : name;
+  };
 
   const handleToggle = async (productId, currentStatus) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
@@ -112,9 +120,10 @@ const Products = () => {
               <th className="border px-2 py-1 text-left">Featured Image</th>
               <th className="border px-2 py-1 text-left">Title</th>
               <th className="border px-2 py-1 text-left">SubTitle</th>
+              <th className="border px-2 py-1 text-left">Content</th>
               <th className="border px-2 py-1 text-left">Catgeory</th>
               <th className="border px-2 py-1 text-left">Author</th>
-              <th className="border px-2 py-1 text-center">Status</th>
+              <th className="border px-2 py-1 text-left">Product</th>
               <th className="border px-2 py-1 text-center">Actions</th>
             </tr>
           </thead>
@@ -132,36 +141,13 @@ const Products = () => {
                 />
                 </td>
                 <td className="border px-2 py-1">{truncateName(article.title)}</td>
-                <td className="border px-2 py-1">{truncateName(article.subtitle)}</td>
+                <td className="border px-2 py-1">{truncateSubtitle(article.subtitle)}</td>
+                <td className="border px-2 py-1">
+                  <div dangerouslySetInnerHTML={{ __html: truncateContent(article.content) }} />
+                </td>
                 <td className="border px-2 py-1">{article.category}</td>
                 <td className="border px-2 py-1">{article.author}</td>
-                
-                
-              <td className="border px-2 py-1 text-center">
-              <div className="flex items-center justify-center gap-2">
-                {/* Toggle Switch */}
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={article.status === "active"}
-                    onChange={() => handleToggle(article._id, article.status)} // Pass product ID and current status
-                    className="sr-only peer"
-                  />
-                  <div className="w-12 h-6 bg-gray-200 rounded-full peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:bg-gray-700 peer-checked:bg-green-500">
-                    <motion.div
-                      className="absolute w-5 h-5 bg-white border border-gray-300 rounded-full top-[2px] left-[1px]"
-                      initial={{ x: 0 }}
-                      animate={{ x: article.status === "active" ? 25 : 0 }} // Adjust the toggle's position based on status
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 30, // Adjust these values for a softer or faster transition
-                      }}
-                    />
-                  </div>
-                </label>
-              </div>
-              </td>
+                <td className="border px-2 py-1">{article.product?.name}</td>
               <td className="border px-2 py-1 text-center">
                 <div className="flex gap-4 justify-center">
                   {/* View Button */}

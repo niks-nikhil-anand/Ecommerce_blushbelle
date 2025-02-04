@@ -5,6 +5,7 @@ import Loader from "@/components/loader/loader";
 import { FaEye, FaPrint } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa"; // Importing the React Icon for close
 import { useRouter } from "next/navigation";
+import GenerateInvoice from "@/components/adminPanel/ui/GenerateInvoice";
 
 
 
@@ -180,7 +181,8 @@ const Products = () => {
               <FaTimes />
             </button>
             {/* Add GenerateInvoice Component with the orderId */}
-            <GenrerateInvoice orderId={selectedOrderId} />
+            {/* <GenrerateInvoice orderId={selectedOrderId} /> */}
+            <GenerateInvoice orderId={selectedOrderId} />
           </div>
         </div>
       )}

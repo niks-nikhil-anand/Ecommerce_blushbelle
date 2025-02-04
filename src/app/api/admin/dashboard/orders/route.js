@@ -4,22 +4,32 @@ import orderModels from "@/models/orderModels";
 import { NextResponse } from "next/server";
 
 
-export const GET = async (request, { params }) => {
+export const GET = async (request) => {
   try {
     await connectDB();
     console.log("Database connected successfully for GET request on Orders");
 
-    const order = await orderModels.find();
-    console.log("Order data fetched:", order); // Debug fetched order data
+    const orders = await orderModels
+      .find()
+      .populate("user")    // Populate user details
+      .populate("cart")    // Populate cart details
+      .populate("address"); // Populate address details
 
-    if (!order) {
-      console.log("Order not found with ID:", id);
-      return NextResponse.json({ status: "error", msg: "Order not found" }, { status: 404 });
+    console.log("Order data fetched:", orders); // Debug fetched order data
+
+    if (!orders || orders.length === 0) {
+      return NextResponse.json(
+        { status: "error", msg: "Orders not found" },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json({ status: "success", data: order }, { status: 200 });
+    return NextResponse.json({ status: "success", data: orders }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching order:", error);
-    return NextResponse.json({ status: "error", msg: "Error fetching order", error: error.message }, { status: 500 });
+    console.error("Error fetching orders:", error);
+    return NextResponse.json(
+      { status: "error", msg: "Error fetching orders", error: error.message },
+      { status: 500 }
+    );
   }
 };

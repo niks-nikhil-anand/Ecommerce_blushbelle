@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loader from "@/components/loader/loader";
 import { FaEye, FaPrint } from "react-icons/fa";
-import GenrerateInvoice from "@/components/adminPanel/ui/GenrerateInvoice";
 import { FaTimes } from "react-icons/fa"; // Importing the React Icon for close
 import { useRouter } from "next/navigation";
 
@@ -22,7 +21,7 @@ const Products = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get("/api/admin/dashboard/orders/allOrders");
+        const response = await axios.get("/api/admin/dashboard/orders");
         if (Array.isArray(response.data)) {
           setOrders(response.data);
         } else {

@@ -14,11 +14,10 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold mb-2 border-b border-gray-600 pb-2">About Us</h3>
             <p className="text-sm text-gray-400">
-              Morbi cursus porttitor enim lobortis molestie. Duis gravida turpis dui, eget bibendum magna congue nec.
-            </p>
+            CleanVeda offers plant-based Ayurvedic supplements, like BrainBite™ Smart IQ, enhancing focus and mental clarity.</p>
             <p className="text-sm text-gray-300">
-              <span className="text-green-500">(219) 555–0114</span> <br />
-              <span className="text-green-500">Cleanveda@gmail.com</span>
+              <span className="text-green-500">+91 9876543210</span> <br />
+              <span className="text-green-500">support@cleanveda.com</span>
             </p>
           </div>
 

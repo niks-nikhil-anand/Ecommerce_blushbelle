@@ -1,180 +1,242 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { FaEye, FaTrash } from 'react-icons/fa'; 
-import { AiOutlineClose } from 'react-icons/ai';
+import { FaEye, FaTrash } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { motion } from "framer-motion";
+import Loader from "@/components/loader/loader";
+import toast, { Toaster } from "react-hot-toast";
+import Image from "next/image";
 
-
-
-const News = () => {
+const Products = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedArticle, setSelectedArticle] = useState(null); // State to hold the selected article content
-  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
-  const articlesPerPage = 5;
-  const router = useRouter();
+  const [itemsPerPage] = useState(5);
+  const [status, setStatus] = useState("active");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        console.log('Fetching articles...');
-        const response = await axios.get('/api/admin/dashboard/blog');
-        console.log('Articles fetched:', response.data);
+        console.log("Fetching articles...");
+        const response = await axios.get("/api/admin/dashboard/blog");
+        console.log("Articles fetched:", response.data);
         setArticles(response.data);
       } catch (error) {
-        console.error('Error fetching articles:', error);
+        console.error("Error fetching articles:", error);
       } finally {
         setLoading(false);
-        console.log('Loading state set to false');
+        console.log("Loading state set to false");
       }
     };
 
     fetchArticles();
   }, []);
 
-  const indexOfLastArticle = currentPage * articlesPerPage;
-  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
-  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProducts = articles.slice(indexOfFirstItem, indexOfLastItem);
 
+  // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleCardClick = (id) => {
-    console.log('Card clicked with ID:', id);
-    router.push(`/blog/${id}`);
+  const truncateName = (name, wordLimit = 4) => {
+    const words = name.split(" ");
+    return words.length > wordLimit ? words.slice(0, wordLimit).join(" ") + "..." : name;
   };
 
-  const handleViewClick = async (id) => {
+  const handleToggle = async (productId, currentStatus) => {
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      const response = await axios.get(`/api/admin/dashboard/blog/${id}`);
-      setSelectedArticle(response.data);
-      setShowPopup(true);
+      const response = await axios.patch(`/api/admin/dashboard/product/${productId}`, {
+        status: newStatus,
+      });
+
+      if (response.status === 200) {
+        setArticles((prevArticles) =>
+          prevArticles.map((article) =>
+            article._id === productId ? { ...article, status: newStatus } : article
+          )
+        );
+        toast.success(`Product status updated to ${newStatus}`);
+      } else {
+        toast.error("Failed to update product status");
+      }
     } catch (error) {
-      console.error('Error fetching full blog content:', error);
+      console.error("Error updating product status:", error);
+      toast.error("An error occurred while updating the product status");
     }
   };
 
-  const handleDeleteClick = async (id) => {
+  const deleteArticle = async () => {
+    if (!productToDelete) return;
     try {
-      const confirmed = confirm('Are you sure you want to delete this article?');
-      if (!confirmed) return;
+      const response = await fetch(`/api/admin/dashboard/blog/${productToDelete}`, {
+        method: "DELETE",
+      });
 
-      await axios.delete(`/api/admin/dashboard/blog/${id}`);
-      setArticles(articles.filter(article => article._id !== id));
+      if (response.ok) {
+        toast.success("Product deleted successfully");
+        handleDelete(productToDelete);
+      } else {
+        const { msg } = await response.json();
+        toast.error(msg || "Failed to delete product");
+      }
     } catch (error) {
-      console.error('Error deleting article:', error);
+      toast.error("An error occurred while deleting the product");
+    } finally {
+      setShowDeleteModal(false);
     }
   };
 
-  const closePopup = () => {
-    setShowPopup(false);
-    setSelectedArticle(null);
+  const handleDelete = (productId) => {
+    setArticles((prevArticles) =>
+      prevArticles.filter((article) => article._id !== productId)
+    );
   };
+
+  if (loading) return <Loader />;
+  if (!articles.length) return <p className="text-center">No products available.</p>;
 
   return (
-    <div className="flex flex-col mb-10 mt-5 px-10">
-      <h1 className="text-3xl font-bold mb-2 text-center underline"> ALL BLOGS</h1>
-      {loading ? (
-        <motion.div
-          className="flex justify-center items-center h-64"
-        >
-          <div className="loader"></div>
-        </motion.div>
-      ) : (
-        <>
-          <div className="space-y-4">
-            {currentArticles.map((article) => (
-              <motion.div
-                key={article._id}
-                className="flex bg-white rounded-lg shadow-md cursor-pointer p-4 relative"
-              >
-                <img
+    <div className="w-full p-4  bg-white shadow-lg  h-[85vh] min-w-[100%]  ">
+     <div className="flex justify-between px-4 py-2 bg-gray-200 text-black  rounded-md my-4 font-medium">
+                <h2 className="text-lg font-semibold text-gray-800">Articles Details</h2>
+              </div>
+      <div className="overflow-x-auto overflow-y-auto max-h-[60vh] custom-scrollbar">
+        <table className="border-collapse border border-gray-300 min-w-[1300px] text-sm">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border px-2 py-1 text-left">Featured Image</th>
+              <th className="border px-2 py-1 text-left">Title</th>
+              <th className="border px-2 py-1 text-left">SubTitle</th>
+              <th className="border px-2 py-1 text-left">Catgeory</th>
+              <th className="border px-2 py-1 text-left">Author</th>
+              <th className="border px-2 py-1 text-center">Status</th>
+              <th className="border px-2 py-1 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {articles.map((article) => (
+              <tr key={article._id} className="hover:bg-gray-100">
+                <td className="border px-2 py-1 text-center flex justify-center">
+                <Image
                   src={article.featuredImage}
-                  alt={article.title}
-                  className="w-24 h-24 object-cover rounded-lg mr-4"
+                  alt={article.name}
+                  width={48} // Adjust based on design
+                  height={48} // Adjust based on design
+                  className=" shadow-lg object-cover cursor-pointer rounded-full"
+                  style={{ width: "60px", height: "60px" }}
                 />
-                <div className="flex flex-col justify-between flex-grow">
-                  <h3 className="text-xl font-semibold mb-1">{article.title}</h3>
-                  <p className="text-gray-600 mb-1">{article.subtitle}</p>
-                  <div className="text-sm text-gray-500">
-                    By {article.author} in {article.category}
+                </td>
+                <td className="border px-2 py-1">{truncateName(article.title)}</td>
+                <td className="border px-2 py-1">{truncateName(article.subtitle)}</td>
+                <td className="border px-2 py-1">{article.category}</td>
+                <td className="border px-2 py-1">{article.author}</td>
+                
+                
+              <td className="border px-2 py-1 text-center">
+              <div className="flex items-center justify-center gap-2">
+                {/* Toggle Switch */}
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={article.status === "active"}
+                    onChange={() => handleToggle(article._id, article.status)} // Pass product ID and current status
+                    className="sr-only peer"
+                  />
+                  <div className="w-12 h-6 bg-gray-200 rounded-full peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:bg-gray-700 peer-checked:bg-green-500">
+                    <motion.div
+                      className="absolute w-5 h-5 bg-white border border-gray-300 rounded-full top-[2px] left-[1px]"
+                      initial={{ x: 0 }}
+                      animate={{ x: article.status === "active" ? 25 : 0 }} // Adjust the toggle's position based on status
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30, // Adjust these values for a softer or faster transition
+                      }}
+                    />
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">
-                    Published on {new Date(article.createdAt).toLocaleDateString()}
-                  </div>
-                  <div className="flex justify-end space-x-2 absolute bottom-4 right-4">
-                    {/* View Button */}
-                    <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleViewClick(article._id);
-                  }}
-                  className="bg-blue-500 text-white px-2 py-1 text-sm rounded-md shadow-md hover:bg-blue-600 flex items-center"
-                >
-                  <FaEye className="mr-1" /> {/* View icon */}
-                  View
-                </button>
+                </label>
+              </div>
+              </td>
+              <td className="border px-2 py-1 text-center">
+                <div className="flex gap-4 justify-center">
+                  {/* View Button */}
+                  <motion.button
+                    onClick={() => console.log("View product", article._id)}
+                    whileHover={{ scale: 1.1, rotate: 2 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-xl shadow-lg hover:bg-blue-600 transition-all duration-300"
+                  >
+                    <FaEye className="text-lg drop-shadow-md" />
+                  </motion.button>
 
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteClick(article._id);
-                  }}
-                  className="bg-red-500 text-white px-2 py-1 text-sm rounded-md shadow-md hover:bg-red-600 flex items-center"
-                >
-                  <FaTrash className="mr-1" /> {/* Delete icon */}
-                  Delete
-                </button>
-                  </div>
+                  {/* Delete Button */}
+                  <motion.button
+                    onClick={() => {
+                      setProductToDelete(article._id);
+                      setShowDeleteModal(true);
+                    }}
+                    whileHover={{ scale: 1.1, rotate: -2 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-xl shadow-lg hover:bg-red-600 transition-all duration-300"
+                  >
+                    <FaTrash className="text-lg drop-shadow-md" />
+                  </motion.button>
                 </div>
-              </motion.div>
+              </td>
+              </tr>
             ))}
-          </div>
+          </tbody>
+        </table>
+      </div>
 
-          {/* Pagination Controls */}
-          <div className="flex justify-center mt-6">
-            {Array.from({ length: Math.ceil(articles.length / articlesPerPage) }, (_, i) => (
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+            <h2 className="text-lg font-semibold mb-4 text-center">
+              Are you sure you want to delete this product?
+            </h2>
+            <div className="flex justify-center gap-4">
               <button
-                key={i + 1}
-                onClick={() => paginate(i + 1)}
-                className={`mx-1 px-3 py-1 border rounded ${
-                  currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'
-                }`}
+                onClick={deleteProduct}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
               >
-                {i + 1}
+                Yes, Delete
               </button>
-            ))}
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                No, Cancel
+              </button>
+            </div>
           </div>
-        </>
+        </div>
       )}
 
-      {/* Popup for Full Blog Content */}
-      {showPopup && selectedArticle && (
-        <motion.div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full h-96 overflow-y-auto relative">
-            <h2 className="text-2xl font-bold mb-4">{selectedArticle.title}</h2>
-            <div
-              className="prose prose-sm md:prose-lg mx-auto"
-              dangerouslySetInnerHTML={{ __html: selectedArticle.content }}
-            />
-            <button
-              onClick={closePopup}
-              className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-            >
-              <AiOutlineClose size={24} /> {/* Close icon from React Icons */}
-            </button>
-          </div>
-        </motion.div>
-      )}
+      {/* Pagination */}
+      <div className="mt-4 flex justify-center space-x-2">
+        {[...Array(Math.ceil(articles.length / itemsPerPage)).keys()].map((number) => (
+          <button
+            key={number}
+            className={`px-2 py-1 rounded-md text-xs ${
+              currentPage === number + 1
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
+            onClick={() => paginate(number + 1)}
+          >
+            {number + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default News;
+export default Products;

@@ -72,7 +72,7 @@ const CTA = () => {
       />
       <button
         type="submit"
-        className={`px-6 py-3 bg-green-500 text-white font-medium rounded-full md:rounded-r-full hover:bg-green-600 transition duration-200 ${
+        className={`px-6 py-3 md:ml-4 bg-green-500 text-white font-medium rounded-full md:rounded-r-full hover:bg-green-600 transition duration-200 ${
           loading ? "opacity-50 cursor-not-allowed" : ""
         }`}
         disabled={loading}

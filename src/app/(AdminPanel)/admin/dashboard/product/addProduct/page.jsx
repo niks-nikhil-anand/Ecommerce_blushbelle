@@ -8,12 +8,7 @@ import { AiOutlineMinusCircle, AiOutlinePlusCircle } from 'react-icons/ai';
 import { toast } from 'react-hot-toast';
 
 
-
-
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
-
-
-
 const ProductForm = () => {
   const [categories, setCategories] = useState([]);
   const [currentStep, setCurrentStep] = useState(1);

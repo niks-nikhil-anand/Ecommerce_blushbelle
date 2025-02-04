@@ -74,8 +74,10 @@ const ReviewFormComponent = () => {
   };
 
   return (
-    <div className="w-full p-6 mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Submit a Review</h1>
+    <div className="max-w-full mx-auto p-4 bg-gray-50  rounded-lg w-full h-[90vh]  overflow-y-auto max-h-[80vh] custom-scrollbar">
+       <div className="flex justify-between px-4 py-2 bg-gray-200 text-black  rounded-md my-4 font-medium">
+                <h2 className="text-lg font-semibold text-gray-800">Submit a Review</h2>
+              </div>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -169,13 +171,16 @@ const ReviewFormComponent = () => {
             </div>
           )}
         </div>
-        <button
-          type="submit"
-          className={`w-full p-2 mt-6 text-white ${loading ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
-          disabled={loading}
-        >
-          {loading ? 'Submitting...' : 'Submit Review'}
-        </button>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className={`w-full max-w-[35%] p-2 mt-6 text-white ${loading ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'} text-center rounded-xl font-semibold`}
+            disabled={loading}
+          >
+            {loading ? 'Submitting...' : 'Submit Review'}
+          </button>
+        </div>
+
       </form>
       <Toaster position="top-center" reverseOrder={false} />
     </div>

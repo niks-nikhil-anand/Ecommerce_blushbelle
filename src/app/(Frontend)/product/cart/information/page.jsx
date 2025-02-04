@@ -28,10 +28,6 @@ const CheckoutPage = () => {
     subscribeChecked: false, 
   });
 
-
-
-
-
   useEffect(() => {
     const fetchCartFromLocalStorage = () => {
       const cartData = JSON.parse(localStorage.getItem("cart")); 
@@ -295,14 +291,6 @@ const CheckoutPage = () => {
   </div>
 
   <div className="flex flex-col lg:flex-row justify-between mt-6 flex-wrap gap-4">
-  <div className="flex md:hidden items-center gap-2 w-full lg:w-auto">
-    <MdArrowBackIos className="text-gray-700" />
-    <Link href="/cart">
-      <button className="text-black font-bold py-2 px-6 rounded-md hover:underline">
-        Return to Cart
-      </button>
-    </Link>
-  </div>
   <button
     onClick={handleContinueToShipping}
     className="bg-purple-600 text-white font-bold py-2 px-6 rounded-md hover:bg-purple-700 transition-colors w-full lg:w-auto"
@@ -333,7 +321,7 @@ const CheckoutPage = () => {
                     <img
                       src={product.featuredImage}
                       alt={product.name}
-                      className="w-12 md:w-16 h-12 md:h-16 object-cover mr-2 md:mr-4 rounded-lg hover:cursor-pointer"
+                      className="w-9 md:w-9 h-16 md:h-16 object-cover mr-2 md:mr-4  hover:cursor-pointer"
                     />
                     <div className="flex flex-col">
                       <h2 className="text-xs md:text-lg hover:cursor-pointer hover:underline">

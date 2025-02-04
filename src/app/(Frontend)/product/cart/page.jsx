@@ -5,6 +5,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Loader from '@/components/loader/loader';
+import Image from 'next/image';
 
 
 const Cart = () => {
@@ -139,10 +140,12 @@ const Cart = () => {
             {products.map((product) => (
               <tr key={product.id} className="border-b">
                 <td className="flex items-center py-2">
-                  <img
-                    src={product.featuredImage}
+                  <Image
+                     src={product.featuredImage}
+                     width={64}  // Matches md:w-16 (16 * 4 = 64)
+                     height={64} // Matches md:h-16
                     alt={product.name}
-                    className="w-12 md:w-16 h-12 md:h-16 object-cover mr-2 md:mr-4 rounded-lg hover:cursor-pointer"
+                    className="w-9 md:w-9 h-16 md:h-16 object-cover mr-2 md:mr-4  hover:cursor-pointer"
                   />
                   <div className="flex flex-col">
                     <h2 className="text-xs md:text-lg hover:cursor-pointer hover:underline">{product.name}</h2>

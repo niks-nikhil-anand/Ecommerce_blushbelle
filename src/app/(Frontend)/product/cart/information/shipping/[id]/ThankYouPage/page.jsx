@@ -5,7 +5,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-const Page = () => {
+const ThankYouPage = () => {
   const [orderComplete, setOrderComplete] = useState(true);
   const router = useRouter();
 
@@ -88,4 +88,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default ThankYouPage;

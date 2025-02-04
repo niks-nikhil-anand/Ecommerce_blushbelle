@@ -54,7 +54,7 @@ const ReviewFormComponent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
       await axios.post('/api/admin/dashboard/review/addReview', formData);
       toast.success('Review submitted successfully!');
@@ -72,6 +72,7 @@ const ReviewFormComponent = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="max-w-full mx-auto p-4 bg-gray-50  rounded-lg w-full h-[90vh]  overflow-y-auto max-h-[80vh] custom-scrollbar">

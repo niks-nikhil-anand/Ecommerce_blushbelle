@@ -93,7 +93,7 @@ const SidebarAdmin = () => {
           <Link href="/admin/dashboard/review/addReview" passHref>
             <SidebarItem icon={<FaPlus />} label="Add Review" />
           </Link>
-          <Link href="/admin/dashboard/review/addReview" passHref>
+          <Link href="/admin/dashboard/review/allReview" passHref>
             <SidebarItem icon={<MdOutlineRateReview />} label="Review" />
           </Link>
 

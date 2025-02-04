@@ -9,7 +9,7 @@ import { AiOutlineDown, AiOutlineClose } from 'react-icons/ai';
 import { FaFacebook, FaTwitter, FaPinterest, FaInstagram } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
-import { AiOutlineHeart } from "react-icons/ai";
+import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import ReviewProductPage from '@/components/frontend/ui/ReviewProductPage';
 import { FaCheckCircle, FaCheckSquare } from "react-icons/fa";
 
@@ -152,144 +152,239 @@ const ProductDetail = () => {
 
     return (
       <div>
+      <div className="flex flex-col md:flex-row w-full px-6 lg:px-12 bg-white">
+  {/* Image Section */}
+  <div className="w-full md:w-[49%] h-full flex justify-start">
+    {/* Thumbnail Column (Desktop) */}
+    <motion.div 
+      className="hidden md:flex flex-col gap-5"
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      {images.length > 0 ? (
+        images.map((image, index) => (
+          <motion.div
+            key={index}
+            className="w-[5rem] h-[5rem] sm:w-[6rem] sm:h-[6rem] overflow-hidden rounded-lg shadow-lg cursor-pointer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Image
+              src={image}
+              alt={`Product Image ${index + 1}`}
+              width={240}
+              height={240}
+              className="rounded object-cover p-5"
+              onClick={() => setCurrentImageIndex(index)}
+            />
+          </motion.div>
+        ))
+      ) : (
+        <div className="col-span-5 flex items-center justify-center text-gray-500">
+          No images available
+        </div>
+      )}
+    </motion.div>
+
+    {/* Preview Image Container */}
+    <motion.div 
+      className="w-full md:w-[30rem] h-[10rem] md:h-[20rem] flex justify-center items-center overflow-hidden mb-4 rounded-lg relative"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.img
+        src={currentImage}
+        alt={name}
+        className="object-contain w-full h-full cursor-pointer"
+        onClick={toggleFullScreen}
+        key={currentImage}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      />
+
+      {/* Mobile Slider Controls */}
       <motion.div 
-            className="flex flex-col lg:flex-row  p-4 sm:p-6 bg-white w-full h-full"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
->
-    <div className="flex  md:flex-row w-full px-6 lg:px-12  bg-white">
-        <div className="w-full md:w-[49%] h-full flex justify-start ">
-        {/* Thumbnail Images (Optional) */}
-        <div className="md:flex flex-col gap-5  hidden">
-          {images.length > 0 ? (
-            images.map((image, index) => (
-              <div key={index} className="w-[5rem] h-[5rem] sm:w-[6rem] sm:h-[6rem] overflow-hidden rounded-lg shadow-lg cursor-pointer">
-                <Image
-                  src={image}
-                  alt={`Product Image ${index + 1}`}
-                  width={240}  // Adjust width as per your requirement
-                  height={240} // Adjust height as per your requirement
-                  className="rounded object-cover p-5" // This ensures the image covers the box without distortion
-                  onClick={() => setCurrentImageIndex(index)}
-                />
-              </div>
-            ))
-          ) : (
-            <div className="col-span-5 flex items-center justify-center text-gray-500">
-              No images available
-            </div>
-          )}
-        </div>
+        className="flex justify-between w-full md:hidden absolute top-1/2 transform -translate-y-1/2 px-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <motion.button
+          onClick={prevImage}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-2 bg-white/80 rounded-full shadow-lg"
+        >
+          <FaRegArrowAltCircleLeft className="text-2xl text-gray-800" />
+        </motion.button>
+        <motion.button
+          onClick={nextImage}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-2 bg-white/80 rounded-full shadow-lg"
+        >
+          <FaRegArrowAltCircleRight className="text-2xl text-gray-800" />
+        </motion.button>
+      </motion.div>
+    </motion.div>
+  </div>
 
-
-
-
-        {/* Preview Image */}
-        <div className="w-full md:w-[30rem] h-[10rem] md:h-[20rem] flex justify-center items-center overflow-hidden mb-4  rounded-lg relative">
-          <img
-            src={currentImage}
-            alt={name}
-            className="object-contain w-full h-full cursor-pointer"
-            
-            onClick={toggleFullScreen} // Open full-screen on click
-          />
-        </div>
-
-        
-        {/* Manual Image Slider Controls */}
-                  <div className="flex justify-between w-full md:hidden absolute top-1/2 transform -translate-y-1/2 left-0 right-0">
-          <button onClick={prevImage} className="p-2 rounded-l text-black text-2xl">
-            <FaRegArrowAltCircleLeft />
-          </button>
-          <button onClick={nextImage} className="p-2 rounded-l text-black text-2xl">
-            <FaRegArrowAltCircleRight />
-          </button>
-        </div>
+  {/* Product Details Section */}
+  <div className="w-full md:w-1/2 max-w-xl lg:max-w-3xl bg-white rounded-3xl px-6 sm:px-10 py-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+    >
+      {/* Product Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+        <motion.h1 
+          className="text-3xl font-bold text-gray-800 mb-2 sm:mb-0"
+          whileHover={{ x: 5 }}
+        >
+          {product.name}
+        </motion.h1>
+        <motion.span
+          className={`text-sm font-semibold px-3 py-1 rounded-lg shadow-md ${
+            product.stock > 0 ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100"
+          }`}
+          whileHover={{ scale: 1.05 }}
+        >
+          {product.stock > 0 ? "In Stock" : "Out of Stock"}
+        </motion.span>
       </div>
 
-      {/* Product Details */}
-      <div className="w-full md:w-1/2 max-w-xl lg:max-w-3xl bg-white rounded-3xl px-6 sm:px-10 py-6">
-        <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          {/* Product Title */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2 sm:mb-0">{product.name}</h1>
-            <span 
-              className={`text-sm font-semibold px-3 py-1 rounded-lg shadow-md ${
-                product.stock > 0
-                  ? "text-green-600 bg-green-100"
-                  : "text-red-600 bg-red-100"
-              }`}
-            >
-              {product.stock > 0 ? "In Stock" : "Out of Stock"}
-            </span>
-          </div>
-          {/* Ratings & Reviews */}
-          <div className="flex items-center mt-2">
-            <span className="text-yellow-500 text-lg">★★★★★</span>
-            <span className="text-gray-500 ml-2">10 Reviews</span>
-          </div>
-          
+      {/* Ratings */}
+      <motion.div 
+        className="flex items-center mt-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      >
+        <span className="text-yellow-500 text-lg">★★★★★</span>
+        <span className="text-gray-500 ml-2">10 Reviews</span>
+      </motion.div>
 
-          {/* Price */}
-          <div className="flex items-center mt-3 gap-2">
-            <span className="text-gray-400 text-sm line-through">₹{product.originalPrice}</span>
-           <h1 className="text-xl font-bold text-green-600">₹{product.salePrice}</h1>
-           <span className="text-red-500 text-lg font-semibold ml-2">{Math.round(percentageOff)}% Off</span>
-           </div>
-           <hr/>
+      {/* Price Section */}
+      <motion.div 
+        className="flex items-center mt-3 gap-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+      >
+        <span className="text-gray-400 text-sm line-through">₹{product.originalPrice}</span>
+        <h1 className="text-xl font-bold text-green-600">₹{product.salePrice}</h1>
+        <span className="text-red-500 text-lg font-semibold ml-2">
+          {Math.round(percentageOff)}% Off
+        </span>
+      </motion.div>
 
-          {/* Share Icons */}
-          <div className="flex items-center mt-4 space-x-3">
-            <span className="text-gray-700 font-medium">Share item:</span>
-            <FaFacebook className="text-blue-600 cursor-pointer" />
-            <FaTwitter className="text-blue-400 cursor-pointer" />
-            <FaPinterest className="text-red-500 cursor-pointer" />
-            <FaInstagram className="text-pink-500 cursor-pointer" />
-          </div>
+      <hr className="my-4" />
 
-          {/* Description */}
-          <p className="text-gray-600 text-sm mt-4">
-            Brain Bite is a powerful supplement designed to boost cognitive function, memory, and focus. Made with natural ingredients.
-          </p>
+      {/* Social Sharing */}
+      <motion.div 
+        className="flex items-center mt-4 space-x-3"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <span className="text-gray-700 font-medium">Share item:</span>
+        {[FaFacebook, FaTwitter, FaPinterest, FaInstagram].map((Icon, index) => (
+          <motion.div
+            key={index}
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            className="cursor-pointer"
+          >
+            <Icon className={`text-xl ${index === 0 ? 'text-blue-600' : index === 1 ? 'text-blue-400' : index === 2 ? 'text-red-500' : 'text-pink-500'}`} />
+          </motion.div>
+        ))}
+      </motion.div>
 
-          {/* Quantity Selector */} 
-          <div className="flex items-center mt-6">
-            <span className="text-gray-700 font-medium">Quantity:</span>
-            <div className="flex items-center ml-4">
-              <button onClick={decreaseQuantity} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-l-lg">
-                <AiOutlineDown />
-              </button>
-              <span className="px-4 py-2 bg-gray-200 text-gray-700">{quantity}</span>
-              <button onClick={increaseQuantity} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-r-lg">
-                <AiOutlineDown />
-              </button>
-            </div>
+      {/* Description */}
+      <motion.p
+        className="text-gray-600 text-sm mt-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+      >
+        Brain Bite is a powerful supplement designed to boost cognitive function, memory, and focus. Made with natural ingredients.
+      </motion.p>
 
-          {/* Action Buttons */}
-          <div className="flex items-center mt-6 ">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition text-lg font-semibold"
-            >
-              Add to Cart
-            </motion.button>
-          </div>
-          </div>
-          {/* Categories & Tags */}
-          <div className="mt-6">
-            <span className="text-gray-700 font-medium">Category: {product.category.name}</span>
-          </div>
-          <div className="mt-2">
-          <span className="text-gray-700 font-normal">
-            Tags: {product.tags.join(', ')}
-          </span>
-          </div>
-        </motion.div>
-      </div>
+      {/* Quantity Selector - Keep existing code with animations */}
+      <div className="flex flex-col md:flex-row items-start md:items-center mt-6 gap-4 md:gap-6">
+  {/* Quantity Selector */}
+  <div className="flex items-center">
+    <span className="text-sm md:text-base text-gray-700 font-medium whitespace-nowrap">
+      Quantity:
+    </span>
+    <div className="flex items-center ml-3 md:ml-4">
+      <motion.button 
+        onClick={decreaseQuantity} 
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="px-3 py-2 md:px-4 bg-gray-200 text-gray-700 rounded-l-lg hover:bg-gray-300 transition-colors active:bg-gray-400"
+      >
+        <AiOutlineMinus className="text-xs md:text-sm" />
+      </motion.button>
+      
+      <motion.span 
+        key={quantity}
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        className="px-3 py-2 md:px-4 bg-gray-200 text-gray-700 text-sm md:text-base min-w-[36px] md:min-w-[40px] text-center"
+      >
+        {quantity}
+      </motion.span>
+      
+      <motion.button 
+        onClick={increaseQuantity} 
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="px-3 py-2 md:px-4 bg-gray-200 text-gray-700 rounded-r-lg hover:bg-gray-300 transition-colors active:bg-gray-400"
+      >
+        <AiOutlinePlus className="text-xs md:text-sm" />
+      </motion.button>
     </div>
-</motion.div>
+  </div>
+
+  {/* Action Buttons */}
+  <motion.div 
+    className="w-full md:w-auto"
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.2 }}
+  >
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="w-full md:w-auto px-6 py-3 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition text-lg font-semibold"
+    >
+      Add to Cart
+    </motion.button>
+  </motion.div>
+</div>
+
+      {/* Categories & Tags */}
+      <motion.div 
+        className="mt-6 space-y-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7 }}
+      >
+        <div className="text-gray-700 font-medium">
+          Category: <span className="font-normal">{product.category.name}</span>
+        </div>
+        <div className="text-gray-700 font-medium">
+          Tags: <span className="font-normal">{product.tags.join(', ')}</span>
+        </div>
+      </motion.div>
+    </motion.div>
+  </div>
+</div>
 <div>
 
 

@@ -151,7 +151,7 @@ const ProductDetail = () => {
     const percentageOff = ((originalPrice - salePrice) / originalPrice) * 100;
 
     return (
-      <div>
+      <div className='my-5'>
       <div className="flex flex-col md:flex-row w-full px-6 lg:px-12 bg-white">
   {/* Image Section */}
   <div className="w-full md:w-[49%] h-full flex justify-start">
@@ -233,145 +233,145 @@ const ProductDetail = () => {
   </div>
 
   {/* Product Details Section */}
-  <div className="w-full md:w-1/2 max-w-xl lg:max-w-3xl bg-white rounded-3xl px-6 sm:px-10 py-6">
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
+  <div className="w-full md:w-1/2 max-w-xl lg:max-w-3xl bg-white rounded-3xl px-2 sm:px-4 py-6">
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: 0.2 }}
+  >
+    {/* Product Header */}
+    <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+      <motion.h1 
+        className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-2 sm:mb-0"
+        whileHover={{ x: 5 }}
+      >
+        {product.name}
+      </motion.h1>
+      <motion.span
+        className={`text-base sm:text-sm font-semibold px-3 py-1 rounded-lg shadow-md ${
+          product.stock > 0 ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100"
+        }`}
+        whileHover={{ scale: 1.05 }}
+      >
+        {product.stock > 0 ? "In Stock" : "Out of Stock"}
+      </motion.span>
+    </div>
+
+    {/* Price Section */}
+    <motion.div 
+      className="flex flex-wrap items-center mt-3 gap-2"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.4 }}
     >
-      {/* Product Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-        <motion.h1 
-          className="text-3xl font-bold text-gray-800 mb-2 sm:mb-0"
-          whileHover={{ x: 5 }}
+      <span className="text-xs sm:text-sm text-gray-400 line-through">₹{product.originalPrice}</span>
+      <h1 className="text-lg md:text-xl font-bold text-green-600">₹{product.salePrice}</h1>
+      <span className="text-sm md:text-base text-red-500 font-semibold">
+        {Math.round(percentageOff)}% Off
+      </span>
+    </motion.div>
+
+    <hr className="my-4" />
+
+    {/* Social Sharing */}
+    <motion.div 
+      className="flex items-center mt-4 space-x-3"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.5 }}
+    >
+      <span className="text-xs sm:text-sm md:text-base text-gray-700 font-medium">Share item:</span>
+      {[FaFacebook, FaTwitter, FaPinterest, FaInstagram].map((Icon, index) => (
+        <motion.div
+          key={index}
+          whileHover={{ scale: 1.15 }}
+          whileTap={{ scale: 0.9 }}
+          className="cursor-pointer"
         >
-          {product.name}
-        </motion.h1>
-        <motion.span
-          className={`text-sm font-semibold px-3 py-1 rounded-lg shadow-md ${
-            product.stock > 0 ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100"
-          }`}
-          whileHover={{ scale: 1.05 }}
-        >
-          {product.stock > 0 ? "In Stock" : "Out of Stock"}
-        </motion.span>
+          <Icon className={`text-lg sm:text-xl ${index === 0 ? 'text-blue-600' : index === 1 ? 'text-blue-400' : index === 2 ? 'text-red-500' : 'text-pink-500'}`} />
+        </motion.div>
+      ))}
+    </motion.div>
+
+    {/* Description */}
+    <motion.p
+      className="text-xs sm:text-sm md:text-base text-gray-600 mt-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.6 }}
+    >
+      Brain Bite is a powerful supplement designed to boost cognitive function, memory, and focus. Made with natural ingredients.
+    </motion.p>
+
+    {/* Quantity Selector */}
+    <div className="flex flex-col md:flex-row items-start md:items-center mt-6 gap-4 md:gap-6">
+      <div className="flex items-center">
+        <span className="text-xs sm:text-sm md:text-base text-gray-700 font-medium whitespace-nowrap">
+          Quantity:
+        </span>
+        <div className="flex items-center ml-3 md:ml-4">
+          <motion.button 
+            onClick={decreaseQuantity} 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-2 sm:px-3 py-1.5 md:px-4 bg-gray-200 text-gray-700 rounded-l-lg hover:bg-gray-300 transition-colors active:bg-gray-400"
+          >
+            <AiOutlineMinus className="text-xs sm:text-sm" />
+          </motion.button>
+          
+          <motion.span 
+            key={quantity}
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            className="px-2 sm:px-3 py-1.5 md:px-4 bg-gray-200 text-gray-700 text-xs sm:text-sm md:text-base min-w-[30px] sm:min-w-[36px] md:min-w-[40px] text-center"
+          >
+            {quantity}
+          </motion.span>
+          
+          <motion.button 
+            onClick={increaseQuantity} 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-2 sm:px-3 py-1.5 md:px-4 bg-gray-200 text-gray-700 rounded-r-lg hover:bg-gray-300 transition-colors active:bg-gray-400"
+          >
+            <AiOutlinePlus className="text-xs sm:text-sm" />
+          </motion.button>
+        </div>
       </div>
 
-      {/* Price Section */}
+      {/* Action Buttons */}
       <motion.div 
-        className="flex items-center mt-3 gap-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
+        className="w-full md:w-auto"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
       >
-        <span className="text-gray-400 text-sm line-through">₹{product.originalPrice}</span>
-        <h1 className="text-xl font-bold text-green-600">₹{product.salePrice}</h1>
-        <span className="text-red-500 text-lg font-semibold ml-2">
-          {Math.round(percentageOff)}% Off
-        </span>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="w-full md:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition text-sm sm:text-base md:text-lg font-semibold"
+        >
+          Add to Cart
+        </motion.button>
       </motion.div>
-
-      <hr className="my-4" />
-
-      {/* Social Sharing */}
-      <motion.div 
-        className="flex items-center mt-4 space-x-3"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        <span className="text-gray-700 font-medium">Share item:</span>
-        {[FaFacebook, FaTwitter, FaPinterest, FaInstagram].map((Icon, index) => (
-          <motion.div
-            key={index}
-            whileHover={{ scale: 1.15 }}
-            whileTap={{ scale: 0.9 }}
-            className="cursor-pointer"
-          >
-            <Icon className={`text-xl ${index === 0 ? 'text-blue-600' : index === 1 ? 'text-blue-400' : index === 2 ? 'text-red-500' : 'text-pink-500'}`} />
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* Description */}
-      <motion.p
-        className="text-gray-600 text-sm mt-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-      >
-        Brain Bite is a powerful supplement designed to boost cognitive function, memory, and focus. Made with natural ingredients.
-      </motion.p>
-
-      {/* Quantity Selector - Keep existing code with animations */}
-      <div className="flex flex-col md:flex-row items-start md:items-center mt-6 gap-4 md:gap-6">
-  {/* Quantity Selector */}
-  <div className="flex items-center">
-    <span className="text-sm md:text-base text-gray-700 font-medium whitespace-nowrap">
-      Quantity:
-    </span>
-    <div className="flex items-center ml-3 md:ml-4">
-      <motion.button 
-        onClick={decreaseQuantity} 
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="px-3 py-2 md:px-4 bg-gray-200 text-gray-700 rounded-l-lg hover:bg-gray-300 transition-colors active:bg-gray-400"
-      >
-        <AiOutlineMinus className="text-xs md:text-sm" />
-      </motion.button>
-      
-      <motion.span 
-        key={quantity}
-        initial={{ scale: 0.8 }}
-        animate={{ scale: 1 }}
-        className="px-3 py-2 md:px-4 bg-gray-200 text-gray-700 text-sm md:text-base min-w-[36px] md:min-w-[40px] text-center"
-      >
-        {quantity}
-      </motion.span>
-      
-      <motion.button 
-        onClick={increaseQuantity} 
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="px-3 py-2 md:px-4 bg-gray-200 text-gray-700 rounded-r-lg hover:bg-gray-300 transition-colors active:bg-gray-400"
-      >
-        <AiOutlinePlus className="text-xs md:text-sm" />
-      </motion.button>
     </div>
-  </div>
 
-  {/* Action Buttons */}
-  <motion.div 
-    className="w-full md:w-auto"
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.2 }}
-  >
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className="w-full md:w-auto px-6 py-3 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition text-lg font-semibold"
+    {/* Categories & Tags */}
+    <motion.div 
+      className="mt-6 space-y-2"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.7 }}
     >
-      Add to Cart
-    </motion.button>
+      <div className="text-xs sm:text-sm md:text-base text-gray-700 font-medium">
+        Category: <span className="font-normal">{product.category.name}</span>
+      </div>
+      <div className="text-xs sm:text-sm md:text-base text-gray-700 font-medium">
+        Tags: <span className="font-normal">{product.tags.join(', ')}</span>
+      </div>
+    </motion.div>
   </motion.div>
 </div>
-      {/* Categories & Tags */}
-      <motion.div 
-        className="mt-6 space-y-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7 }}
-      >
-        <div className="text-gray-700 font-medium">
-          Category: <span className="font-normal">{product.category.name}</span>
-        </div>
-        <div className="text-gray-700 font-medium">
-          Tags: <span className="font-normal">{product.tags.join(', ')}</span>
-        </div>
-      </motion.div>
-    </motion.div>
-  </div>
 </div>
 <div>
 
@@ -379,83 +379,106 @@ const ProductDetail = () => {
 
 </div>
           {/* Additional Banner */}
-          <div className="p-4 md:p-8 bg-white max-w-5xl mx-auto">
-      {/* Toggle Menu - Responsive */}
-      <div className="flex flex-col md:flex-row items-center justify-between border-b border-gray-300 mb-6">
-        {["Descriptions", "Additional Information", "Customer Feedback"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`w-full md:w-auto px-4 py-2 text-lg font-medium transition-all ${
-              activeTab === tab ? "border-b-2 border-green-500 text-green-600" : "text-gray-600"
-            }`}
+          <div className="p-3 sm:p-6 md:p-8 bg-white max-w-5xl mx-auto">
+  {/* Toggle Menu - Responsive */}
+  <div className="flex flex-col sm:flex-row items-center justify-between border-b border-gray-300 mb-4 sm:mb-6">
+    {["Descriptions", "Additional Information", "Customer Feedback"].map((tab) => (
+      <motion.button
+        key={tab}
+        onClick={() => setActiveTab(tab)}
+        whileHover={{ scale: 1.05 }}
+        className={`w-full sm:w-auto px-2 sm:px-4 py-2 text-sm sm:text-base md:text-lg font-medium transition-all ${
+          activeTab === tab 
+            ? "border-b-2 border-green-500 text-green-600" 
+            : "text-gray-600 hover:text-gray-800"
+        }`}
+      >
+        {tab}
+      </motion.button>
+    ))}
+  </div>
+
+  {/* Section Content */}
+  {activeTab === "Descriptions" && (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col md:flex-row items-start gap-4 sm:gap-6"
+    >
+      {/* Left Section - Text */}
+      <div className="flex-1">
+        <p 
+          className="text-xs sm:text-sm md:text-base text-gray-700 mb-4"
+          dangerouslySetInnerHTML={{ __html: product.description }}
+        />
+
+        {/* Badges */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center space-x-2 bg-gray-100 p-2 sm:p-3 rounded-md"
           >
-            {tab}
-          </button>
-        ))}
+            <FaCheckCircle className="text-green-500 text-sm sm:text-base" />
+            <span className="text-xs sm:text-sm md:text-base text-gray-800 font-medium">
+              {Math.round(percentageOff)}% Discount
+            </span>
+          </motion.div>
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center space-x-2 bg-gray-100 p-2 sm:p-3 rounded-md"
+          >
+            <FaCheckCircle className="text-green-500 text-sm sm:text-base" />
+            <span className="text-xs sm:text-sm md:text-base text-gray-800 font-medium">
+              100% Organic
+            </span>
+          </motion.div>
+        </div>
       </div>
 
-      {/* Section Content */}
-      {activeTab === "Descriptions" && (
-        <div className="flex flex-col md:flex-row items-start">
-          {/* Left Section - Text */}
-          <div className="flex-1">
-            <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-4">
-              BrainBite™ Smart IQ
-            </h2>
-            <p className="text-gray-700 mb-4"
-            dangerouslySetInnerHTML={{ __html: product.description }}
-            >
-           
-            </p>
-           
+      {/* Right Section - Image */}
+      <motion.div 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex-1 flex justify-center mt-4 sm:mt-0 w-full"
+      >
+        <Image
+          src={product.descriptionImage}
+          alt="BrainBite Supplement"
+          width={400}
+          height={300}
+          className="rounded-lg object-cover w-full sm:w-[90%] md:w-auto"
+        />
+      </motion.div>
+    </motion.div>
+  )}
 
-            {/* Badges */}
-            <div className="grid grid-cols-2 gap-4 ">
-              <div className="flex items-center space-x-2 bg-gray-100 p-3 rounded-md">
-                <FaCheckCircle className="text-green-500" />
-                <span className="text-gray-800 font-medium">{Math.round(percentageOff)}% Discount</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-gray-100 p-3 rounded-md">
-                <FaCheckCircle className="text-green-500" />
-                <span className="text-gray-800 font-medium">100% Organic</span>
-              </div>
-            </div>
-          </div>
+  {/* Additional Information Section */}
+  {activeTab === "Additional Information" && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="text-gray-700 p-3 sm:p-4 md:p-6"
+    >
+      <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">Additional Information</h3>
+      <p 
+        className="text-xs sm:text-sm md:text-base"
+        dangerouslySetInnerHTML={{ __html: product.additionalInfo }}
+      />
+    </motion.div>
+  )}
 
-          {/* Right Section - Image */}
-          <div className="flex-1 flex justify-center mt-6 md:mt-0">
-            <Image
-              src={product.descriptionImage}
-              alt="BrainBite Supplement"
-              width={400}
-              height={300}
-              className="rounded-lg object-cover w-full md:w-auto"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Additional Information Section */}
-      {activeTab === "Additional Information" && (
-        <div className="text-gray-700 p-4 md:p-6">
-          <h3 className="text-2xl font-semibold mb-4">Additional Information</h3>
-          <p 
-          dangerouslySetInnerHTML={{ __html: product.additionalInfo }}
-          >
-          </p>
-        </div>
-      )}
-
-      {/* Customer Feedback Section */}
-      {activeTab === "Customer Feedback" && (
-        <div className="text-gray-700 p-4 md:p-6">
-          <h3 className="text-2xl font-semibold mb-4">Customer Feedback</h3>
-          <ReviewProductPage/>
-
-        </div>
-      )}
-    </div>
+  {/* Customer Feedback Section */}
+  {activeTab === "Customer Feedback" && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="text-gray-700 p-3 sm:p-4 md:p-6"
+    >
+      <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">Customer Feedback</h3>
+      <ReviewProductPage/>
+    </motion.div>
+  )}
+</div>
          
 
           {isFullScreen && (

@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from "react";
-import { FiShoppingCart, FiSearch, FiMenu, FiX } from "react-icons/fi";
+import { FiShoppingCart, FiSearch, FiMenu, FiX, FiUser } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import logo from "../../../../public/logo/cleanvedaLogo.png";
@@ -14,22 +14,46 @@ const Navbar = () => {
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="bg-white shadow-md px-6 py-3"
+      className="bg-gray-100 shadow-md px-6 py-3"
     >
       <div className="flex items-center justify-between">
-        {/* Logo Section */}
-        <div className="flex items-center">
-          <Image src={logo} alt="Cleanveda Logo" width={120} height={50} />
-        </div>
-
-        {/* Hamburger Menu Icon (for mobile and tablet view) */}
-        <div className="lg:hidden flex items-center">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-gray-700 text-2xl focus:outline-none"
+        {/* Mobile Header Section */}
+        <div className="flex items-center justify-between w-full lg:w-auto">
+          {/* Mobile Menu Button */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="lg:hidden"
           >
-            {isMenuOpen ? <FiX /> : <FiMenu />}
-          </button>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-700 text-2xl focus:outline-none"
+            >
+              {isMenuOpen ? <FiX /> : <FiMenu />}
+            </button>
+          </motion.div>
+
+          {/* Logo - Centered on mobile */}
+          <div className="lg:flex lg:items-center mx-4 lg:mx-0">
+            <Image src={logo} alt="Cleanveda Logo" width={120} height={50} />
+          </div>
+
+          {/* Mobile Icons */}
+          <div className="lg:hidden flex items-center space-x-4">
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative"
+            >
+              <FiShoppingCart className="text-gray-700 text-2xl cursor-pointer" />
+              <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                0
+              </div>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+              <FiUser className="text-gray-700 text-2xl cursor-pointer" />
+            </motion.div>
+          </div>
         </div>
 
         {/* Desktop Menu Section */}
@@ -46,66 +70,67 @@ const Navbar = () => {
           <li className="hover:text-green-600 transition cursor-pointer">Immunity Booster</li>
         </ul>
 
-        {/* Icons and Sign-In Button Section */}
+        {/* Desktop Icons Section */}
         <div className="hidden lg:flex items-center space-x-4">
-          {/* Cart Icon */}
-          <div className="relative">
-            <FiShoppingCart className="text-gray-700 text-2xl cursor-pointer hover:text-green-600 transition" />
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="relative"
+          >
+            <FiShoppingCart className="text-gray-700 text-2xl cursor-pointer" />
             <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
               0
             </div>
-          </div>
+          </motion.div>
+          
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+            <FiSearch className="text-gray-700 text-2xl cursor-pointer" />
+          </motion.div>
 
-          {/* Search Icon */}
-          <FiSearch className="text-gray-700 text-2xl cursor-pointer hover:text-green-600 transition" />
-
-          {/* Sign In Button */}
           <Link href="/auth/signIn">
-            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+            >
               Sign In
-            </button>
+            </motion.button>
           </Link>
         </div>
       </div>
 
-      {/* Mobile and Tablet Menu Section */}
+      {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <motion.ul
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="lg:hidden flex flex-col mt-4 space-y-4 text-gray-700 font-medium"
+          className="lg:hidden mt-4"
         >
-          <li className="hover:text-green-600 transition cursor-pointer">Home</li>
-          <li className="hover:text-green-600 transition cursor-pointer">Students</li>
-          <li className="hover:text-green-600 transition cursor-pointer">
-            Health-Conscious Individuals
-          </li>
-          <li className="hover:text-green-600 transition cursor-pointer">Parents</li>
-          <li className="hover:text-green-600 transition cursor-pointer">Brain Booster</li>
-          <li className="hover:text-green-600 transition cursor-pointer">Immunity Booster</li>
+          <ul className="flex flex-col space-y-4 text-gray-700 font-medium">
+            <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Home</motion.li>
+            <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Students</motion.li>
+            <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">
+              Health-Conscious Individuals
+            </motion.li>
+            <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Parents</motion.li>
+            <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Brain Booster</motion.li>
+            <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Immunity Booster</motion.li>
+          </ul>
 
-          {/* Icons and Sign-In Button for mobile */}
-          <div className="flex items-center space-x-4 mt-4">
-            {/* Cart Icon */}
-            <div className="relative">
-              <FiShoppingCart className="text-gray-700 text-2xl cursor-pointer hover:text-green-600 transition" />
-              <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                0
-              </div>
-            </div>
-
-            {/* Search Icon */}
-            <FiSearch className="text-gray-700 text-2xl cursor-pointer hover:text-green-600 transition" />
+          <div className="mt-6 border-t pt-4">
+            <Link href="/auth/signIn">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition w-full"
+              >
+                Sign In
+              </motion.button>
+            </Link>
           </div>
-
-          {/* Sign In Button */}
-          <Link href="/auth/signIn">
-            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition w-full">
-              Sign In
-            </button>
-          </Link>
-        </motion.ul>
+        </motion.div>
       )}
     </motion.nav>
   );

@@ -90,10 +90,26 @@ const LoginForm = () => {
 
   return (
     <div className="flex justify-center items-center bg-gray-50 px-4 md:px-0 w-full flex-col py-12">
-      <div className="w-full md:w-2/3 lg:w-1/2 bg-white shadow-lg rounded-2xl px-8 pb-10">
+      <div className="w-full md:w-2/3 lg:w-1/2 bg-white shadow-lg rounded-2xl px-8 py-10">
       <div className='flex justify-center items-center flex-col'>
-      <h1 className="text-4xl md:text-5xl text-green-700 font-bold my-6 text-center">SignIn </h1>
-      <p className="text-gray-600 text-center mb-8">Welcome back , Cleanveda</p>      </div>
+            <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h1 className="text-2xl md:text-3xl lg:text-4xl text-green-600 font-bold mb-4 md:mb-5 text-center tracking-tight">
+          Welcome Back to Cleanveda
+        </h1>
+        <motion.p 
+          className="text-gray-600 text-base md:text-lg lg:text-xl text-center mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <span className="text-green-500">👋 Sign in</span> to access your personalized health dashboard, track your orders, and continue your wellness journey
+        </motion.p>
+</motion.div> 
+</div>
         <div className="flex justify-center mb-6">
           <button
             onClick={() => setIsOtpLogin(false)}
@@ -172,7 +188,7 @@ const LoginForm = () => {
           </motion.button>
         </form>
 
-        <div className="flex justify-between mt-4 text-sm md:text-base">
+        <div className="flex  mt-4 text-sm md:text-base flex-col gap-4 justify-center items-center md:flex-row">
           <Link href={"/forgotPassword"} className="text-green-700 hover:underline">Forgot password?</Link>
           <Link href={"/auth/register"} className="text-green-700 hover:underline">Create an account</Link>
         </div>

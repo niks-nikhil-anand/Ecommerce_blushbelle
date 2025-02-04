@@ -121,31 +121,11 @@ const CheckoutPage = () => {
       
       console.log("Checkout successful!", checkoutResponse.data);
     
-      if (checkoutResponse.status >= 200 && checkoutResponse.status < 300) {
-        
-        // Fetch order ID from cookies
-        console.log("Fetching order ID from cookies...");
-            const decodedTokenResponse = await axios.get("/api/pendingOrder/checkout/cookies");
-            const decodedToken = decodedTokenResponse.data; 
-    
-            console.log("Order ID response received:", decodedToken);
-
-            // Access the properties from the decoded token
-            const { orderId, cartId, addressId, userId } = decodedToken;
-          
-            // Redirect to the shipping page with the orderId if it exists
-            if (orderId) {
-              console.log(`Redirecting to shipping page with Order ID: ${orderId}`);
-              router.push(`/product/cart/information/shipping/${orderId}`);
-            } else {
-              console.error("Order ID not found.");
-            }
-    
-            console.log(`Cart ID: ${cartId}, Address ID: ${addressId}, User ID: ${userId}`);
-
-       
+      if (checkoutResponse.status === 200) {
+        console.log("Checkout successful! Response data:", checkoutResponse.data);
+        router.push("/product/cart/information/shipping"); // Absolute path
       } else {
-        console.error("Checkout failed with status:", checkoutResponse.status);
+        console.error("Checkout failed. Status:", checkoutResponse.status);
       }
     } catch (error) {
       console.error("Error during checkout or fetching order ID:", error);

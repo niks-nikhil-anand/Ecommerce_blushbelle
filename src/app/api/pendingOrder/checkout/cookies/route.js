@@ -11,25 +11,21 @@ export const GET = async (req) => {
 
     const cookieStore = cookies();
     const pendingOrder = cookieStore.get("pendingOrder");
-    console.log("Retrieved cookies:", cookieStore);
 
     if (!pendingOrder) {
       console.error("User authentication token is missing.");
       throw new Error("User authentication token is missing.");
     }
 
-    console.log("Pending order cookie found:", pendingOrder.value);
 
-    const decodedToken = jwt.decode(pendingOrder.value);
-    console.log("Decoded token:", decodedToken);
+    const decodedToken = jwt.decode(pendingOrder.value); 
 
-    if (!decodedToken || !decodedToken.orderId) {
+    if (!decodedToken || !decodedToken.cartId || !decodedToken.addressId) {
       console.error("Invalid token. No order ID found.");
       throw new Error("Invalid token.");
     }
 
-
-    return NextResponse.json(decodedToken , {
+    return NextResponse.json(decodedToken, {
       status: 200,
     });
     

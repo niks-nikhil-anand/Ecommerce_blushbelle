@@ -68,7 +68,7 @@ const Products = () => {
   };
 
   const handleNavigate = (orderId) => {
-    router.push(`orders/${orderId}`);
+    router.push(`${orderId}`);
   }
 
   return (

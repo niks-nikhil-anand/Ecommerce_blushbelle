@@ -156,7 +156,7 @@ const Page = () => {
     <option value="" disabled>
       Select
     </option>
-    <option value="Unpaid">Unpaid</option>
+    <option value="UnPaid">UnPaid</option>
     <option value="Paid">Paid</option>
   </select>
 </div>

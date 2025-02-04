@@ -150,12 +150,6 @@ const ProductDetail = () => {
 
     const percentageOff = ((originalPrice - salePrice) / originalPrice) * 100;
 
-
-    
-
-
-    
-
     return (
       <div>
       <motion.div 
@@ -164,10 +158,8 @@ const ProductDetail = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
 >
-<div className="flex  md:flex-row w-full px-6 lg:px-12  bg-white">
+    <div className="flex  md:flex-row w-full px-6 lg:px-12  bg-white">
         <div className="w-full md:w-[49%] h-full flex justify-start ">
-
-
         {/* Thumbnail Images (Optional) */}
         <div className="md:flex flex-col gap-5  hidden">
           {images.length > 0 ? (
@@ -194,7 +186,6 @@ const ProductDetail = () => {
 
 
         {/* Preview Image */}
-
         <div className="w-full md:w-[30rem] h-[10rem] md:h-[20rem] flex justify-center items-center overflow-hidden mb-4  rounded-lg relative">
           <img
             src={currentImage}
@@ -262,18 +253,18 @@ const ProductDetail = () => {
             Brain Bite is a powerful supplement designed to boost cognitive function, memory, and focus. Made with natural ingredients.
           </p>
 
-          
-
-          {/* Quantity & Add to Cart */}
-          <div className='flex '>
+          {/* Quantity Selector */} 
           <div className="flex items-center mt-6">
             <span className="text-gray-700 font-medium">Quantity:</span>
-            <div className="flex items-center border rounded-full py-2 px-5 mx-4">
-              <button className="px-3 py-1">-</button>
-              <input type="number" className="w-8 text-center bg-transparent border-none" value={1} readOnly />
-              <button className="px-3 py-1">+</button>
+            <div className="flex items-center ml-4">
+              <button onClick={decreaseQuantity} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-l-lg">
+                <AiOutlineDown />
+              </button>
+              <span className="px-4 py-2 bg-gray-200 text-gray-700">{quantity}</span>
+              <button onClick={increaseQuantity} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-r-lg">
+                <AiOutlineDown />
+              </button>
             </div>
-          </div>
 
           {/* Action Buttons */}
           <div className="flex items-center mt-6 ">

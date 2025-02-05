@@ -112,6 +112,9 @@ const Products = () => {
     <div className="w-full p-4  bg-white shadow-lg  h-[85vh] min-w-[100%]  ">
      <div className="flex justify-between px-4 py-2 bg-gray-200 text-black  rounded-md my-4 font-medium">
                 <h2 className="text-lg font-semibold text-gray-800">Articles Details</h2>
+                <button className="bg-[#754E1A] hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-all">
+                  Export
+                </button>
               </div>
       <div className="overflow-x-auto overflow-y-auto max-h-[60vh] custom-scrollbar">
         <table className="border-collapse border border-gray-300 min-w-[1300px] text-sm">

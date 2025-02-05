@@ -52,8 +52,8 @@ const SidebarAdmin = () => {
           </Link>
 
 
-          <Link href="/admin/dashboard/orders/searchOrders" passHref>
-            <SidebarItem icon={<MdPendingActions />} label="Search Orders" selected={selectedItem === 'Pending Orders'} onClick={() => setSelectedItem('Pending Orders')} />
+          <Link href="/admin/dashboard/orders/pendingOrders" passHref>
+            <SidebarItem icon={<MdPendingActions />} label="Pending Orders" selected={selectedItem === 'Pending Orders'} onClick={() => setSelectedItem('Pending Orders')} />
           </Link>
 
           <h3 className="text-sm font-medium mt-4 mb-2 text-black">Products</h3>

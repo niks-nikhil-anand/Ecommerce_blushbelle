@@ -35,7 +35,7 @@ const Navbar = () => {
     };
 
   return (
- <nav className="bg-white text-white transition-colors duration-300 shadow-lg">
+ <nav className="bg-gray-50 text-white transition-colors duration-300 shadow-lg">
     <div className="flex justify-between px-4 py-5 ">
     {/* Logo Section */}
 
@@ -47,7 +47,7 @@ const Navbar = () => {
     </div>
 
     <div className="flex items-center justify-center">
-      <Image src={logo} alt="Logo" className="w-[80px] h-auto mr-4" />
+      <Image src={logo} alt="Logo" className="w-[80px] h-auto mr-4 " />
     </div>
 
     <div className="flex items-center justify-center">

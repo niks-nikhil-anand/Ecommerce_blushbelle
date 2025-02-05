@@ -16,7 +16,6 @@ export const GET = async (request, { params }) => {
     if (!product) {
       return NextResponse.json({ msg: "Product not found" }, { status: 404 });
     }
-    console.log(product)
     return NextResponse.json(product, { status: 200 });
   } catch (error) {
     console.error('Error fetching product:', error);

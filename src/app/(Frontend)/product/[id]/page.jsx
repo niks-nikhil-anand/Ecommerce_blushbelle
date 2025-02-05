@@ -18,6 +18,7 @@ import RelatedBlogs from '@/components/frontend/ui/RelatedBlogs';
 
 
 
+
 const ProductDetail = () => {
     const router = useRouter();
     const [product, setProduct] = useState(null);
@@ -482,7 +483,7 @@ const ProductDetail = () => {
   )}
 </div>
 
-<div className='px-[9rem] py-[1rem]'>
+<div className='px-[2rem] py-[1rem] '>
   <RelatedBlogs/>
 </div>
          

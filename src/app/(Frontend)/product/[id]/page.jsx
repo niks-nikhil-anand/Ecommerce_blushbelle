@@ -12,6 +12,7 @@ import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/f
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import ReviewProductPage from '@/components/frontend/ui/ReviewProductPage';
 import { FaCheckCircle, FaCheckSquare } from "react-icons/fa";
+import RelatedBlogs from '@/components/frontend/ui/RelatedBlogs';
 
 
 
@@ -479,6 +480,10 @@ const ProductDetail = () => {
       <ReviewProductPage/>
     </motion.div>
   )}
+</div>
+
+<div className='px-[9rem] py-[1rem]'>
+  <RelatedBlogs/>
 </div>
          
 

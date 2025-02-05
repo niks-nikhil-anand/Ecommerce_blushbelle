@@ -56,26 +56,32 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Desktop Menu Section */}
-        <ul className="hidden lg:flex space-x-6 text-gray-700 font-medium">
-          <Link href="/">
-            <li className="hover:text-green-600 transition cursor-pointer">Home</li>
-          </Link>
-          <li className="hover:text-green-600 transition cursor-pointer">Students</li>
-          <li className="hover:text-green-600 transition cursor-pointer">
-            Health-Conscious Individuals
-          </li>
-          <li className="hover:text-green-600 transition cursor-pointer">Parents</li>
-          <li className="hover:text-green-600 transition cursor-pointer">Brain Booster</li>
-          <li className="hover:text-green-600 transition cursor-pointer">Immunity Booster</li>
-        </ul>
+        <ul className="flex space-x-6  p-4 rounded-lg ">
+      {[
+        { name: "Home", link: "/" },
+        { name: "Students", link: "/students" },
+        { name: "Health-conscious individuals", link: "/health" },
+        { name: "Parents", link: "/parents" },
+        { name: "Brain Booster", link: "/brain-booster" },
+        { name: "Immunity Booster", link: "/immunity-booster" },
+      ].map((item, index) => (
+        <motion.li
+          key={index}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="cursor-pointer text-gray-700 font-semibold transition-colors duration-300 hover:text-green-600"
+        >
+          <Link href={item.link}>{item.name}</Link>
+        </motion.li>
+      ))}
+    </ul>
 
         {/* Desktop Icons Section */}
         <div className="hidden lg:flex items-center space-x-4">
           <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="relative cursor-pointer"
+            className="relative "
           >
             <Link href={"/product/cart"}>
             <FiShoppingCart className="text-gray-700 text-2xl cursor-pointer" />

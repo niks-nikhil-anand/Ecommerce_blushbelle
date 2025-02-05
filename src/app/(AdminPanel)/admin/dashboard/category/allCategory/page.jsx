@@ -48,10 +48,16 @@ const Categories = () => {
   }
 
   return (
-   <div className="w-full p-4  bg-white shadow-lg  h-[85vh] min-w-[100%]  ">
-        <div className="flex justify-between px-4 py-2 bg-gray-200 text-black  rounded-md my-4 font-medium">
-                   <h2 className="text-lg font-semibold text-gray-800">Articles Details</h2>
-                 </div>
+   <div className="w-full px-4 py-2  bg-white shadow-lg  h-[85vh] min-w-[100%]  ">
+                <div className="flex justify-between items-center px-6 py-3 bg-gray-200 text-black rounded-md my-4 font-medium">
+          <h2 className="text-lg font-semibold text-gray-800">Articles Details</h2>
+          
+          <div className="flex items-center gap-4">
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-md transition-all">
+              Add Category
+            </button>
+          </div>
+        </div>
          <div className="overflow-x-auto overflow-y-auto max-h-[60vh] custom-scrollbar">
            <table className="border-collapse border border-gray-300 min-w-[1300px] text-sm">
              <thead>

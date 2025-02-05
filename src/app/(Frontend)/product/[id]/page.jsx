@@ -487,7 +487,7 @@ const ProductDetail = () => {
 <div className='px-[2rem] py-[1rem] '>
   <RelatedBlogs/>
 </div>
-<div className='px-[2rem] py-[1rem] '>
+<div className='px-[1rem] py-[1rem] '>
   <RelatedProducts/>
 </div>
          

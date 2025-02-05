@@ -13,6 +13,7 @@ import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import ReviewProductPage from '@/components/frontend/ui/ReviewProductPage';
 import { FaCheckCircle, FaCheckSquare } from "react-icons/fa";
 import RelatedBlogs from '@/components/frontend/ui/RelatedBlogs';
+import RelatedProducts from '@/components/frontend/ui/RelatedProducts';
 
 
 
@@ -191,7 +192,7 @@ const ProductDetail = () => {
 
     {/* Preview Image Container */}
     <motion.div 
-      className="w-full md:w-[30rem] h-[10rem] md:h-[20rem] flex justify-center items-center overflow-hidden mb-4 rounded-lg relative"
+      className="w-full md:w-[20rem] h-[10rem] md:h-[20rem] flex justify-center items-center overflow-hidden mb-4 rounded-lg relative m-auto"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
@@ -485,6 +486,9 @@ const ProductDetail = () => {
 
 <div className='px-[2rem] py-[1rem] '>
   <RelatedBlogs/>
+</div>
+<div className='px-[2rem] py-[1rem] '>
+  <RelatedProducts/>
 </div>
          
 

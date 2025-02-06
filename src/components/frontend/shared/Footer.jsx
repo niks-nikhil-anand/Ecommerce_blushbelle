@@ -28,7 +28,7 @@ const Footer = () => {
               <li className="hover:text-gray-200 cursor-pointer">My Account</li>
               <li className="hover:text-gray-200 cursor-pointer">Order History</li>
               <li className="hover:text-gray-200 cursor-pointer">Shopping Cart</li>
-              <li className="hover:text-gray-200 cursor-pointer">Wishlist</li>
+              <li className="hover:text-gray-200 cursor-pointer">All Products</li>
             </ul>
           </div>
 
@@ -36,35 +36,42 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold mb-2  pb-2">Helps</h3>
             <ul className="text-sm space-y-2 text-gray-400">
+              <li className="hover:text-gray-200 cursor-pointer">About Us</li>
               <li className="hover:text-gray-200 cursor-pointer">Contact</li>
               <li className="hover:text-gray-200 cursor-pointer">FAQs</li>
-              <li className="hover:text-gray-200 cursor-pointer">Terms & Conditions</li>
-              <li className="hover:text-gray-200 cursor-pointer">Privacy Policy</li>
+              <li className="hover:text-gray-200 cursor-pointer">Blogs</li>
             </ul>
           </div>
 
-          {/* Proxy */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold mb-2  pb-2">Proxy</h3>
-            <ul className="text-sm space-y-2 text-gray-400">
-              <li className="hover:text-gray-200 cursor-pointer">About</li>
-              <li className="hover:text-gray-200 cursor-pointer">Shop</li>
-              <li className="hover:text-gray-200 cursor-pointer">Product</li>
-              <li className="hover:text-gray-200 cursor-pointer">Track Order</li>
-            </ul>
-          </div>
+
 
           {/* Categories */}
           <div className="space-y-4">
             <h3 className="text-lg font-bold mb-2 pb-2">Categories</h3>
             <ul className="text-sm space-y-2 text-gray-400">
-              <li className="hover:text-gray-200 cursor-pointer">Fruit & Vegetables</li>
-              <li className="hover:text-gray-200 cursor-pointer">Meat & Fish</li>
-              <li className="hover:text-gray-200 cursor-pointer">Bread & Bakery</li>
-              <li className="hover:text-gray-200 cursor-pointer">Beauty & Health</li>
+              <li className="hover:text-gray-200 cursor-pointer">Students</li>
+              <li className="hover:text-gray-200 cursor-pointer">
+              Health-conscious individuals
+              </li>
+              <li className="hover:text-gray-200 cursor-pointer">Parents</li>
+              <li className="hover:text-gray-200 cursor-pointer">Brain Booster</li>
+              <li className="hover:text-gray-200 cursor-pointer">Immunity Booster</li>
+            </ul>
+          </div>
+
+          
+          {/* Proxy */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold mb-2  pb-2">Proxy</h3>
+            <ul className="text-sm space-y-2 text-gray-400">
+              <li className="hover:text-gray-200 cursor-pointer">Return Policy</li>
+              <li className="hover:text-gray-200 cursor-pointer">Shipping Policy</li>
+              <li className="hover:text-gray-200 cursor-pointer">Privacy Policy</li>
+              <li className="hover:text-gray-200 cursor-pointer">Terms & Condition</li>
             </ul>
           </div>
         </div>
+
 
         <div className="border-t border-gray-700 mt-8 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center">

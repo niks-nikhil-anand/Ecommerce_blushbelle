@@ -160,17 +160,17 @@ const ProductDetail = () => {
         <div className="flex space-x-4">
           {/* Facebook */}
           <FacebookShareButton url={url} quote={title}>
-            <FaFacebook size={32} className="text-blue-600 cursor-pointer" />
+            <FaFacebook size={22} className="text-blue-600 cursor-pointer" />
           </FacebookShareButton>
     
           {/* Twitter */}
           <TwitterShareButton url={url} title={title}>
-            <FaTwitter size={32} className="text-blue-400 cursor-pointer" />
+            <FaTwitter size={22} className="text-blue-400 cursor-pointer" />
           </TwitterShareButton>
     
           {/* WhatsApp */}
           <WhatsappShareButton url={url} title={title} separator=" - ">
-            <FaWhatsapp size={32} className="text-green-500 cursor-pointer" />
+            <FaWhatsapp size={22} className="text-green-500 cursor-pointer" />
           </WhatsappShareButton>
         </div>
       );

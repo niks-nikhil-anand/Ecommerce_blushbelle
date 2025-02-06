@@ -35,7 +35,9 @@ const Navbar = () => {
 
           {/* Logo - Centered on mobile */}
           <div className="lg:flex lg:items-center mx-4 lg:mx-0">
+            <Link href={"/"}>
             <Image src={logo} alt="Cleanveda Logo" width={120} height={50} />
+            </Link>
           </div>
 
           {/* Mobile Icons */}
@@ -56,7 +58,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <ul className="flex space-x-6  p-4 rounded-lg ">
+        <ul className=" space-x-6  p-4 rounded-lg hidden md:flex ">
       {[
         { name: "Home", link: "/" },
         { name: "Students", link: "/students" },

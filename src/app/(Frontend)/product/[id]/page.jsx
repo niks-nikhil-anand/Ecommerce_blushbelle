@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Loader from '@/components/loader/loader';
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { AiOutlineDown, AiOutlineClose } from 'react-icons/ai';
-import { FaFacebook, FaTwitter, FaPinterest, FaInstagram } from "react-icons/fa";
+import { FaPinterest , FaInstagram} from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
@@ -14,6 +14,8 @@ import ReviewProductPage from '@/components/frontend/ui/ReviewProductPage';
 import { FaCheckCircle, FaCheckSquare } from "react-icons/fa";
 import RelatedBlogs from '@/components/frontend/ui/RelatedBlogs';
 import RelatedProducts from '@/components/frontend/ui/RelatedProducts';
+import { FacebookShareButton, TwitterShareButton, WhatsappShareButton } from 'react-share';
+import { FaFacebook, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 
 
 
@@ -153,6 +155,28 @@ const ProductDetail = () => {
 
     const percentageOff = ((originalPrice - salePrice) / originalPrice) * 100;
 
+    const ShareButtons = ({ url, title }) => {
+      return (
+        <div className="flex space-x-4">
+          {/* Facebook */}
+          <FacebookShareButton url={url} quote={title}>
+            <FaFacebook size={32} className="text-blue-600 cursor-pointer" />
+          </FacebookShareButton>
+    
+          {/* Twitter */}
+          <TwitterShareButton url={url} title={title}>
+            <FaTwitter size={32} className="text-blue-400 cursor-pointer" />
+          </TwitterShareButton>
+    
+          {/* WhatsApp */}
+          <WhatsappShareButton url={url} title={title} separator=" - ">
+            <FaWhatsapp size={32} className="text-green-500 cursor-pointer" />
+          </WhatsappShareButton>
+        </div>
+      );
+    };
+    
+
     return (
       <div className='my-5'>
       <div className="flex flex-col md:flex-row w-full px-6 lg:px-12 bg-white">
@@ -278,23 +302,15 @@ const ProductDetail = () => {
 
     {/* Social Sharing */}
     <motion.div 
-      className="flex items-center mt-4 space-x-3"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.5 }}
-    >
-      <span className="text-xs sm:text-sm md:text-base text-gray-700 font-medium">Share item:</span>
-      {[FaFacebook, FaTwitter, FaPinterest, FaInstagram].map((Icon, index) => (
-        <motion.div
-          key={index}
-          whileHover={{ scale: 1.15 }}
-          whileTap={{ scale: 0.9 }}
-          className="cursor-pointer"
-        >
-          <Icon className={`text-lg sm:text-xl ${index === 0 ? 'text-blue-600' : index === 1 ? 'text-blue-400' : index === 2 ? 'text-red-500' : 'text-pink-500'}`} />
-        </motion.div>
-      ))}
-    </motion.div>
+  className="flex items-center mt-4 space-x-3"
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ delay: 0.5 }}
+>
+  <span className="text-xs sm:text-sm md:text-base text-gray-700 font-medium">Share item:</span>
+  <ShareButtons url={window.location.href} title={name} />
+</motion.div>
+
 
     {/* Description */}
     <motion.p

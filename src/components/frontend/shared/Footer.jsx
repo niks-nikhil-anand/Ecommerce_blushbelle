@@ -4,6 +4,7 @@ import ApplePay from '../../../../public/icons/Method=ApplePay.png';
 import Discover from '../../../../public/icons/Discover.png';
 import Mastercard from '../../../../public/icons/Mastercard.png';
 import Visa from '../../../../public/icons/visa-logo.png';
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -25,10 +26,18 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold mb-2  pb-2">My Account</h3>
             <ul className="text-sm space-y-2 text-gray-400">
+              <Link href={"/auth/signIn"}> 
               <li className="hover:text-gray-200 cursor-pointer">My Account</li>
+              </Link>
+              <Link href={"/auth/signIn"}>
               <li className="hover:text-gray-200 cursor-pointer">Order History</li>
+              </Link>
+              <Link href={"/auth/signIn"}>
               <li className="hover:text-gray-200 cursor-pointer">Shopping Cart</li>
+              </Link>
+              <Link href={"/product/shopAllProducts"}>
               <li className="hover:text-gray-200 cursor-pointer">All Products</li>
+              </Link>
             </ul>
           </div>
 
@@ -36,10 +45,18 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold mb-2  pb-2">Helps</h3>
             <ul className="text-sm space-y-2 text-gray-400">
+              <Link href={"/aboutUs"}>
               <li className="hover:text-gray-200 cursor-pointer">About Us</li>
+              </Link>
+              <Link href={"/contactUs"}>
               <li className="hover:text-gray-200 cursor-pointer">Contact</li>
+              </Link>
+              <Link href={"/FAQs"}>
               <li className="hover:text-gray-200 cursor-pointer">FAQs</li>
+              </Link>
+              <Link href={"/blog"}>
               <li className="hover:text-gray-200 cursor-pointer">Blogs</li>
+              </Link>
             </ul>
           </div>
 
@@ -64,10 +81,18 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold mb-2  pb-2">Proxy</h3>
             <ul className="text-sm space-y-2 text-gray-400">
+              <Link href={"/returnPolicy"}>
               <li className="hover:text-gray-200 cursor-pointer">Return Policy</li>
+              </Link>
+              <Link href={"/shippingPolicy"}>
               <li className="hover:text-gray-200 cursor-pointer">Shipping Policy</li>
+              </Link>
+              <Link href={"/privacyPolicy"}>
               <li className="hover:text-gray-200 cursor-pointer">Privacy Policy</li>
+              </Link>
+              <Link href={"/termsAndConditions"}>
               <li className="hover:text-gray-200 cursor-pointer">Terms & Condition</li>
+              </Link>
             </ul>
           </div>
         </div>

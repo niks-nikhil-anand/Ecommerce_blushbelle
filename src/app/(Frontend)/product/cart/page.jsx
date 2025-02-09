@@ -193,12 +193,13 @@ const Cart = () => {
       <div
       className="w-full p-4 bg-white shadow-md rounded-lg mt-5"
     >
-      <h1 className="text-lg font-semibold mb-2">Coupon Code</h1>
-      <div className="flex items-center border border-gray-300 rounded-full overflow-hidden">
-        <input
+      <div className="flex items-center rounded-full overflow-hidden justify-between">
+      <h1 className="text-lg font-semibold ">Coupon Code</h1>
+      <div className=' items-center border border-gray-300 rounded-full overflow-hidden '>
+      <input
           type="text"
           placeholder="Enter code"
-          className="flex-1 px-4 py-2 outline-none bg-gray-100"
+          className="flex-1 px-4 py-2 outline-none bg-white "
         />
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -207,6 +208,8 @@ const Cart = () => {
         >
           Apply Coupon
         </motion.button>
+      </div>
+       
       </div>
     </div>
       </div>

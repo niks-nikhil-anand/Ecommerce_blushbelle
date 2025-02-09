@@ -1,4 +1,3 @@
-
 import connectDB from "@/lib/dbConnect";
 import orderModels from "@/models/orderModels";
 import { NextResponse } from "next/server";
@@ -13,7 +12,6 @@ export const GET = async (request) => {
       .find()
       .populate("user")    // Populate user details
       .populate("cart")    // Populate cart details
-      .populate("address"); // Populate address details
 
     console.log("Order data fetched:", orders); // Debug fetched order data
 

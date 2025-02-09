@@ -1,24 +1,96 @@
-import React from "react";
-import { FaArrowUp, FaChartLine } from "react-icons/fa";
+"use client";
+import React, { useState, useEffect } from "react";
+import { FaChartLine } from "react-icons/fa";
+import axios from "axios";
 
 const DashboardCard = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get("/api/admin/dashboard/orders");
+        if (Array.isArray(response.data.data)) {
+          console.log("Orders fetched successfully:", response.data.data);
+          setOrders(response.data.data);
+        } else {
+          console.error("Unexpected response format:", response);
+          setError("Unexpected response format");
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        setError("Failed to fetch orders");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  const calculatePercentageIncrease = () => {
+    if (orders.length === 0) return 0;
+
+    const currentMonthOrders = orders.filter(order => {
+      const orderDate = new Date(order.createdAt);
+      const currentDate = new Date();
+      return orderDate.getMonth() === currentDate.getMonth() && orderDate.getFullYear() === currentDate.getFullYear();
+    }).length;
+
+    const previousMonthOrders = orders.filter(order => {
+      const orderDate = new Date(order.createdAt);
+      const currentDate = new Date();
+      return orderDate.getMonth() === currentDate.getMonth() - 1 && orderDate.getFullYear() === currentDate.getFullYear();
+    }).length;
+
+    if (previousMonthOrders === 0) return 100;
+
+    return ((currentMonthOrders - previousMonthOrders) / previousMonthOrders) * 100;
+  };
+
+  const percentageIncrease = calculatePercentageIncrease();
+
   return (
-    <div className="w-54 h-36 bg-gradient-to-br from-white to-indigo-50 shadow-lg hover:shadow-xl transition-shadow rounded-2xl p-6 flex justify-between items-start text-left ">
-  <div className="space-y-3">
-    <h2 className="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Orders</h2>
-    <div className="space-y-1">
-      <p className="text-3xl font-bold text-gray-900">1,482</p>
-      <div className="flex items-center space-x-1 mt-5">
-        <span className="text-sm font-medium text-green-600">↑12.5%</span>
-        <span className="text-xs text-green-600">from last month</span>
-      </div>
-    </div>
-  </div>
-  <div className="bg-indigo-100 p-3 rounded-full flex-shrink-0">
-    <FaChartLine size={28} className="text-indigo-600" />
-  </div>
-</div>
+    
+
+    <Card
+      title="Total Orders"
+      value={orders.length}
+      percentageIncrease={percentageIncrease}
+      loading={loading}
+      error={error}
+      icon={<FaChartLine size={28} className="text-indigo-600" />}
+    />
   );
 };
+
+
+const Card = ({ title, value, percentageIncrease, loading, error, icon }) => {
+  return (
+    <div className="w-54 h-36 bg-gradient-to-br from-white to-indigo-50 shadow-lg hover:shadow-xl transition-shadow rounded-2xl p-6 flex justify-between items-start text-left">
+      <div className="space-y-3">
+        <h2 className="text-sm font-medium text-gray-600 uppercase tracking-wide">{title}</h2>
+        <div className="space-y-1">
+          {loading ? (
+            <p className="text-3xl font-bold text-gray-900">Loading...</p>
+          ) : error ? (
+            <p className="text-3xl font-bold text-gray-900">Error</p>
+          ) : (
+            <p className="text-3xl font-bold text-gray-900">{value}</p>
+          )}
+          <div className="flex items-center space-x-1 mt-5">
+            <span className="text-sm font-medium text-green-600">↑{percentageIncrease.toFixed(2)}%</span>
+            <span className="text-xs text-green-600">from last month</span>
+          </div>
+        </div>
+      </div>
+      <div className="bg-indigo-100 p-3 rounded-full flex-shrink-0">{icon}</div>
+    </div>
+  );
+};
+
+
 
 export default DashboardCard;

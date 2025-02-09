@@ -127,7 +127,8 @@ const Cart = () => {
 
   <div className='flex flex-col md:flex-row w-full justify-between p-4 md:p-6 bg-white'>
       {/* Left Section - Cart Items */}
-      <div className="w-full md:w-[70%] p-4 bg-white shadow-md rounded-lg">
+      <div className='flex flex-col w-full md:w-[70%] '>
+      <div className="w-full  p-4 bg-white shadow-md rounded-lg">
         {products.length > 0 ? (
           <>
             <table className="w-full table-auto border-collapse text-sm md:text-base">
@@ -186,9 +187,34 @@ const Cart = () => {
         ) : (
           <p className="text-gray-500 text-sm md:text-base">Your cart is empty</p>
         )}
+
       </div>
+      {/* Coupon Field -- in the cart  */}
+      <div
+      className="w-full p-4 bg-white shadow-md rounded-lg mt-5"
+    >
+      <h1 className="text-lg font-semibold mb-2">Coupon Code</h1>
+      <div className="flex items-center border border-gray-300 rounded-full overflow-hidden">
+        <input
+          type="text"
+          placeholder="Enter code"
+          className="flex-1 px-4 py-2 outline-none bg-gray-100"
+        />
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-black text-white px-5 py-2 rounded-full"
+        >
+          Apply Coupon
+        </motion.button>
+      </div>
+    </div>
+      </div>
+     
+
+
       {/* Right Section - Cart Summary */}
-      <div className="w-full md:w-1/4 p-6 bg-white rounded-lg shadow-md border mt-6 md:mt-0 md:ml-6">
+      <div className="w-full md:w-1/4  p-6 bg-white rounded-lg shadow-md border mt-6 md:mt-0 md:ml-6">
         <h1 className="text-lg font-semibold mb-4">Cart Total</h1>
         <div className="flex justify-between mb-2">
           <span className="text-gray-600">Subtotal:</span>

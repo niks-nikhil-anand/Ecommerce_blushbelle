@@ -118,15 +118,11 @@ const Card = ({ title, value, percentageIncrease, loading, error, icon }) => {
           ) : error ? (
             <p className="text-3xl font-bold text-gray-900">Error</p>
           ) : (
-            <p className="text-3xl font-bold text-gray-900">{value}</p>
+            <p className="text-3xl font-bold text-gray-900">₹{value}/-</p>
           )}
-          <div className="flex items-center mt-5">
-            <span className="text-sm font-medium text-green-600">↑{percentageIncrease.toFixed(2)}%</span>
-            <span className="text-xs text-green-600">from last month</span>
-          </div>
         </div>
       </div>
-      <div className="bg-indigo-100 p-3 rounded-full flex-shrink-0">{icon}</div>
+      <div className="bg-white/20 p-3 rounded-full shadow-md flex-shrink-0">{icon}</div>
     </div>
   );
 };

@@ -73,7 +73,7 @@ const CategoriesSection = () => {
   </div>
 
   {/* Absolute Positioned Image */}
-  <div className="absolute bottom-[-60px] right-2 sm:right-[-18px] p-4 w-[80px] sm:w-[150px]">
+  <div className="absolute bottom-[-60px] right-2 sm:right-[1px] p-4 w-[80px] sm:w-[150px]">
     <Image src={AbsoluteImage} alt="Category Image" width={150} height={150} />
   </div>
 </div>

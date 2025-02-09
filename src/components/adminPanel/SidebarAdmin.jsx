@@ -1,8 +1,10 @@
 "use client";
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaAppleAlt, FaCarrot, FaPlus, FaShoppingCart, FaListUl, FaCog, FaSearch, FaHome } from "react-icons/fa";
-import { FaTable, FaProductHunt } from "react-icons/fa6";
+import {  FaPlus, FaShoppingCart, FaCog, FaHome , FaEnvelopeOpenText, FaNewspaper , FaStar } from "react-icons/fa";
+import {  MdCategory, MdOutlineLocalOffer } from "react-icons/md";
+import { FaBox, FaBoxes } from "react-icons/fa";
+import { FaTable } from "react-icons/fa6";
 import { GiOpenBook } from "react-icons/gi";
 import { MdOutlineLogout, MdPendingActions, MdOutlineRateReview } from "react-icons/md";
 import { ImProfile } from "react-icons/im";
@@ -58,21 +60,49 @@ const SidebarAdmin = () => {
 
           <h3 className="text-sm font-medium mt-4 mb-2 text-black">Products</h3>
           <Link href="/admin/dashboard/product/addProduct" passHref>
-            <SidebarItem icon={<MdAdd />} label="Add Product" selected={selectedItem === 'Add Product'} onClick={() => setSelectedItem('Add Product')} />
-          </Link>
+                  <SidebarItem 
+                    icon={<MdAdd />} 
+                    label="Add Product" 
+                    selected={selectedItem === 'Add Product'} 
+                    onClick={() => setSelectedItem('Add Product')} 
+                  />
+                </Link>
 
+                <Link href="/admin/dashboard/product/allProduct" passHref>
+                  <SidebarItem 
+                    icon={<FaBox />} 
+                    label="Products" 
+                    selected={selectedItem === 'Products'} 
+                    onClick={() => setSelectedItem('Products')} 
+                  />
+                </Link>
 
-          <Link href="/admin/dashboard/product/allProduct" passHref>
-            <SidebarItem icon={<FaProductHunt />} label="Products" selected={selectedItem === 'Products'} onClick={() => setSelectedItem('Products')} />
-          </Link>
+                <Link href="/admin/dashboard/product/addStocks" passHref>
+                  <SidebarItem 
+                  icon={<FaBoxes />} 
+                  label="Add Stocks" 
+                  selected={selectedItem === 'Add Stocks'} 
+                  onClick={() => setSelectedItem('Add Stocks')} 
+                />
+              </Link>
 
-          <Link href="/admin/dashboard/product/Coupon" passHref>
-            <SidebarItem icon={<FaProductHunt />} label="Coupons" selected={selectedItem === 'Coupon'} onClick={() => setSelectedItem('Coupon')} />
-          </Link>
+              <Link href="/admin/dashboard/product/Coupon" passHref>
+                <SidebarItem 
+                  icon={<MdOutlineLocalOffer />} 
+                  label="Coupons" 
+                  selected={selectedItem === 'Coupon'} 
+                  onClick={() => setSelectedItem('Coupon')} 
+                />
+              </Link>
 
-          <Link href="/admin/dashboard/category/allCategory" passHref>
-            <SidebarItem icon={<MdAdd />} label=" Category" selected={selectedItem === 'Add Categories'} onClick={() => setSelectedItem('Add Categories')} />
-          </Link>
+              <Link href="/admin/dashboard/category/allCategory" passHref>
+                <SidebarItem 
+                  icon={<MdCategory />} 
+                  label="Categories" 
+                  selected={selectedItem === 'Add Categories'} 
+                  onClick={() => setSelectedItem('Add Categories')} 
+                />
+              </Link>
 
           
 
@@ -96,13 +126,13 @@ const SidebarAdmin = () => {
             <SidebarItem icon={<FaPlus />} label="Add Review" />
           </Link>
           <Link href="/admin/dashboard/review/allReview" passHref>
-            <SidebarItem icon={<MdOutlineRateReview />} label="Review" />
+            <SidebarItem icon={<FaStar />} label="Reviews" />
           </Link>
           <Link href="/admin/dashboard/messages/Feedback" passHref>
-            <SidebarItem icon={<MdOutlineRateReview />} label="Feedbacks" />
+            <SidebarItem icon={<FaEnvelopeOpenText />} label="Feedbacks" />
           </Link>
           <Link href="/admin/dashboard/messages/Newsletter" passHref>
-            <SidebarItem icon={<MdOutlineRateReview />} label="Newsletter" />
+            <SidebarItem icon={<FaNewspaper />} label="Newsletter" />
           </Link>
 
 

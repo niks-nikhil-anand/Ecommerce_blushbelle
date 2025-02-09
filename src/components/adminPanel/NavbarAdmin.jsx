@@ -35,7 +35,7 @@ const Navbar = () => {
     };
 
   return (
- <nav className="bg-gray-50 text-white transition-colors duration-300 shadow-lg">
+ <nav className="bg-gray-50 text-white transition-colors duration-300 shadow-lg border border-b-2">
     <div className="flex justify-between px-4 py-5 ">
     {/* Logo Section */}
 
@@ -61,7 +61,6 @@ const Navbar = () => {
         onClick={handleLogout}
       >
         <IoMdLogOut className="text-xl" />
-        <span className="hidden md:inline">Logout</span>
       </button>
     </div>
   </div>

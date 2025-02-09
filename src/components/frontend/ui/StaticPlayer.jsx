@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import bgImage from '../../../../public/frontend/player/image9.png';
 import playerIcon from '../../../../public/frontend/player/Group15.png';
+import Link from 'next/link';
 
 const StaticPlayer = () => {
   return (
@@ -32,9 +33,11 @@ const StaticPlayer = () => {
           your go-to solution.
         </p>
         {/* Button */}
+        <Link href={"/product/679c0d28e71b7de6da3e3d4c"}>
         <button className="bg-green-600 text-white px-4 py-2 sm:px-3 sm:py-1 md:px-6 md:py-2 rounded-full hover:bg-green-700 transition shadow-lg">
           View Products
         </button>
+        </Link>
       </div>
     </div>
   );

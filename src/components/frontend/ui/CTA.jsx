@@ -48,8 +48,7 @@ const CTA = () => {
     >
       <h2 className="text-xl sm:text-2xl font-semibold">Subscribe to our Newsletter</h2>
       <p className="text-gray-600 mt-2 max-w-sm">
-        Pellentesque eu nibh eget mauris congue mattis mattis nec tellus.
-        Phasellus imperdiet elit eu magna.
+      Stay updated with our latest news and exclusive offers. Subscribe now to never miss an update!
       </p>
     </motion.div>
   

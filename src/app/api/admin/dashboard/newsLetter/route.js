@@ -49,3 +49,19 @@ export async function POST(req) {
     return NextResponse.json({ error: 'An error occurred while processing your subscription' }, { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    console.log("Connecting to the database...");
+    await connectDB();
+    console.log("Connected to the database.");
+
+    // Fetch all newsletter subscriptions
+    const subscriptions = await NewsLetter.find({}, "email createdAt");
+
+    return NextResponse.json({ subscriptions }, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching subscriptions:', error);
+    return NextResponse.json({ error: 'An error occurred while fetching subscriptions' }, { status: 500 });
+  }
+}

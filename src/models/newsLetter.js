@@ -9,6 +9,8 @@ const NewsLetterSchema = new mongoose.Schema({
     required: true,
     unique: true
   }
+},{
+  timestamps: true
 });
 
 const NewsLetter = mongoose.models.NewsLetter || mongoose.model('NewsLetter', NewsLetterSchema);

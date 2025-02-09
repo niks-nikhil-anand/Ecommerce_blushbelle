@@ -4,6 +4,7 @@ import productImage from "../../../../public/frontend/products/smartIQ/product.p
 import bg from "../../../../public/frontend/products/smartIQ/bg.png";
 import ingredients from "../../../../public/frontend/products/smartIQ/ingredients.png";
 import titleSvg from "../../../../public/frontend/products/smartIQ/title_shape.png";
+import Link from "next/link";
 
 const SmartIQGrid = () => {
   return (
@@ -36,11 +37,13 @@ const SmartIQGrid = () => {
       go-to solution.
     </p>
     <div className="flex flex-col sm:flex-row items-center sm:items-start mb-4">
+      <Link href={"/product/679c0d28e71b7de6da3e3d4c"} >
       <button className="bg-purple-600 text-white px-5 sm:px-6 py-2 rounded-full font-semibold shadow-md hover:bg-purple-700 focus:outline-none">
         Order Now
       </button>
+      </Link>
       <div className="mt-2 sm:mt-0 sm:ml-6 text-lg sm:text-xl font-bold text-gray-800">
-        $56.99 <span className="line-through text-orange-500">$59.99</span>
+      ₹1999 <span className="line-through text-orange-500">₹3000</span>
       </div>
     </div>
   </div>

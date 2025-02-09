@@ -189,29 +189,35 @@ const Cart = () => {
         )}
 
       </div>
-      {/* Coupon Field -- in the cart  */}
-      <div
-      className="w-full p-4 bg-white shadow-md rounded-lg mt-5"
-    >
-      <div className="flex items-center rounded-full overflow-hidden justify-between">
-      <h1 className="text-lg font-semibold ">Coupon Code</h1>
-      <div className=' items-center border border-gray-300 rounded-full overflow-hidden '>
+
+
+
+     {/* Coupon Field -- in the cart */}
+<div className="w-full p-4 bg-white shadow-md rounded-lg mt-5">
+  <div className="flex flex-col md:flex-row items-center justify-between">
+    {/* Heading */}
+    <h1 className="text-lg font-semibold mb-4 md:mb-0">Coupon Code</h1>
+
+    {/* Input and Button Container */}
+    <div className="w-full md:w-auto flex flex-col sm:flex-row items-center border border-gray-300 rounded-full overflow-hidden">
+      {/* Input Field */}
       <input
-          type="text"
-          placeholder="Enter code"
-          className="flex-1 px-4 py-2 outline-none bg-white "
-        />
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-black text-white px-5 py-2 rounded-full"
-        >
-          Apply Coupon
-        </motion.button>
-      </div>
-       
-      </div>
+        type="text"
+        placeholder="Enter code"
+        className="flex-1 px-4 py-2 outline-none bg-white w-full sm:w-auto"
+      />
+
+      {/* Apply Coupon Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="bg-black text-white px-5 py-2 rounded-full w-full sm:w-auto mt-2 sm:mt-0"
+      >
+        Apply Coupon
+      </motion.button>
     </div>
+  </div>
+</div>
       </div>
      
 

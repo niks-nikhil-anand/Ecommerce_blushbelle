@@ -37,6 +37,12 @@ const ProductForm = () => {
   const [imageInputs, setImageInputs] = useState([0]);
   const [loading, setLoading] = useState(false);
 
+  const ReactQuill = useMemo(() => dynamic(() => import('react-quill'), { 
+    ssr: false,
+    loading: () => <p>Loading...</p>,
+  }), []);
+
+
 
   useEffect(() => {
     const fetchCategories = async () => {

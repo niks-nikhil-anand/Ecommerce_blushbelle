@@ -32,6 +32,7 @@ const CheckoutPage = () => {
     const fetchCartFromLocalStorage = () => {
       const cartData = JSON.parse(localStorage.getItem("cart")); 
       if (cartData) {
+        console.log("Cart data found in local storage:", cartData);
         setCart(cartData);
       }
     };

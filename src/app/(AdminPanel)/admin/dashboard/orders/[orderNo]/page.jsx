@@ -128,18 +128,17 @@ const Page = () => {
   }
 
   return (
-    <div className="bg-gray-100  p-4 max-h-[70vh">
+    <div className="bg-gray-100  p-4 max-h-[90vh]">
       <div className="p-4 border rounded-md shadow-sm bg-white">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-800">Order Details</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Order Details </h2>
           <div className="flex space-x-4">
            
           </div>
         </div>
       </div>
-
       {/* Order Details Section */}
-      <div className="mt-6 p-6 border rounded-md shadow-sm bg-white max-h-[60vh] overflow-y-auto">
+      <div className="mt-6 p-6 border rounded-md shadow-sm bg-white max-h-[65vh] overflow-y-auto custom-scrollbar">
         <div className="flex justify-between items-center border-b pb-4 mb-4">
           <h2 className="text-lg font-semibold">
             Invoice <span className="text-orange-600">#{invoiceData?.invoiceNo}</span>

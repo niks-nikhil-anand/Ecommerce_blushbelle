@@ -1,6 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { FaChartLine } from "react-icons/fa";
+import {
+  FaDollarSign,
+  FaCalendarAlt,
+  FaGlobe,
+  FaStore,
+} from "react-icons/fa";
 import axios from "axios";
 
 const DashboardCard = () => {
@@ -53,16 +58,49 @@ const DashboardCard = () => {
   const percentageIncrease = calculatePercentageIncrease();
 
   return (
-    
 
-    <Card
-      title="Total Orders"
-      value={orders.length}
-      percentageIncrease={percentageIncrease}
-      loading={loading}
-      error={error}
-      icon={<FaChartLine size={28} className="text-indigo-600" />}
-    />
+    <div className="flex gap-5">
+  {/* Total Revenue Card */}
+  <Card
+    title="Total Revenue"
+    value={orders.length}
+    percentageIncrease={percentageIncrease}
+    loading={loading}
+    error={error}
+    icon={<FaDollarSign size={28} className="text-green-600" />} // Dollar sign for revenue
+  />
+
+  {/* Total Revenue This Month Card */}
+  <Card
+    title="Total Revenue This Month"
+    value={orders.length}
+    percentageIncrease={percentageIncrease}
+    loading={loading}
+    error={error}
+    icon={<FaCalendarAlt size={28} className="text-blue-600" />} // Calendar for monthly revenue
+  />
+
+  {/* Total Revenue (Online) Card */}
+  <Card
+    title="Total Revenue (Online)"
+    value={orders.length}
+    percentageIncrease={percentageIncrease}
+    loading={loading}
+    error={error}
+    icon={<FaGlobe size={28} className="text-purple-600" />} // Globe for online revenue
+  />
+
+  {/* Total Revenue (Offline) Card */}
+  <Card
+    title="Total Revenue (Offline)"
+    value={orders.length}
+    percentageIncrease={percentageIncrease}
+    loading={loading}
+    error={error}
+    icon={<FaStore size={28} className="text-orange-600" />} // Store for offline revenue
+  />
+</div>
+    
   );
 };
 
@@ -74,13 +112,15 @@ const Card = ({ title, value, percentageIncrease, loading, error, icon }) => {
         <h2 className="text-sm font-medium text-gray-600 uppercase tracking-wide">{title}</h2>
         <div className="space-y-1">
           {loading ? (
-            <p className="text-3xl font-bold text-gray-900">Loading...</p>
+            <p className="text-xl font-bold text-gray-900">
+              Loading...
+              </p>
           ) : error ? (
             <p className="text-3xl font-bold text-gray-900">Error</p>
           ) : (
             <p className="text-3xl font-bold text-gray-900">{value}</p>
           )}
-          <div className="flex items-center space-x-1 mt-5">
+          <div className="flex items-center mt-5">
             <span className="text-sm font-medium text-green-600">↑{percentageIncrease.toFixed(2)}%</span>
             <span className="text-xs text-green-600">from last month</span>
           </div>

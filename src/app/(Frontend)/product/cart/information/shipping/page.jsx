@@ -279,7 +279,7 @@ const CheckoutPage = () => {
         });
   
         if (response.status === 200) {
-          router.push(`/product/cart/information/shipping/${cartId}/success`);
+          router.push(`/product/cart/information/shipping/${cartId}/ThankYouPage`);
         }
       } else if (paymentMethod === "Online Payment") {
         // Call Razorpay initiation method

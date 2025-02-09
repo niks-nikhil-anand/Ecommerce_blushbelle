@@ -237,7 +237,7 @@ const Cart = () => {
           <span>Total:</span>
           <span className="text-gray-900">₹{estimatedTotal()}</span>
         </div>
-        <Link  href="/cart/information">
+        <Link  href="/product/cart/information">
         <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
           className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-full transition-all">
           Proceed to checkout

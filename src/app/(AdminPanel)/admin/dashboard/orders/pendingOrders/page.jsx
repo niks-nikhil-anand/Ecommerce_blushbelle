@@ -52,7 +52,7 @@ const Products = () => {
   }
 
   if (!orders.length) {
-    return <p className="text-center text-gray-600">No orders available.</p>;
+    return <p className="text-center text-gray-600">No pending Orders available.</p>;
   }
 
   // Open full-screen modal
@@ -74,7 +74,8 @@ const Products = () => {
   return (
     <div className="w-full p-4 bg-white shadow-lg  h-[80vh] min-w-[100%] mx-auto mt-4 ">
        <div className="flex justify-between  px-4 py-2 bg-gray-200 text-black  rounded-md my-4 font-medium">
-                <h2 className="text-lg font-semibold text-gray-800">Order Details</h2>
+                <h2 className="text-lg font-semibold text-gray-800">Pending Order Details</h2>
+                
               </div>
       {/* Wrapper with horizontal and vertical scrollbars */}
       <div className="overflow-x-auto overflow-y-auto max-h-[70vh] custom-scrollbar">

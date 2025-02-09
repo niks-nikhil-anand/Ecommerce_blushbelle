@@ -66,6 +66,10 @@ const SidebarAdmin = () => {
             <SidebarItem icon={<FaProductHunt />} label="Products" selected={selectedItem === 'Products'} onClick={() => setSelectedItem('Products')} />
           </Link>
 
+          <Link href="/admin/dashboard/product/Coupon" passHref>
+            <SidebarItem icon={<FaProductHunt />} label="Coupons" selected={selectedItem === 'Coupon'} onClick={() => setSelectedItem('Coupon')} />
+          </Link>
+
           <Link href="/admin/dashboard/category/allCategory" passHref>
             <SidebarItem icon={<MdAdd />} label=" Category" selected={selectedItem === 'Add Categories'} onClick={() => setSelectedItem('Add Categories')} />
           </Link>
@@ -83,24 +87,34 @@ const SidebarAdmin = () => {
 
           <h3 className="text-sm font-medium mt-4 mb-2 text-black">Users</h3>
           <Link href="/admin/dashboard/users" passHref>
-            <SidebarItem icon={<FaTable />} label="Table View" selected={selectedItem === 'Table View'} onClick={() => setSelectedItem('Table View')} />
+            <SidebarItem icon={<FaTable />} label="All Users" selected={selectedItem === 'All Users'} onClick={() => setSelectedItem('All Users')} />
           </Link>
-          <Link href="/admin/dashboard/user/search" passHref>
-            <SidebarItem icon={<FaSearch />} label="Search Users" selected={selectedItem === 'Search Users'} onClick={() => setSelectedItem('Search Users')} />
-          </Link>
+          
 
-          <h3 className="text-sm font-medium mt-4 mb-2 text-black">Review</h3>
+          <h3 className="text-sm font-medium mt-4 mb-2 text-black">Messages</h3>
           <Link href="/admin/dashboard/review/addReview" passHref>
             <SidebarItem icon={<FaPlus />} label="Add Review" />
           </Link>
           <Link href="/admin/dashboard/review/allReview" passHref>
             <SidebarItem icon={<MdOutlineRateReview />} label="Review" />
           </Link>
+          <Link href="/admin/dashboard/messages/Feedback" passHref>
+            <SidebarItem icon={<MdOutlineRateReview />} label="Feedbacks" />
+          </Link>
+          <Link href="/admin/dashboard/messages/Newsletter" passHref>
+            <SidebarItem icon={<MdOutlineRateReview />} label="Newsletter" />
+          </Link>
+
 
           <h3 className="text-sm font-medium mt-4 mb-2 text-black">Account</h3>
           <Link href="/admin/dashboard/profile" passHref>
             <SidebarItem icon={<ImProfile />} label="Profile" selected={selectedItem === 'Profile'} onClick={() => setSelectedItem('Profile')} />
           </Link>
+
+          <Link href="/admin/dashboard/profile" passHref>
+            <SidebarItem icon={<ImProfile />} label="Our Staff" selected={selectedItem === 'Profile'} onClick={() => setSelectedItem('Profile')} />
+          </Link>
+
           <Link href="/settings" passHref>
             <SidebarItem icon={<FaCog />} label="Settings" selected={selectedItem === 'Settings'} onClick={() => setSelectedItem('Settings')} />
           </Link>

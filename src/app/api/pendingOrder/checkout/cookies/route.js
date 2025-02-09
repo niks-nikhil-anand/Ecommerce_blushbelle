@@ -3,6 +3,9 @@ import { cookies } from "next/headers";
 import jwt from 'jsonwebtoken';
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
+
 export const GET = async (req) => {
   try {
     console.log("Connecting to the database...");

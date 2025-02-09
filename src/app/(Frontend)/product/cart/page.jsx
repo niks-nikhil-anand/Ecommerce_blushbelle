@@ -119,126 +119,101 @@ const Cart = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen shadow-lg border-b-black-100 border p-4">
   <div className="flex flex-col md:flex-row items-center w-full">
-    <h1 className="text-2xl md:text-5xl font-semibold text-orange-600 mb-2 md:mb-4">Your Cart</h1>
+    <h1 className="text-2xl md:text-5xl font-semibold text-orange-600 mb-2 md:mb-4">My Shopping Cart</h1>
     <Link href={"/"}>
       <h1 className="text-sm md:text-xl font-semibold text-blue-500 mb-2 md:mb-4 underline ml-0 md:ml-5 mt-1 md:mt-3 hover:cursor-pointer hover:underline-offset-1">Continue Shopping</h1>
     </Link>
   </div>
 
-  <div className="w-full p-2 md:p-4 bg-white">
-    {products.length > 0 ? (
-      <>
-        <table className="w-full table-auto border-collapse text-xs md:text-base">
-          <thead>
-            <tr>
-              <th className="px-2 md:px-4 py-2 text-left">Product</th>
-              <th className="px-2 md:px-4 py-2 text-center hidden md:table-cell ">Quantity</th>
-              <th className="px-2 md:px-4 py-2 text-right">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id} className="border-b">
-                <td className="flex items-center py-2">
-                  <Image
-                     src={product.featuredImage}
-                     width={64}  // Matches md:w-16 (16 * 4 = 64)
-                     height={64} // Matches md:h-16
-                    alt={product.name}
-                    className="w-9 md:w-9 h-16 md:h-16 object-cover mr-2 md:mr-4  hover:cursor-pointer"
-                  />
-                  <div className="flex flex-col">
-                    <h2 className="text-xs md:text-lg hover:cursor-pointer hover:underline">{product.name}</h2>
-                    <div className="flex gap-2 md:gap-3">
-                      <p className="text-gray-500 text-xs md:text-sm">
-                        ₹<span className="line-through">{product.originalPrice}</span>
-                      </p>
-                      <p className="text-black text-sm md:text-lg">₹{product.salePrice}</p>
-                    </div>
-                  </div>
-                </td>
+  <div className='flex flex-col md:flex-row w-full justify-between p-4 md:p-6 bg-white'>
+      {/* Left Section - Cart Items */}
+      <div className="w-full md:w-[70%] p-4 bg-white shadow-md rounded-lg">
+        {products.length > 0 ? (
+          <>
+            <table className="w-full table-auto border-collapse text-sm md:text-base">
+              <thead>
+                <tr className='border-b'>
+                  <th className="px-4 py-2 text-left">Product</th>
+                  <th className="px-4 py-2 text-center hidden md:table-cell">Quantity</th>
+                  <th className="px-4 py-2 text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product) => (
+                  <tr key={product.id} className="border-b">
+                    <td className="flex items-center py-3">
+                      <Image
+                        src={product.featuredImage}
+                        width={64}  
+                        height={64} 
+                       alt={product.name}
+                       className="w-9 md:w-9 h-16 md:h-16 object-cover mr-2 md:mr-4  hover:cursor-pointer"
+                      />
+                      <div>
+                        <h2 className="text-sm md:text-lg cursor-pointer hover:underline">{product.name}</h2>
+                        <div className="flex gap-2">
+                          <p className="text-gray-500 text-sm line-through">₹{product.originalPrice}</p>
+                          <p className="text-black text-sm md:text-lg">₹{product.salePrice}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="text-center hidden md:table-cell">
+                      <div className="flex items-center justify-center">
+                        <button className="px-2 py-1 border border-gray-300 rounded-l hover:bg-gray-200" onClick={() => decrementQuantity(product._id)}>-</button>
+                        <span className="px-3 py-2">{product.quantity}</span>
+                        <button className="px-2 py-1 border border-gray-300 rounded-r hover:bg-gray-200" onClick={() => incrementQuantity(product._id)}>+</button>
+                        <button className="text-red-500 hover:text-red-700 ml-4" onClick={() => removeItem(product._id)}>
+                          <FaTrashAlt size={16} />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="text-right text-sm md:text-lg font-medium">₹{product.salePrice * product.quantity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="mt-6 text-right">
+              <p className="text-xs md:text-sm font-semibold">Taxes, discounts, and shipping calculated at checkout</p>
+            </div>
+            <div className='flex justify-start mt-6'>
+            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+          className="mt-4 w-[12rem] bg-gray-400 hover:bg-gray-700 text-white font-semibold py-3 rounded-full transition-all">
+             Return to Shop
+        </motion.button>
 
-                <td className="text-center hidden md:table-cell">
-                  <div className="flex items-center justify-center">
-                    <button
-                      className="px-2 py-1 text-gray-600 border border-gray-300 rounded-l hover:bg-gray-200"
-                      onClick={() => decrementQuantity(product._id)}
-                    >
-                      -
-                    </button>
-                    <span className="px-2 md:px-4 py-2">{product.quantity}</span>
-                    <button
-                      className="px-2 py-1 text-gray-600 border border-gray-300 rounded-r hover:bg-gray-200"
-                      onClick={() => incrementQuantity(product._id)}
-                    >
-                      +
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700 ml-2 md:ml-4"
-                      onClick={() => removeItem(product._id)}
-                    >
-                      <FaTrashAlt size={16} />
-                    </button>
-                  </div>
-                </td>
-
-
-
-                <div className='flex flex-col '>
-                <td className="text-right text-xs md:text-lg font-medium">
-                  ₹{totalPriceForProduct(product)}
-                </td>
-                <td className="text-center md:hidden">
-                  <div className="flex items-center justify-center">
-                    <button
-                      className="px-2 py-1 text-gray-600 border border-gray-300 rounded-l hover:bg-gray-200"
-                      onClick={() => decrementQuantity(product._id)}
-                    >
-                      -
-                    </button>
-                    <span className="px-2 md:px-4 py-2">{product.quantity}</span>
-                    <button
-                      className="px-2 py-1 text-gray-600 border border-gray-300 rounded-r hover:bg-gray-200"
-                      onClick={() => incrementQuantity(product._id)}
-                    >
-                      +
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700 ml-2 md:ml-4"
-                      onClick={() => removeItem(product._id)}
-                    >
-                      <FaTrashAlt size={16} />
-                    </button>
-                  </div>
-                </td>
-                </div>
-               
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div className="mt-4 text-right">
-          <p className="text-base md:text-lg font-semibold">
-            <span className='text-[#D07021]'>Estimated total:</span> <span className="pl-3">₹{estimatedTotal()}</span>
-          </p>
-          <p className="text-xs md:text-sm font-semibold">
-            Taxes, discounts, and shipping calculated at checkout
-          </p>
-          <Link href={"cart/information"}>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-4 py-3 bg-[#6a0dad] text-white rounded-full shadow-lg hover:bg-[#4b0082] transition text-sm md:text-base mt-5 w-full md:w-1/5">
-              Check out
-            </motion.button>
-          </Link>
+            </div>
+          </>
+        ) : (
+          <p className="text-gray-500 text-sm md:text-base">Your cart is empty</p>
+        )}
+      </div>
+      {/* Right Section - Cart Summary */}
+      <div className="w-full md:w-1/4 p-6 bg-white rounded-lg shadow-md border mt-6 md:mt-0 md:ml-6">
+        <h1 className="text-lg font-semibold mb-4">Cart Total</h1>
+        <div className="flex justify-between mb-2">
+          <span className="text-gray-600">Subtotal:</span>
+          <span className="text-gray-900">₹{estimatedTotal()}</span>
         </div>
-      </>
-    ) : (
-      <p className="text-gray-500 text-sm md:text-base">Your cart is empty</p>
-    )}
-  </div>
+        <div className="flex justify-between mb-2">
+          <span className="text-gray-600">Shipping:</span>
+          <span className="text-green-600 font-medium">Free</span>
+        </div>
+        <div className="flex justify-between border-t pt-2 font-semibold">
+          <span>Total:</span>
+          <span className="text-gray-900">₹{estimatedTotal()}</span>
+        </div>
+        <Link  href="/cart/information">
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+          className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-full transition-all">
+          Proceed to checkout
+        </motion.button>
+        </Link>
+        
+      </div>
+    </div>
+
+ 
+
 </div>
 
 

@@ -83,6 +83,7 @@ const Navbar = () => {
         { name: "Home", link: "/" },
         { name: "Students", link: "/students" },
         { name: "Immunity Booster", link: "/immunity-booster" },
+        { name: "Brain Booster", link: "/immunity-booster" },
       ].map((item, index) => (
         <motion.li
           key={index}

@@ -51,9 +51,10 @@ const couponSchema = new mongoose.Schema({
     },
   ],
   applicableCategories: [
-    {
-      type: String, // Coupon can be applicable to specific categories
-    },
+   {
+     type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+   }
   ],
 },{
   timestamps: true

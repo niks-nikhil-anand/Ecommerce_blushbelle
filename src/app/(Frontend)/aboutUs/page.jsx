@@ -1,123 +1,97 @@
-'use client'
-import React from 'react'
-import { FaMapMarkerAlt } from 'react-icons/fa'
-import { motion } from 'framer-motion'
+"use client"
+import { motion } from 'framer-motion';
+import { FaLeaf, FaFlask, FaHandsHelping, FaRecycle } from 'react-icons/fa';
+import Group1 from '../../../../public/frontend/heroSection/Group1.png';
+import Image from 'next/image';
 
-const locations = [
-  {
-    title: 'Main Branch',
-    address: 'Kozy Biotech , 25, City Plaza, Kayam Nagar , Bhojpur',
-    PinCode: '802314',
-  },
-]
-
-
-
-export default function AboutPageOne() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
-
+function AboutUs() {
+  const values = [
+    {
+      icon: <FaLeaf className="text-green-500 text-4xl mb-4 mx-auto" />,
+      title: 'Natural Ingredients',
+      description: 'We prioritize using natural, plant-based ingredients in all our products.',
+    },
+    {
+      icon: <FaFlask className="text-green-500 text-4xl mb-4 mx-auto" />,
+      title: 'Innovative Formulations',
+      description: 'Our team develops innovative formulations to enhance health and beauty.',
+    },
+    {
+      icon: <FaHandsHelping className="text-green-500 text-4xl mb-4 mx-auto" />,
+      title: 'Community Support',
+      description: 'We are committed to supporting and giving back to our community.',
+    },
+    {
+      icon: <FaRecycle className="text-green-500 text-4xl mb-4 mx-auto" />,
+      title: 'Sustainability',
+      description: 'We focus on sustainable practices to protect our planet for future generations.',
+    },
+  ];
   return (
-    <div>
-      <div className="mx-auto max-w-7xl px-4">
-        {/* Hero Map */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col space-y-8 pb-10 pt-12 md:pt-24"
-        >
-          <div className="max-w-max rounded-full border bg-gray-50 p-1 px-3">
-            <p className="text-xs font-semibold leading-normal md:text-sm">About the Cleanveda</p>
-          </div>
-          <p className="text-3xl font-bold text-gray-900 md:text-5xl md:leading-10">
-            Made with love, right here in India
-          </p>
-          <p className="w-full text-base text-gray-600 md:text-xl">
-          Unlock optimal wellness at CleanVeda.com with our premium natural health supplements, herbal personal care products, and rejuvenating skin and hair care solutions. Discover effective, plant-based formulations crafted for holistic health, vitality, and beauty. Shop our organic, cruelty-free products today and elevate your health and beauty regimen with the power of nature!
-          </p>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-full space-y-4"
-        >
-          <img
-            className="h-[200px] w-full rounded-xl object-cover md:h-full"
-            src="https://dev-ui-image-assets.s3.ap-south-1.amazonaws.com/google-map.jpg"
-            alt="Google Map"
-          />
-        </motion.div>
-        {/* Locations */}
-        <div className="my-8 flex flex-col gap-y-6 md:flex-row justify-start">
-          {locations.map((location) => (
-            <motion.div
-              key={location.title}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-col space-y-3 md:w-2/4 lg:w-1/5"
-            >
-              <FaMapMarkerAlt className="h-5 w-5" />
-              <p className="w-full text-xl font-semibold text-gray-900">Kozy Biorech</p>
-              <p className="text-sm font-medium">{location.address}</p>
-            </motion.div>
-          ))}
+    <div className="bg-white text-gray-800">
+      {/* Hero Section */}
+      <section className="relative">
+        <img
+          src="path_to_high_quality_image.jpg"
+          alt="Natural wellness"
+          className="w-full h-64 object-cover"
+        />
+        <div className="absolute inset-0 bg-green-900 bg-opacity-50 flex items-center justify-center">
+          <motion.h1
+            className="text-4xl font-bold text-white"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+          >
+            About CleanVeda
+          </motion.h1>
         </div>
-        <hr className="mt-20" />
-        {/* Greetings */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="mt-16 flex items-center"
-        >
-          <div className="space-y-6 md:w-3/4 ">
-            <div className="max-w-max rounded-full border bg-gray-50 p-1 px-3">
-              <p className="text-xs font-semibold leading-normal md:text-sm">Join Us &rarr;</p>
-            </div>
-            <p className="text-3xl font-bold text-gray-900 md:text-4xl">Meet our team</p>
-            <p className="max-w-4xl text-base text-gray-700 md:text-xl">
-              Our philosophy is simple — hire a team of diverse, passionate people and foster a
-              culture that empowers you to do your best work.
-            </p>
-          </div>
-        </motion.div>
-        <hr className="mt-20" />
+      </section>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center gap-x-4 gap-y-4 py-16 md:flex-row"
-        >
-          <div className="space-y-6">
-            <p className="text-sm font-semibold md:text-base">Join our team &rarr;</p>
-            <p className="text-3xl font-bold md:text-4xl">We&apos;re just getting started</p>
-            <p className="text-base text-gray-600 md:text-lg">
-              Our philosophy is simple — hire a team of diverse, passionate people and foster a
-              culture that empowers you to do your best work.
-            </p>
-            <button
-              type="button"
-              className="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white md:px-6 md:py-3"
-            >
-              We are hiring
-            </button>
+      {/* Company Story */}
+      <section className="py-12 px-4 md:px-16">
+        <div className="md:flex md:items-center">
+          <div className="md:w-1/2">
+          <h2 className="text-3xl font-semibold mb-4">Our Commitment to Natural Wellness</h2>
+          <p className="mb-6">
+            At CleanVeda.com, we are dedicated to providing premium natural health supplements, herbal personal care products, and rejuvenating skin and hair care solutions. Our effective, plant-based formulations are meticulously crafted to promote holistic health, vitality, and beauty.
+          </p>
+          <p>
+            Explore our range of organic, cruelty-free products today, and enhance your health and beauty regimen with the transformative power of nature.
+          </p>
           </div>
-          <div className="w-full">
-            <img
-              src="https://plus.unsplash.com/premium_photo-1683121855240-5d3f67a5fdec?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aGlyaW5nfGVufDB8fDB8fHww"
-              className="max-w-full rounded-lg object-cover"
-              alt="Hiring Banner"
+          <div className="md:w-1/2 md:pl-8 mt-8 md:mt-0 flex justify-end">
+          <Image
+              src="/frontend/heroSection/Group1.png"
+              alt="CleanVeda products"
+              width={600} // Replace with the actual width of your image
+              height={400} // Replace with the actual height of your image
+              className="w-[20rem] h-auto "
             />
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </section>
+
+      {/* Values and Mission */}
+      <section className="bg-gray-100 py-12 px-4 md:px-16">
+        <h2 className="text-3xl font-semibold text-center mb-8">Our Values</h2>
+        <div className="flex flex-wrap justify-center">
+        <div className="flex flex-wrap justify-center">
+      {values.map((value, index) => (
+        <div key={index} className="w-full md:w-1/3 p-4">
+          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+            {value.icon}
+            <h3 className="text-xl font-semibold mb-2">{value.title}</h3>
+            <p>{value.description}</p>
+          </div>
+        </div>
+      ))}
     </div>
-  )
+          {/* Repeat similar blocks for other values */}
+        </div>
+      </section>
+    </div>
+  );
 }
+
+export default AboutUs;

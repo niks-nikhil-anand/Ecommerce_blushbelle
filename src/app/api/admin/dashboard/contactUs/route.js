@@ -1,8 +1,7 @@
-import { NextResponse } from 'next/server';
-import connectDB from '@/utils/connectDB';
-import ContactUs from '@/models/ContactUs';
-import resend from '@/utils/resend';
-import ContactUsEmail from '@/emails/ContactUsEmail';
+import connectDB from "@/lib/dbConnect";
+import contactUsModels from "@/models/contactUsModels";
+import { NextResponse } from "next/server";
+
 
 export async function POST(req) {
   try {
@@ -11,34 +10,32 @@ export async function POST(req) {
     console.log("Connected to the database.");
 
     // Parse incoming request data
-    const { first_name, last_name, email, phone_number, message } = await req.json();
+    const { firstName, lastName, email, mobileNumber, message } = await req.json();
 
     // Validate the request data
-    if (!first_name || !last_name || !email || !phone_number || !message) {
+    if (!firstName || !lastName || !email || !mobileNumber || !message) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
-    // Check if the email already exists in the database (optional, if you want to prevent multiple submissions)
-    const existingEntry = await ContactUs.findOne({ email, message });
+    // Check if the email already exists in the database
+    const existingEntry = await contactUsModels.findOne({ email, message });
     if (existingEntry) {
       return NextResponse.json({ error: 'You have already submitted this message.' }, { status: 409 });
     }
 
+    // Get the authenticated user (if applicable)
+
     // Save contact form data to the database
-    const newContactEntry = new ContactUs({ first_name, last_name, email, phone_number, message });
+    const newContactEntry = new contactUsModels({
+      firstName,
+      lastName,
+      email,
+      mobileNumber,
+      message,
+    });
     await newContactEntry.save();
 
-    // Send confirmation email
-    await resend.emails.send({
-      from: 'no-reply@cleanveda.com',
-      to: email,
-      subject: 'Thank You for Contacting Cleanveda!',
-      react: (
-        <ContactUsEmail firstName={first_name} />
-      ),
-    });
-
-    console.log("Confirmation email sent to:", email);
+    console.log("Message saved successfully for email:", email);
 
     return NextResponse.json({ message: 'Your message has been sent successfully!' }, { status: 200 });
   } catch (error) {

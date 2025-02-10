@@ -30,22 +30,15 @@ function AboutUs() {
   return (
     <div className="bg-white text-gray-800">
       {/* Hero Section */}
-      <section className="relative">
-        <img
-          src="path_to_high_quality_image.jpg"
-          alt="Natural wellness"
-          className="w-full h-64 object-cover"
-        />
-        <div className="absolute inset-0 bg-green-900 bg-opacity-50 flex items-center justify-center">
-          <motion.h1
-            className="text-4xl font-bold text-white"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
-            About CleanVeda
-          </motion.h1>
-        </div>
+      <section className="relative h-64 bg-green-900 flex items-center justify-center">
+        <motion.h1
+          className="text-4xl font-bold text-white"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          About CleanVeda
+        </motion.h1>
       </section>
 
       {/* Company Story */}

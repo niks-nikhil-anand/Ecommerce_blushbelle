@@ -1,411 +1,259 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
-import { FiSearch, FiUser, FiShoppingBag } from "react-icons/fi";
-import { AiOutlineDown, AiOutlineUp, AiOutlineMenu } from "react-icons/ai";
+import { FiShoppingCart, FiSearch, FiMenu, FiX, FiUser, FiShoppingBag } from "react-icons/fi";
+import { AiOutlineUp, AiOutlineDown } from "react-icons/ai";
 import Image from 'next/image';
-import logo from '../../../../public/IconHub/grocery.png'; 
-import waveNav from '../../../../public/frontend/SvgAssets/wave-nav.svg'; // Adjust the path to your logo
+import logo from "../../../../public/logo/cleanvedaLogo.png";
 import Link from "next/link";
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
-
 const Navbar = () => {
   const [userId, setUserId] = useState(null);
-    const [isShopOpen, setIsShopOpen] = useState(false);
-    const [isLearnOpen, setIsLearnOpen] = useState(false);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const router = useRouter();
 
-    const toggleShopDropdown = () => {
-        setIsShopOpen((prev) => !prev);
-        if (isLearnOpen) setIsLearnOpen(false);
-      };
-    
-      const toggleLearnDropdown = () => {
-        setIsLearnOpen((prev) => !prev);
-        if (isShopOpen) setIsShopOpen(false);
-      };
-      const toggleAccountDropdown = () => {
-        setIsAccountOpen((prev) => !prev);
-        if (isAccountOpen) setIsAccountOpen(false);
-      };
-    
-      const toggleMobileMenu = () => {
-        setIsMobileMenuOpen((prev) => !prev);
-      };
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/product/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
 
-      useEffect(() => {
-        // Fetch user details from the API
-        const fetchUser = async () => {
-          try {
-            const response = await fetch('/api/users/userDetails/cookies');
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            console.log(data)
-            setUserId(data._id); // Assuming the API returns an object with the `_id` field
-          } catch (error) {
-            console.error('Failed to fetch user details:', error);
-          }
-        };
-    
-        fetchUser();
-      }, []);
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
-      const handleLogout = async () => {
-        try {
-          toast.loading('Logging out...');
-          await fetch('/api/users/auth/logout', {
-            method: 'POST', 
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          toast.dismiss(); // Dismiss the loading toast
-          toast.success('Logged out successfully!');
-          window.location.href = '/';
-        } catch (error) {
-          toast.dismiss(); // Dismiss the loading toast
-          toast.error('Logout failed. Please try again.');
-          console.error('Logout failed:', error);
+  const toggleAccountDropdown = () => {
+    setIsAccountOpen(!isAccountOpen);
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/users/userDetails/cookies');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
-      };
-    
-    
-  return (
-    <nav className="bg-white shadow-md w-full py-4 px-6 md:px-12 relative z-50">
-      <div className="flex justify-between items-center">
-  {/* Mobile Menu Icon */}
-  <div className="md:hidden">
-    <AiOutlineMenu
-      className="w-8 h-8 cursor-pointer"
-      onClick={toggleMobileMenu}
-    />
-  </div>
+        const data = await response.json();
+        console.log(data);
+        setUserId(data._id);
+      } catch (error) {
+        console.error('Failed to fetch user details:', error);
+      }
+    };
 
-  {/* Logo */}
-  <div className="flex justify-center md:hidden">
-    <Link href={`/users/${userId}`}>
-    <Image src={logo} alt="Logo" width={40} height={40} />
-    </Link>
-  </div>
+    fetchUser();
+  }, []);
 
-  {/* Right Side - Search, User, Cart Icons */}
-  <div className="flex items-center space-x-4 md:hidden">
-    <FiSearch className="w-6 h-6 cursor-pointer" />
-    <FiUser className="w-6 h-6 cursor-pointer" />
-    <Link  href={`/users/${userId}/cart`}>
-    <FiShoppingBag className="w-6 h-6 cursor-pointer" />
-    </Link>
-
-  </div>
-</div>
-
-{/* Mobile Menu */}
-{isMobileMenuOpen && (
-  <motion.div
-    initial={{ height: 0, opacity: 0 }}
-    animate={{ height: "auto", opacity: 1 }}
-    transition={{ duration: 0.5, ease: "easeInOut" }}
-    className="md:hidden bg-white w-full mt-4 p-6 shadow-lg rounded-lg"
-  >
-    {/* Animate links individually for a staggered effect */}
-    <motion.ul
-      initial="hidden"
-      animate="visible"
-      variants={{
-        hidden: { opacity: 0, y: -10 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: {
-            delayChildren: 0.3,
-            staggerChildren: 0.2,
-          },
+  const handleLogout = async () => {
+    try {
+      toast.loading('Logging out...');
+      await fetch('/api/users/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      }}
-      className="space-y-6"
+      });
+      toast.dismiss();
+      toast.success('Logged out successfully!');
+      window.location.href = '/';
+    } catch (error) {
+      toast.dismiss();
+      toast.error('Logout failed. Please try again.');
+      console.error('Logout failed:', error);
+    }
+  };
+
+  return (
+    <motion.nav
+      initial={{ y: -50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white shadow-md px-6 py-3"
     >
-      <motion.li variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}>
-        <button
-          onClick={toggleShopDropdown}
-          className="text-lg font-medium flex items-center justify-between w-full"
-        >
-          Shop
-          {isShopOpen ? <AiOutlineUp className="ml-2" /> : <AiOutlineDown className="ml-2" />}
-        </button>
-        {isShopOpen && (
-          <motion.ul
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="mt-2 space-y-2 pl-4"
+      <div className="flex items-center justify-between">
+        {/* Mobile Header Section */}
+        <div className="flex items-center justify-between w-full lg:w-auto">
+          {/* Mobile Menu Button */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="lg:hidden"
           >
-            <li>
-              <a href="#" className="block hover:text-blue-600">
-                Men`&apos;s Health
-              </a>
-            </li>
-            <li>
-              <a href="#" className="block hover:text-blue-600">
-                Women`&apos;s Health
-              </a>
-            </li>
-            <li>
-              <a href="#" className="block hover:text-blue-600">
-                Best Sellers
-              </a>
-            </li>
-          </motion.ul>
-        )}
-      </motion.li>
-
-      {/* Learn dropdown */}
-      <motion.li variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}>
-        <button
-          onClick={toggleLearnDropdown}
-          className="text-lg font-medium flex items-center justify-between w-full"
-        >
-          Learn
-          {isLearnOpen ? <AiOutlineUp className="ml-2" /> : <AiOutlineDown className="ml-2" />}
-        </button>
-        {isLearnOpen && (
-          <motion.ul
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="mt-2 space-y-2 pl-4"
-          >
-            <li>
-              <a href="#" className="block hover:text-blue-600">
-                About Us
-              </a>
-            </li>
-            <li>
-              <a href="#" className="block hover:text-blue-600">
-                FAQs
-              </a>
-            </li>
-            <li>
-              <a href="#" className="block hover:text-blue-600">
-                Blog
-              </a>
-            </li>
-          </motion.ul>
-        )}
-      </motion.li>
-
-      {/* Regular Links */}
-      <motion.li variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}>
-        <a href="#" className="block hover:text-blue-600">
-          Rewards
-        </a>
-      </motion.li>
-      <motion.li variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}>
-        <a href="#" className="block hover:text-blue-600">
-          Take Quiz
-        </a>
-      </motion.li>
-    </motion.ul>
-  </motion.div>
-)}
-
-
-      {/* Desktop Menu */}
-      <div className="mx-auto hidden md:flex justify-between items-center px-8 ">
-        {/* Left Side - Menu Links */}
-        <div className="flex items-center space-x-10 relative z-50 ">
-          {/* Shop Dropdown */}
-          <div className="relative">
             <button
-              onClick={toggleShopDropdown}
-              className="text-lg font-medium hover:text-gray-700 focus:outline-none flex items-center"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-700 text-2xl focus:outline-none"
             >
-              Shop
-              {isShopOpen ? <AiOutlineUp className="ml-2" /> : <AiOutlineDown className="ml-2" />}
+              {isMenuOpen ? <FiX /> : <FiMenu />}
             </button>
-            {isShopOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute left-0 mt-4 w-[60rem] bg-white shadow-xl rounded-b-3xl py-10 px-14 flex gap-[10rem] z-50"
-                style={{ zIndex: 9999 }}
+          </motion.div>
+
+          {/* Logo - Centered on mobile */}
+          <div className="lg:flex lg:items-center mx-4 lg:mx-0">
+            <Link href={"/"}>
+              <Image src={logo} alt="Cleanveda Logo" width={120} height={50} />
+            </Link>
+          </div>
+
+          {/* Mobile Icons */}
+          <div className="lg:hidden flex items-center space-x-4">
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative"
+            >
+              <Link href={`/users/${userId}/cart`}>
+                <FiShoppingCart className="text-gray-700 text-2xl cursor-pointer" />
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+              <FiUser className="text-gray-700 text-2xl cursor-pointer" />
+            </motion.div>
+          </div>
+        </div>
+
+        <ul className="space-x-6 p-4 rounded-lg hidden md:flex">
+          {[
+            { name: "Home", link: "/" },
+            { name: "Students", link: "/students" },
+            { name: "Immunity Booster", link: "/immunity-booster" },
+            { name: "Brain Booster", link: "/brain-booster" },
+          ].map((item, index) => (
+            <motion.li
+              key={index}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="cursor-pointer text-gray-700 font-semibold transition-colors duration-300 hover:text-green-600"
+            >
+              <Link href={item.link}>{item.name}</Link>
+            </motion.li>
+          ))}
+        </ul>
+
+        {/* Desktop Icons Section */}
+        <div className="hidden lg:flex items-center space-x-4">
+          <motion.div
+            initial={{ width: "150px" }}
+            animate={{ width: isSearchFocused ? "250px" : "150px" }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="relative"
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-full px-4 py-2 text-black bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyPress}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              aria-label="Search products"
+              autoComplete="on"
+            />
+            <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          </motion.div>
+
+          <div className="flex items-center space-x-6 relative z-50">
+            {/* Account Starts from here */}
+            <div className="relative">
+              <button
+                onClick={toggleAccountDropdown}
+                className="text-lg font-medium hover:text-gray-700 focus:outline-none flex items-center"
               >
-                {/* Collections, Categories, Health Focus sections */}
-                <div>
-                  <h3 className="font-bold text-lg mb-3 ml-7">Collections</h3>
-                  <ul className="space-y-6">
-                    <li className="flex items-center space-x-3">
-                      <span>♂</span>
-                      <Link href="#" className="hover:text-blue-600">Men&apos;s Health</Link>
-                    </li>
-                    <li className="flex items-center space-x-3">
-                      <span>♀</span>
-                      <Link href="#" className="hover:text-blue-600">Women&apos;s Health</Link>
-                    </li>
-                    <li className="flex items-center space-x-3">
-                      <span>🔥</span>
-                      <Link href="#" className="hover:text-blue-600">Best Sellers</Link>
-                    </li>
-                    <li className="flex items-center space-x-3">
-                      <span>🍎</span>
-                      <Link href="#" className="hover:text-blue-600">New Products</Link>
-                    </li>
+                <FiUser className="w-6 h-6 cursor-pointer" />
+                {isAccountOpen ? <AiOutlineUp className="ml-2" /> : <AiOutlineDown className="ml-2" />}
+              </button>
+              {isAccountOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute left-[-3rem] mt-7 w-[10rem] bg-white shadow-xl rounded-b-3xl py-5 px-5 z-50"
+                  style={{ zIndex: 100 }}
+                >
+                  <ul className="space-y-4">
                     <li className="flex items-center space-x-3">
                       <span>📦</span>
-                      <Link href={"/users/${userDetails?._id}/shop"} className="hover:text-blue-600">All Products </Link>
+                      <Link href={`/users/${userId}/accounts/ordersHistory`} className="hover:text-blue-600">
+                        Orders
+                      </Link>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                      <span>❤️</span>
+                      <Link href={`/users/${userId}/accounts/wishlist`} className="hover:text-blue-600">Wishlist</Link>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                      <span>🏠</span>
+                      <Link href={`/users/${userId}/accounts/savedAddress`} className="hover:text-blue-600">Addresses</Link>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                      <span>🔔</span>
+                      <a href="#" className="hover:text-blue-600">Notification</a>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                      <span>▶️</span>
+                      <Link href="#" onClick={handleLogout} className="hover:text-blue-600">Logout</Link>
                     </li>
                   </ul>
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg mb-3 ml-7">Categories</h3>
-                  <ul className="space-y-6">
-                    <li className="flex items-center space-x-3">
-                      <span>🍬</span>
-                      <a href="#" className="hover:text-blue-600">Gummies</a>
-                    </li>
-                    <li className="flex items-center space-x-3">
-                      <span>💧</span>
-                      <a href="#" className="hover:text-blue-600">Liquids</a>
-                    </li>
-                    <li className="flex items-center space-x-3">
-                      <span>🧂</span>
-                      <a href="#" className="hover:text-blue-600">Powders</a>
-                    </li>
-                    <li className="flex items-center space-x-3">
-                      <span>💊</span>
-                      <a href="#" className="hover:text-blue-600">Capsules</a>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg mb-3 ml-7">Health Focus</h3>
-                  <ul className="space-y-6">
-                    <li className="flex items-center space-x-3">
-                      <span>🛡️</span>
-                      <a href="#" className="hover:text-blue-600">Immunity</a>
-                    </li>
-                    <li className="flex items-center space-x-3">
-                      <span>⚛️</span>
-                      <a href="#" className="hover:text-blue-600">Mind + Mood</a>
-                    </li>
-                    <li className="flex items-center space-x-3">
-                      <span>🌟</span>
-                      <a href="#" className="hover:text-blue-600">Beauty</a>
-                    </li>
-                    <li className="flex items-center space-x-3">
-                      <span>🏋️‍♂️</span>
-                      <a href="#" className="hover:text-blue-600">Active Line</a>
-                    </li>
-                  </ul>
-                </div>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
+            </div>
+            <Link href={`/users/${userId}/product/cart`}>
+              <FiShoppingCart className="w-6 h-6 cursor-pointer" />
+            </Link>
           </div>
-
-          {/* Learn Dropdown */}
-          <div className="relative">
-            <button
-              onClick={toggleLearnDropdown}
-              className="text-lg font-medium hover:text-gray-700 focus:outline-none flex items-center"
-            >
-              Learn
-              {isLearnOpen ? <AiOutlineUp className="ml-2" /> : <AiOutlineDown className="ml-2" />}
-            </button>
-            {isLearnOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute left-0 mt-4 w-[20rem] bg-white shadow-xl rounded-b-3xl py-5 px-5 z-50"
-                style={{ zIndex: 9999 }}
-              >
-                <ul className="space-y-4">
-                  <li className="flex items-center space-x-3">
-                    <span>📖</span>
-                    <a href="#" className="hover:text-blue-600">About Us</a>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <span>❓</span>
-                    <a href="#" className="hover:text-blue-600">FAQs</a>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <span>📝</span>
-                    <a href="#" className="hover:text-blue-600">Wellness Blog</a>
-                  </li>
-                </ul>
-              </motion.div>
-            )}
-          </div>
-
-          <a href="#" className="text-lg font-medium hover:text-gray-700">Rewards</a>
-          <a href="#" className="text-lg font-medium hover:text-gray-700">Take Quiz</a>
-        </div>
-
-       
-        <div className="flex justify-center relative z-50">
-          <Link href={`/users/${userId}`}>
-          <h1 className="font-bold text-xl hover:cursor-pointer">Cleanveda</h1>
-          </Link>
-        </div>
-
-        
-        <div className="flex items-center space-x-6 relative z-50">
-          <FiSearch className="w-6 h-6 cursor-pointer" />
-          {/* Account Starts from here */}
-          <div className="relative">
-            <button
-              onClick={toggleAccountDropdown}
-              className="text-lg font-medium hover:text-gray-700 focus:outline-none flex items-center"
-            >
-                        <FiUser className="w-6 h-6 cursor-pointer" />
-              {isAccountOpen ? <AiOutlineUp className="ml-2" /> : <AiOutlineDown className="ml-2" />}
-            </button>
-            {isAccountOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute left-0 mt-4 w-[10rem] bg-white shadow-xl rounded-b-3xl py-5 px-5 z-50"
-                style={{ zIndex: 9999 }}
-              >
-                <ul className="space-y-4">
-                  <li className="flex items-center space-x-3">
-                  <span>📦</span>
-                    <Link href={`/users/${userId}/accounts/ordersHistory`} className="hover:text-blue-600">
-                    Orders
-                    </Link>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                  <span>❤️</span>
-                    <Link href={`/users/${userId}/accounts/wishlist`} className="hover:text-blue-600">Wislist</Link>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                  <span>🏠</span>
-                    <Link href={`/users/${userId}/accounts/savedAddress`} className="hover:text-blue-600">Addresses</Link>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                  <span>🔔</span>
-                    <a href="#" className="hover:text-blue-600">Notification</a>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <span>▶️</span>
-                    <Link href="#" onClick={handleLogout} className="hover:text-blue-600">Logout</Link>
-                  </li>
-                </ul>
-              </motion.div>
-            )}
-          </div>
-          <Link href={`/users/${userId}/product/cart`}>
-          <FiShoppingBag className="w-6 h-6 cursor-pointer" />
-          </Link>
         </div>
       </div>
-      <div className="absolute w-full md:bottom-[-2rem]  bottom-[-1.7rem] right-0 left-0 z-0">
-        <Image src={waveNav} alt="wave-navbar" />
-      </div>
-    </nav>
+
+      {/* Mobile Menu Dropdown */}
+      {isMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="lg:hidden mt-4"
+        >
+          <ul className="flex flex-col space-y-4 text-gray-700 font-medium">
+            <Link href={"/"}>
+              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Home</motion.li>
+            </Link>
+            <Link href="/students">
+              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Students</motion.li>
+            </Link>
+            <Link href="/health-conscious-individuals">
+              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Health-Conscious Individuals</motion.li>
+            </Link>
+            <Link href="/parents">
+              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Parents</motion.li>
+            </Link>
+            <Link href="/brain-booster">
+              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Brain Booster</motion.li>
+            </Link>
+            <Link href="/immunity-booster">
+              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Immunity Booster</motion.li>
+            </Link>
+          </ul>
+
+          <div className="mt-6 border-t pt-4">
+            <Link href="/auth/signIn">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition w-full"
+              >
+                Sign In
+              </motion.button>
+            </Link>
+          </div>
+        </motion.div>
+      )}
+    </motion.nav>
   );
 };
 

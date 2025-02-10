@@ -35,7 +35,7 @@ const Navbar = () => {
     };
 
   return (
- <nav className="bg-gray-50 text-white transition-colors duration-300 shadow-lg border border-b-2">
+ <nav className="bg-white text-black transition-colors duration-300 shadow-lg border border-b-2">
     <div className="flex justify-between px-4 py-5 ">
     {/* Logo Section */}
 

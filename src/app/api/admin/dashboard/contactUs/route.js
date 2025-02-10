@@ -43,3 +43,25 @@ export async function POST(req) {
     return NextResponse.json({ error: 'An error occurred while submitting your message' }, { status: 500 });
   }
 }
+
+
+export async function GET() {
+  try {
+    console.log("Connecting to the database...");
+    await connectDB();
+    console.log("Connected to the database.");
+
+    const contactEntries = await contactUsModels.find();
+
+    if (!contactEntries.length) {
+      return NextResponse.json({ message: 'No messages found' }, { status: 404 });
+    }
+
+    console.log("Fetched contact messages successfully");
+
+    return NextResponse.json(contactEntries, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching contact messages:', error);
+    return NextResponse.json({ error: 'An error occurred while fetching messages' }, { status: 500 });
+  }
+}

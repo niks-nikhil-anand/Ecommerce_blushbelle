@@ -7,12 +7,20 @@ import NavbarAdmin from '@/components/adminPanel/NavbarAdmin';
 const Layout = ({ children }) => {
   return (
     <div className="flex w-full min-h-screen overflow-hidden">
-    <SidebarAdmin className="w-1/4 h-screen bg-gray-800" />
-    <div className="flex-1 overflow-hidden ">
-      <NavbarAdmin className="w-full" />
+  {/* Sidebar */}
+  <SidebarAdmin className="w-1/4 h-screen bg-gray-800" />
+
+  {/* Main Content Area */}
+  <div className="flex-1 flex flex-col overflow-hidden">
+    {/* Navbar */}
+    <NavbarAdmin className="w-full" />
+
+    {/* Content */}
+    <div className="flex-1 overflow-y-auto p-4">
       {children}
     </div>
   </div>
+</div>
   );
 };
 

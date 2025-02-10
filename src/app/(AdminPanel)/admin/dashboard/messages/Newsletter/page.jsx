@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loader from "@/components/loader/loader";
-import { FaPrint } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 const Newsletter = () => {
@@ -52,6 +52,9 @@ const Newsletter = () => {
     <div className="w-full p-4 bg-white shadow-lg h-[80vh] min-w-[100%] mx-auto mt-4">
       <div className="flex justify-between px-4 py-2 bg-gray-200 text-black rounded-md my-4 font-medium">
         <h2 className="text-lg font-semibold text-gray-800">Newsletter Details</h2>
+        <button className="bg-[#754E1A] hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-all">
+                  Export
+                </button>
       </div>
       {/* Wrapper with horizontal and vertical scrollbars */}
       <div className="overflow-x-auto overflow-y-auto max-h-[70vh] custom-scrollbar flex justify-center items-center">
@@ -65,14 +68,15 @@ const Newsletter = () => {
           </thead>
           <tbody>
             {currentNewsletters.map((newsletter) => (
-              <tr key={newsletter._id} className="hover:bg-gray-100">
+              <tr key={newsletter._id} className="hover:bg-gray-100 cursor-pointer">
                 <td className="border border-gray-300 px-2 py-1">{newsletter.email}</td>
                 <td className="border border-gray-300 px-2 py-1 truncate">{new Date(newsletter.createdAt).toLocaleString()}</td>
                 <td className="border border-gray-300 px-2 py-1 text-center">
                   <div className="flex justify-center space-x-2">
                     <button className="px-2 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 text-xs">
-                      <FaPrint />
-                    </button>
+                    <FaTrash />
+                  </button>
+
                   </div>
                 </td>
               </tr>

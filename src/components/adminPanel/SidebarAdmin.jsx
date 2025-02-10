@@ -116,7 +116,7 @@ const SidebarAdmin = () => {
           </Link>
 
           <h3 className="text-sm font-medium mt-4 mb-2 text-black">Users</h3>
-          <Link href="/admin/dashboard/users" passHref>
+          <Link href="/admin/dashboard/users/allUsers" passHref>
             <SidebarItem icon={<FaTable />} label="All Users" selected={selectedItem === 'All Users'} onClick={() => setSelectedItem('All Users')} />
           </Link>
           

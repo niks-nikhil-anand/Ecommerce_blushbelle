@@ -120,7 +120,7 @@ const Navbar = () => {
 
         <ul className="space-x-6 p-4 rounded-lg hidden md:flex">
           {[
-            { name: "Home", link: "/" },
+            { name: "Home", link: `/users/${userId}/` },
             { name: "Students", link: "/students" },
             { name: "Immunity Booster", link: "/immunity-booster" },
             { name: "Brain Booster", link: "/brain-booster" },

@@ -1,46 +1,61 @@
 import mongoose from "mongoose";
 
-const blogSchema = new mongoose.Schema({
-  featuredImage: {
+const couponSchema = new mongoose.Schema({
+  code: {
     type: String,
-    required: true
+    required: true,
+    unique: true, // Ensure coupon codes are unique
   },
-  title: {
+  discountType: {
     type: String,
-    required: true
+    required: true,
+    enum: ["percentage", "fixed"], // Discount type can be either percentage or fixed amount
   },
-  subtitle: {
-    type: String,
-    required: true
+  discountValue: {
+    type: Number,
+    required: true, // The value of the discount (e.g., 10 for 10% or $10)
   },
-  category: {
-    type: String,
-    required: true
+  minPurchaseAmount: {
+    type: Number,
+    default: 0, // Minimum purchase amount required to apply the coupon
   },
-  author: {
-    type: String,
-    required: true
+  maxDiscountAmount: {
+    type: Number,
+    default: null, // Maximum discount amount (optional, for percentage discounts)
   },
-  content: {
-    type: mongoose.Schema.Types.Mixed,
-    required: true
-  },
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-},
-  createdAt: {
+  validFrom: {
     type: Date,
-    default: Date.now
+    required: true, // Start date of coupon validity
   },
-  updatedAt: {
+  validUntil: {
     type: Date,
-    default: Date.now
-  }
+    required: true, // End date of coupon validity
+  },
+  usageLimit: {
+    type: Number,
+    default: null, // Maximum number of times the coupon can be used (optional)
+  },
+  usedCount: {
+    type: Number,
+    default: 0, // Number of times the coupon has been used
+  },
+  isActive: {
+    type: Boolean,
+    default: true, // Whether the coupon is active or not
+  },
+  applicableProducts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product", // Coupon can be applicable to specific products
+    },
+  ],
+  applicableCategories: [
+    {
+      type: String, // Coupon can be applicable to specific categories
+    },
+  ],
+},{
+  timestamps: true
 });
 
-
-export const Blog = mongoose.models.Blog || mongoose.model("Blog" , blogSchema)
-
-
-
+export const Coupon = mongoose.models.Coupon || mongoose.model("Coupon", couponSchema);

@@ -86,7 +86,7 @@ const SidebarAdmin = () => {
                 />
               </Link>
 
-              <Link href="/admin/dashboard/product/Coupon" passHref>
+              <Link href="/admin/dashboard/coupon" passHref>
                 <SidebarItem 
                   icon={<MdOutlineLocalOffer />} 
                   label="Coupons" 

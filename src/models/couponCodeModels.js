@@ -39,10 +39,11 @@ const couponSchema = new mongoose.Schema({
     type: Number,
     default: 0, // Number of times the coupon has been used
   },
-  isActive: {
-    type: Boolean,
-    default: true, // Whether the coupon is active or not
-  },
+  status: {
+    type: String,
+    enum: ['Active', 'UnActive'],
+    default: 'Active',
+},
   applicableProducts: [
     {
       type: mongoose.Schema.Types.ObjectId,

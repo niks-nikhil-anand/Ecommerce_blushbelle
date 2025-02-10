@@ -2,372 +2,527 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { MdClose } from 'react-icons/md';
 import Image from 'next/image';
 import Loader from '@/components/loader/loader';
-import ProductBanner from '@/components/frontend/ui/(Banners)/ProductBanner';
-import { useRouter } from 'next/navigation';
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { AiOutlineDown, AiOutlineClose } from 'react-icons/ai';
-import { FaRegArrowAltCircleRight , FaRegArrowAltCircleLeft  } from "react-icons/fa";
+import { FaPinterest , FaInstagram} from "react-icons/fa";
+import { useRouter } from 'next/navigation';
+import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
+import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
+import ReviewProductPage from '@/components/frontend/ui/ReviewProductPage';
+import { FaCheckCircle, FaCheckSquare } from "react-icons/fa";
+import RelatedBlogs from '@/components/frontend/ui/RelatedBlogs';
+import RelatedProducts from '@/components/frontend/ui/RelatedProducts';
+import { FacebookShareButton, TwitterShareButton, WhatsappShareButton } from 'react-share';
+import { FaFacebook, FaTwitter, FaWhatsapp } from 'react-icons/fa';
+
+
+
 
 
 
 const ProductDetail = () => {
-  // Main hooks and setup
-  const router = useRouter();
-  const [product, setProduct] = useState(null);
-  const [idFromURL, setIdFromURL] = useState('');
-  const [userIdFromURL, setUserIdFromUR] = useState('');
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
-  const [quantity, setQuantity] = useState(1);
-  const [addedToCart, setAddedToCart] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+    const router = useRouter();
+    const [product, setProduct] = useState(null);
+    const [idFromURL, setIdFromURL] = useState('');
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [progress, setProgress] = useState(0);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isFullScreen, setIsFullScreen] = useState(false);
+    const [activeTab, setActiveTab] = useState("Descriptions");
 
+    const [quantity, setQuantity] = useState(1);
+    const [addedToCart, setAddedToCart] = useState(false);
 
+    useEffect(() => {
+        const urlPath = window.location.pathname;
+        const id = urlPath.substring(urlPath.lastIndexOf('/') + 1);
+        setIdFromURL(id);
 
-  useEffect(() => {
-      const urlPath = window.location.pathname;
-      const userId = urlPath.split('/')[2];
-      const productId = urlPath.split('/')[4];
-      setIdFromURL(productId);
-      setUserIdFromUR(userId);
+        if (id) {
+            const interval = setInterval(() => {
+                setProgress(prev => (prev < 100 ? prev + 1 : prev));
+            }, 10); 
 
-      if (productId) {
-          const interval = setInterval(() => {
-              setProgress((prev) => (prev < 100 ? prev + 1 : prev));
-          }, 10);
+            axios.get(`/api/admin/dashboard/product/${id}`)
+                .then(response => {
+                    clearInterval(interval);
+                    console.log(response.data)
+                    setProduct(response.data);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    console.error("Error fetching product data:", error);
+                    clearInterval(interval);
+                    setLoading(false);
+                });
+        }
+    }, []);
 
-          axios.get(`/api/admin/dashboard/product/${productId}`)
-              .then((response) => {
-                  clearInterval(interval);
-                  setProduct(response.data);
-                  setLoading(false);
-              })
-              .catch((error) => {
-                  console.error("Error fetching product data:", error);
-                  clearInterval(interval);
-                  setLoading(false);
-              });
-      }
-  }, []);
+    if (loading) {
+        return (
+            <Loader/>
+        );
+    }
 
-
-
- 
-
-
-
-  const handleAddToCart = async () => {
+    const handleAddToCart = () => {
       const cartData = {
-          id: idFromURL,
-          quantity: quantity,
+        id: idFromURL,
+        quantity: quantity
       };
-
+    
+      // Retrieve the existing cart from localStorage
+      let existingCart = localStorage.getItem('cart');
+    
       try {
-          await axios.post(`/api/users/cart/${idFromURL}`, {
-              cart: [cartData],
-          });
-
-          setAddedToCart(true);
-          router.push(`/users/${userIdFromURL}/product/cart`);
-      } catch (error) {
-          console.error("Error syncing cart with the backend:", error);
+        // Parse the cart if it exists and is valid JSON, otherwise initialize an empty array
+        existingCart = existingCart ? JSON.parse(existingCart) : [];
+      } catch (e) {
+        // If parsing fails, initialize as an empty array
+        existingCart = [];
       }
-  };
+    
+      // Ensure existingCart is an array
+      if (!Array.isArray(existingCart)) {
+        existingCart = [];
+      }
+    
+      // Check if the product is already in the cart
+      const existingProductIndex = existingCart.findIndex((item) => item.id === idFromURL);
+    
+      if (existingProductIndex !== -1) {
+        // If the product is already in the cart, update its quantity
+        existingCart[existingProductIndex].quantity += quantity;
+      } else {
+        // If the product is not in the cart, add it
+        existingCart.push(cartData);
+      }
+    
+      // Update the cart in localStorage
+      localStorage.setItem('cart', JSON.stringify(existingCart));
+    
+      // Navigate to the cart page
+      setAddedToCart(true);
+      router.push("/product/cart")
+    };
+
+    
+    
+    
+    const increaseQuantity = () => {
+      setQuantity(prevQuantity => prevQuantity + 1);
+    };
+    
+    const decreaseQuantity = () => {
+      setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
+    };
 
 
-
-  const nextImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % product.images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + product.images.length) % product.images.length);
-  };
-
-  const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
-  };
-
-  const increaseQuantity = () => setQuantity((prevQuantity) => prevQuantity + 1);
-  const decreaseQuantity = () => setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
-  const toggleOpen = () => setIsOpen(!isOpen);
-
-  if (loading) {
-      return <Loader />;
-  }
-
-  const { name, description, images, salePrice, originalPrice, featuredImage, ratings, descriptionImage, servingPerBottle, suggestedUse, ingredients, productHighlights } = product || {};
-  const averageRating = ratings?.average || 4.2;
-  const allImages = [...(images || [])];
-
-  const currentImage = images[currentImageIndex];
+    const nextImage = () => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % product.images.length);
+    };
+  
+    const prevImage = () => {
+      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + product.images.length) % product.images.length);
+    };
+  
+    const toggleFullScreen = () => {
+      setIsFullScreen(!isFullScreen);
+    };
 
 
+    const toggleOpen = () => {
+      setIsOpen(!isOpen);
+    };
 
-  return (
-        <div>
-        <motion.div 
-              className="flex flex-col lg:flex-row  p-4 sm:p-6 bg-[#e0d2ff] w-full h-full mt-5"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
->
-        {/* Product Images */}
-        <div className="w-full md:w-[49%] h-full flex flex-col items-center ">
-          {/* Preview Image */}
-          <div className="w-full md:w-[30rem] h-[20rem] md:h-[40rem] flex justify-center items-center overflow-hidden mb-4  rounded-lg relative">
-            <img
-              src={currentImage}
-              alt={name}
-              className="object-contain w-full h-full cursor-pointer"
-              
-              onClick={toggleFullScreen} // Open full-screen on click
-              
-            />
-          </div>
-
-          {/* Manual Image Slider Controls */}
-                    <div className="flex justify-between w-full md:hidden absolute top-1/2 transform -translate-y-1/2 left-0 right-0">
-            <button onClick={prevImage} className="p-2 rounded-l text-black text-2xl">
-              <FaRegArrowAltCircleLeft />
-            </button>
-            <button onClick={nextImage} className="p-2 rounded-l text-black text-2xl">
-              <FaRegArrowAltCircleRight />
-            </button>
-          </div>
+    if (!product) {
+        return <div>Product not found.</div>;
+    }
+    const { name, description, images, salePrice, originalPrice, featuredImage, ratings, descriptionImage , servingPerBottle , suggestedUse , ingredients , productHighlights } = product;
+    const averageRating = ratings?.average || 4.2;
+    const allImages = [ ...(images || [])];
 
 
-          {/* Thumbnail Images (Optional) */}
-          <div className="md:flex gap-2 overflow-x-auto w-full hidden">
-            {images.length > 0 ? (
-              images.map((image, index) => (
-                <div key={index} className="w-[5rem] h-[5rem] sm:w-[6rem] sm:h-[6rem] overflow-hidden rounded-lg shadow-lg cursor-pointer">
-                  <img
-                    src={image}
-                    alt={`Product Image ${index + 1}`}
-                    className="w-full h-full object-cover rounded"
-                    onClick={() => setCurrentImageIndex(index)}
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="col-span-5 flex items-center justify-center text-gray-500">
-                No images available
-              </div>
-            )}
-          </div>
+    const currentImage = images[currentImageIndex];
+
+
+    const percentageOff = ((originalPrice - salePrice) / originalPrice) * 100;
+
+    const ShareButtons = ({ url, title }) => {
+      return (
+        <div className="flex space-x-4">
+          {/* Facebook */}
+          <FacebookShareButton url={url} quote={title}>
+            <FaFacebook size={22} className="text-blue-600 cursor-pointer" />
+          </FacebookShareButton>
+    
+          {/* Twitter */}
+          <TwitterShareButton url={url} title={title}>
+            <FaTwitter size={22} className="text-blue-400 cursor-pointer" />
+          </TwitterShareButton>
+    
+          {/* WhatsApp */}
+          <WhatsappShareButton url={url} title={title} separator=" - ">
+            <FaWhatsapp size={22} className="text-green-500 cursor-pointer" />
+          </WhatsappShareButton>
         </div>
+      );
+    };
+    
 
-
-  {/* Product Details */}
-  <div className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl bg-white rounded-3xl px-6 sm:px-10 py-10">
-  <motion.div 
-    className="flex flex-col justify-start mb-2"
-    initial={{ opacity: 0, y: 50 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
-  >
-    <motion.h1 
-      className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4"
-      initial={{ opacity: 0, x: -50 }}
+    return (
+      <div className='my-5'>
+      <div className="flex flex-col md:flex-row w-full px-6 lg:px-12 bg-white">
+  {/* Image Section */}
+  <div className="w-full md:w-[49%] h-full flex justify-start">
+    {/* Thumbnail Column (Desktop) */}
+    <motion.div 
+      className="hidden md:flex flex-col gap-5"
+      initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.4 }}
     >
-      {name}
-    </motion.h1>
-
-    <div className="flex items-center mb-2  bg-white rounded-3xl">
-      <span className="text-green-500 text-lg font-bold">★ ★ ★ ★ ★</span>
-      <span className="text-gray-500 ml-2">{ratings.numberOfRatings} Reviews</span>
-    </div>
-
-    <h2 className="text-purple-500 mb-2 text-xs sm:text-sm">SERVINGS PER BOTTLE: {servingPerBottle}</h2>
-
-    <h1 className="text-2xl sm:text-3xl font-bold mb-4">
-      ₹{salePrice || originalPrice}
-    </h1>
-
-    <div className="flex flex-col sm:flex-row justify-start  gap-4 mb-4">
-      <span className="text-gray-700">Quantity</span>
-      <div className="flex items-center border rounded-3xl py-3 px-5 w-full sm:w-1/4 justify-between">
-        <button className="px-3 py-1" onClick={decreaseQuantity}>-</button>
-        <input type="number" className="w-12 text-center" value={quantity} readOnly />
-        <button className="px-3 py-1" onClick={increaseQuantity}>+</button>
-      </div>
-    </div>
-
-    <div className="flex flex-col border-y-2 my-5 border-gray-150">
-      <div className="flex justify-between hover:cursor-pointer py-5" onClick={toggleOpen}>
-        <h3 className="text-orange-600 font-bold mb-2">Suggested Use</h3>
-        <AiOutlineDown className="cursor-pointer text-2xl text-orange-600" />
-      </div>
-      {isOpen && (
-        <div className="mb-5 mt-2 px-3">
-          <p className="text-gray-700">{suggestedUse}</p>
+      {images.length > 0 ? (
+        images.map((image, index) => (
+          <motion.div
+            key={index}
+            className="w-[5rem] h-[5rem] sm:w-[6rem] sm:h-[6rem] overflow-hidden rounded-lg shadow-lg cursor-pointer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Image
+              src={image}
+              alt={`Product Image ${index + 1}`}
+              width={240}
+              height={240}
+              className="rounded object-cover p-5"
+              onClick={() => setCurrentImageIndex(index)}
+            />
+          </motion.div>
+        ))
+      ) : (
+        <div className="col-span-5 flex items-center justify-center text-gray-500">
+          No images available
         </div>
       )}
-    </div>
-  </motion.div>
+    </motion.div>
 
-  {/* Action Buttons */}
-  <motion.div 
-    className="flex flex-col gap-4 w-full"
-    initial={{ opacity: 0, y: 50 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
-  >
-    <motion.button 
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-4 py-3 bg-[#6a0dad] text-white rounded-full shadow-lg hover:bg-[#4b0082] transition text-sm sm:text-base"
-      onClick={handleAddToCart} 
+    {/* Preview Image Container */}
+    <motion.div 
+      className="w-full md:w-[20rem] h-[10rem] md:h-[20rem] flex justify-center items-center overflow-hidden mb-4 rounded-lg relative m-auto"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
     >
-      {addedToCart ? 'Go to Cart' : 'Add to Cart'}
-    </motion.button>
-  </motion.div>
-</div>
-
-</motion.div>
-<div>
-{product && product.productHighlights && (
-  <ProductHighlights highlights={product.productHighlights} />
-)}
-
-</div>
-            {/* Additional Banner */}
-            <div className="flex flex-col md:flex-row items-center p-4 md:p-8 mt-10 bg-[#e0d2ff]">
-  <div className="flex w-full flex-col md:flex-row justify-between">
-    {/* Image Section */}
-    <div className="w-full md:w-1/2 mb-6 md:mb-0 md:mr-8">
-      <Image
-        src={descriptionImage}
-        alt="Banner Image"
-        className="w-full h-[20rem] md:h-[30rem] object-cover rounded-xl"
-        width={500}
-        height={300}
+      <motion.img
+        src={currentImage}
+        alt={name}
+        className="object-contain w-full h-full cursor-pointer"
+        onClick={toggleFullScreen}
+        key={currentImage}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
       />
-    </div>
 
-    {/* Text Section */}
-    <div className="flex flex-col justify-start w-full md:w-1/2">
-      <h1 className="text-xl md:text-3xl lg:text-4xl text-[#D07021] mb-4">
-        {name}
-      </h1>
-      <p className="text-black-100 text-base md:text-lg lg:text-xl leading-relaxed">
-        {description}
-      </p>
-    </div>
-  </div>
-</div>
-
-
-            <div>
-            {product && product.ingredients && (
-  <FeaturedIngredients ingredients={product.ingredients} />
-)}
-            </div> 
-            <div>
-               <ProductBanner/>
-            </div>
-
-            {isFullScreen && (
-          <motion.div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div className="relative bg-white p-2 rounded-lg" style={{ width: '80vw', height: '80vh' }}>
-              <img src={currentImage} alt="Full Size Product" className="object-contain w-full h-full" />
-              <AiOutlineClose className="absolute top-2 right-2 text-2xl text-gray-600 cursor-pointer" onClick={toggleFullScreen} />
-              
-              {/* Navigation Controls */}
-              <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 flex justify-between px-4">
-                <button onClick={prevImage} className="text-black text-2xl">
-                  <AiOutlineLeft />
-                </button>
-                <button onClick={nextImage} className="text-black text-2xl">
-                  <AiOutlineRight />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-        </div>
-    );
-};
-
-
-// Place these components outside of ProductDetail to avoid conditional rendering issues
-const ProductHighlights = ({ highlights }) => (
-  <div className="flex flex-col items-center justify-center min-h-[75vh] bg-white p-6 sm:p-10">
-    <motion.h2
-      className="text-xl sm:text-2xl font-semibold text-orange-600 mb-6 sm:mb-8"
-      initial={{ opacity: 0, y: -50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      Product Highlights
-    </motion.h2>
-    <div className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-10">
-      {highlights.map((highlight, index) => (
-        <motion.div
-          key={highlight.id}
-          className="flex flex-col items-center max-w-[90%] sm:max-w-xs text-center mt-4 sm:mt-5"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: index * 0.2 }}
+      {/* Mobile Slider Controls */}
+      <motion.div 
+        className="flex justify-between w-full md:hidden absolute top-1/2 transform -translate-y-1/2 px-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <motion.button
+          onClick={prevImage}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-2 bg-white/80 rounded-full shadow-lg"
         >
-          <img
-            src={highlight.icon}
-            alt={highlight.icon}
-            className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-3 sm:mb-4 rounded-full"
-          />
-          <h3 className="text-base sm:text-lg font-bold text-orange-600 mb-1 sm:mb-2">
-            {highlight.title}
-          </h3>
-          <p className="text-sm sm:text-base text-gray-600">{highlight.description}</p>
-        </motion.div>
-      ))}
-    </div>
+          <FaRegArrowAltCircleLeft className="text-2xl text-gray-800" />
+        </motion.button>
+        <motion.button
+          onClick={nextImage}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-2 bg-white/80 rounded-full shadow-lg"
+        >
+          <FaRegArrowAltCircleRight className="text-2xl text-gray-800" />
+        </motion.button>
+      </motion.div>
+    </motion.div>
   </div>
-);
 
-const FeaturedIngredients = ({ ingredients }) => (
-  <div className="p-6 sm:p-10 bg-white">
-    <h2 className="text-center text-2xl sm:text-3xl font-semibold text-orange-600 mb-6 sm:mb-10">
-      Featured Ingredients
-    </h2>
-    <div className="flex justify-center items-start flex-wrap gap-5 sm:space-x-5">
-      {ingredients.map((ingredient, index) => (
-        <motion.div
-          key={index}
+  {/* Product Details Section */}
+  <div className="w-full md:w-1/2 max-w-xl lg:max-w-3xl bg-white rounded-3xl px-2 sm:px-4 py-6">
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: 0.2 }}
+  >
+    {/* Product Header */}
+    <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+      <motion.h1 
+        className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-2 sm:mb-0"
+        whileHover={{ x: 5 }}
+      >
+        {product.name}
+      </motion.h1>
+      <motion.span
+        className={`text-base sm:text-sm font-semibold px-3 py-1 rounded-lg shadow-md ${
+          product.stock > 0 ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100"
+        }`}
+        whileHover={{ scale: 1.05 }}
+      >
+        {product.stock > 0 ? "In Stock" : "Out of Stock"}
+      </motion.span>
+    </div>
+
+    {/* Price Section */}
+    <motion.div 
+      className="flex flex-wrap items-center mt-3 gap-2"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.4 }}
+    >
+      <span className="text-xs sm:text-sm text-gray-400 line-through">₹{product.originalPrice}</span>
+      <h1 className="text-lg md:text-xl font-bold text-green-600">₹{product.salePrice}</h1>
+      <span className="text-sm md:text-base text-red-500 font-semibold">
+        {Math.round(percentageOff)}% Off
+      </span>
+    </motion.div>
+
+    <hr className="my-4" />
+
+    {/* Social Sharing */}
+    <motion.div 
+  className="flex items-center mt-4 space-x-3"
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ delay: 0.5 }}
+>
+  <span className="text-xs sm:text-sm md:text-base text-gray-700 font-medium">Share item:</span>
+  <ShareButtons url={window.location.href} title={name} />
+</motion.div>
+
+
+    {/* Description */}
+    <motion.p
+      className="text-xs sm:text-sm md:text-base text-gray-600 mt-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.6 }}
+    >
+      Brain Bite is a powerful supplement designed to boost cognitive function, memory, and focus. Made with natural ingredients.
+    </motion.p>
+
+    {/* Quantity Selector */}
+    <div className="flex flex-col md:flex-row items-start md:items-center mt-6 gap-4 md:gap-6">
+      <div className="flex items-center">
+        <span className="text-xs sm:text-sm md:text-base text-gray-700 font-medium whitespace-nowrap">
+          Quantity:
+        </span>
+        <div className="flex items-center ml-3 md:ml-4">
+          <motion.button 
+            onClick={decreaseQuantity} 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-2 sm:px-3 py-1.5 md:px-4 bg-gray-200 text-gray-700 rounded-l-lg hover:bg-gray-300 transition-colors active:bg-gray-400"
+          >
+            <AiOutlineMinus className="text-xs sm:text-sm" />
+          </motion.button>
+          
+          <motion.span 
+            key={quantity}
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            className="px-2 sm:px-3 py-1.5 md:px-4 bg-gray-200 text-gray-700 text-xs sm:text-sm md:text-base min-w-[30px] sm:min-w-[36px] md:min-w-[40px] text-center"
+          >
+            {quantity}
+          </motion.span>
+          
+          <motion.button 
+            onClick={increaseQuantity} 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-2 sm:px-3 py-1.5 md:px-4 bg-gray-200 text-gray-700 rounded-r-lg hover:bg-gray-300 transition-colors active:bg-gray-400"
+          >
+            <AiOutlinePlus className="text-xs sm:text-sm" />
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <motion.div 
+        className="w-full md:w-auto"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="bg-green-100 rounded-xl p-4 sm:p-6 shadow-md w-full sm:w-[45%] lg:w-[20%] mt-5"
+          className="w-full md:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition text-sm sm:text-base md:text-lg font-semibold"
+          onClick={handleAddToCart}
         >
-          <img
-            src={ingredient.image}
-            alt={ingredient.name}
-            className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-3 sm:mb-4 rounded-full"
-          />
-          <h3 className="text-orange-600 text-center font-semibold text-base sm:text-lg mb-1 sm:mb-2">
-            {ingredient.name}
-          </h3>
-          <p className="text-center text-sm sm:text-base text-gray-700 mb-2">
-            {ingredient.description}
-          </p>
-          <p className="text-center font-semibold text-gray-800">
-            {ingredient.weightInGram}mg
-          </p>
-        </motion.div>
-      ))}
+          Add to Cart
+        </motion.button>
+      </motion.div>
     </div>
+
+    {/* Categories & Tags */}
+    <motion.div 
+      className="mt-6 space-y-2"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.7 }}
+    >
+      <div className="text-xs sm:text-sm md:text-base text-gray-700 font-medium">
+        Category: <span className="font-normal">{product.category.name}</span>
+      </div>
+      <div className="text-xs sm:text-sm md:text-base text-gray-700 font-medium">
+        Tags: <span className="font-normal">{product.tags.join(', ')}</span>
+      </div>
+    </motion.div>
+  </motion.div>
+</div>
+</div>
+<div>
+
+
+
+</div>
+          {/* Additional Banner */}
+          <div className="p-3 sm:p-6 md:p-8 bg-white max-w-5xl mx-auto">
+  {/* Toggle Menu - Responsive */}
+  <div className="flex flex-col sm:flex-row items-center justify-between border-b border-gray-300 mb-4 sm:mb-6">
+    {["Descriptions", "Additional Information", "Customer Feedback"].map((tab) => (
+      <motion.button
+        key={tab}
+        onClick={() => setActiveTab(tab)}
+        whileHover={{ scale: 1.05 }}
+        className={`w-full sm:w-auto px-2 sm:px-4 py-2 text-sm sm:text-base md:text-lg font-medium transition-all ${
+          activeTab === tab 
+            ? "border-b-2 border-green-500 text-green-600" 
+            : "text-gray-600 hover:text-gray-800"
+        }`}
+      >
+        {tab}
+      </motion.button>
+    ))}
   </div>
-);
 
+  {/* Section Content */}
+  {activeTab === "Descriptions" && (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col md:flex-row items-start gap-4 sm:gap-6"
+    >
+      {/* Left Section - Text */}
+      <div className="flex-1">
+        <p 
+          className="text-xs sm:text-sm md:text-base text-gray-700 mb-4"
+          dangerouslySetInnerHTML={{ __html: product.description }}
+        />
 
+        {/* Badges */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center space-x-2 bg-gray-100 p-2 sm:p-3 rounded-md"
+          >
+            <FaCheckCircle className="text-green-500 text-sm sm:text-base" />
+            <span className="text-xs sm:text-sm md:text-base text-gray-800 font-medium">
+              {Math.round(percentageOff)}% Discount
+            </span>
+          </motion.div>
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center space-x-2 bg-gray-100 p-2 sm:p-3 rounded-md"
+          >
+            <FaCheckCircle className="text-green-500 text-sm sm:text-base" />
+            <span className="text-xs sm:text-sm md:text-base text-gray-800 font-medium">
+              100% Organic
+            </span>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Right Section - Image */}
+      <motion.div 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex-1 flex justify-center mt-4 sm:mt-0 w-full"
+      >
+        <Image
+          src={product.descriptionImage}
+          alt="BrainBite Supplement"
+          width={400}
+          height={300}
+          className="rounded-lg object-cover w-full sm:w-[90%] md:w-auto"
+        />
+      </motion.div>
+    </motion.div>
+  )}
+
+  {/* Additional Information Section */}
+  {activeTab === "Additional Information" && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="text-gray-700 p-3 sm:p-4 md:p-6"
+    >
+      <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">Additional Information</h3>
+      <p 
+        className="text-xs sm:text-sm md:text-base"
+        dangerouslySetInnerHTML={{ __html: product.additionalInfo }}
+      />
+    </motion.div>
+  )}
+
+  {/* Customer Feedback Section */}
+  {activeTab === "Customer Feedback" && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="text-gray-700 p-3 sm:p-4 md:p-6"
+    >
+      <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">Customer Feedback</h3>
+      <ReviewProductPage/>
+    </motion.div>
+  )}
+</div>
+
+<div className='px-[2rem] py-[1rem] '>
+  <RelatedBlogs/>
+</div>
+<div className='px-[1rem] py-[1rem] '>
+  <RelatedProducts/>
+</div>
+         
+
+          {isFullScreen && (
+        <motion.div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="relative bg-white p-2 rounded-lg" style={{ width: '80vw', height: '80vh' }}>
+            <img src={currentImage} alt="Full Size Product" className="object-contain w-full h-full" />
+            <AiOutlineClose className="absolute top-2 right-2 text-2xl text-gray-600 cursor-pointer" onClick={toggleFullScreen} />
+            
+            {/* Navigation Controls */}
+            <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 flex justify-between px-4">
+              <button onClick={prevImage} className="text-black text-2xl">
+                <AiOutlineLeft />
+              </button>
+              <button onClick={nextImage} className="text-black text-2xl">
+                <AiOutlineRight />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      </div>
+  );
+};
 export default ProductDetail;
-
-
 

@@ -2,6 +2,8 @@
 import { motion } from 'framer-motion';
 import { FaLeaf, FaFlask, FaHandsHelping, FaRecycle } from 'react-icons/fa';
 import Group1 from '../../../../public/frontend/heroSection/Group1.png';
+import BgImage from '../../../../public/frontend/ProductFeatures/Bg.png';
+
 import Image from 'next/image';
 
 function AboutUs() {
@@ -30,15 +32,26 @@ function AboutUs() {
   return (
     <div className="bg-white text-gray-800">
       {/* Hero Section */}
-      <section className="relative h-64 bg-green-900 flex items-center justify-center">
-        <motion.h1
-          className="text-4xl font-bold text-white"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          About CleanVeda
-        </motion.h1>
+      <section className="relative h-64 w-full">
+        <div className="absolute inset-0">
+          <Image
+            src="/frontend/ProductFeatures/Bg.png"
+            alt="Background Image"
+            layout="fill"
+            objectFit="cover "
+            quality={100}
+          />
+        </div>
+        <div className="relative h-full flex items-center justify-center">
+          <motion.h1
+            className="text-4xl font-bold text-white"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+          >
+            About CleanVeda
+          </motion.h1>
+        </div>
       </section>
 
       {/* Company Story */}

@@ -141,8 +141,8 @@ const SidebarAdmin = () => {
             <SidebarItem icon={<ImProfile />} label="Profile" selected={selectedItem === 'Profile'} onClick={() => setSelectedItem('Profile')} />
           </Link>
 
-          <Link href="/admin/dashboard/profile" passHref>
-            <SidebarItem icon={<ImProfile />} label="Our Staff" selected={selectedItem === 'Profile'} onClick={() => setSelectedItem('Profile')} />
+          <Link href="/admin/dashboard/ourStaff" passHref>
+            <SidebarItem icon={<ImProfile />} label="Our Staff" selected={selectedItem === 'ourStaff'} onClick={() => setSelectedItem('ourStaff')} />
           </Link>
 
           <Link href="/settings" passHref>

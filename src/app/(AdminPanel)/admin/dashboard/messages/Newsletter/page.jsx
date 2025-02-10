@@ -16,7 +16,7 @@ const Newsletter = () => {
   useEffect(() => {
     const fetchNewsletters = async () => {
       try {
-        const response = await axios.get("/api/admin/dashboard/newsLetter");
+        const response = await axios.get("/api/admin/dashboard/contactUs");
         if (Array.isArray(response.data.subscriptions)) {
           setNewsLetter(response.data.subscriptions);
         } else {

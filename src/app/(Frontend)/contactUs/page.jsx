@@ -2,42 +2,41 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import contactUsImage from '../../../../public/frontend/contactUsImage.jpg'
+import Image from 'next/image'
 
 export default function Contact() {
   return (
     <div>
+      <section className="relative h-64 w-full">
+              <div className="absolute inset-0 mt-[-5px]">
+                <Image
+                  src="/frontend/ProductFeatures/Bg.png"
+                  alt="Background Image"
+                  layout="fill"
+                  objectFit="cover "
+                  quality={100}
+                />
+              </div>
+              <div className="relative h-full flex items-center justify-center  flex-col">
+                <motion.h1
+                  className="text-4xl font-bold text-white"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1 }}
+                >
+                Get in touch
+                </motion.h1>
+                <p className="mt-4 text-lg text-white">
+                  Our friendly team is here to assist you.
+                </p>
+              </div>
+            </section>
       <div className="mx-auto max-w-7xl px-4">
-        <div className="flex flex-col space-y-8 pb-10 pt-12 md:pt-24">
-          <motion.div
-            className="mx-auto max-w-max rounded-full border bg-gray-50 p-1 px-3"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <p className="text-center text-xs font-semibold leading-normal md:text-sm">
-              We&apos;d love to hear your thoughts
-            </p>
-          </motion.div>
-          <motion.p
-            className="text-center text-3xl font-bold text-gray-900 md:text-5xl md:leading-10"
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            We Value Your Feedback
-          </motion.p>
-          <p className="mx-auto max-w-4xl text-center text-base text-gray-600 md:text-xl">
-            Your opinions and experiences matter to us. Please feel free to share your thoughts, and let&apos;s make things better together.
-          </p>
-        </div>
         <div className="mx-auto max-w-7xl py-12 md:py-24">
           <div className="grid items-center justify-items-center gap-x-4 gap-y-10 lg:grid-cols-2">
             <div className="flex items-center justify-center">
               <div className="px-2 md:px-12">
-                <p className="text-2xl font-bold text-gray-900 md:text-4xl">Get in touch</p>
-                <p className="mt-4 text-lg text-gray-600">
-                  Our friendly team is here to assist you.
-                </p>
+                <p className="text-2xl font-bold text-gray-900 md:text-4xl">Leave Us a message</p>
                 <form className="mt-8 space-y-4">
                   <div className="grid w-full gap-y-4 md:gap-x-4 lg:grid-cols-2">
                     <div className="grid w-full items-center gap-1.5">

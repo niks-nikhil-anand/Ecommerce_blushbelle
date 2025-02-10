@@ -105,7 +105,7 @@ const Cart = () => {
     <div className="flex flex-col items-center justify-center min-h-screen shadow-lg border-b-black-100 border p-4">
       <div className="flex flex-col md:flex-row items-center w-full">
         <h1 className="text-2xl md:text-5xl font-semibold text-orange-600 mb-2 md:mb-4">Your Cart</h1>
-        <Link href={"/"}>
+        <Link href={`/users/${userId}`}>
           <h1 className="text-sm md:text-xl font-semibold text-blue-500 mb-2 md:mb-4 underline ml-0 md:ml-5 mt-1 md:mt-3 hover:cursor-pointer hover:underline-offset-1">Continue Shopping</h1>
         </Link>
       </div>

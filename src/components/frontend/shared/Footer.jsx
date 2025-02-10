@@ -26,6 +26,9 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-bold mb-2  pb-2">My Account</h3>
             <ul className="text-sm space-y-2 text-gray-400">
+            <Link href={"/product/shopAllProducts"}>
+              <li className="hover:text-gray-200 cursor-pointer">All Products</li>
+              </Link>
               <Link href={"/auth/signIn"}> 
               <li className="hover:text-gray-200 cursor-pointer">My Account</li>
               </Link>
@@ -35,9 +38,7 @@ const Footer = () => {
               <Link href={"/auth/signIn"}>
               <li className="hover:text-gray-200 cursor-pointer">Shopping Cart</li>
               </Link>
-              <Link href={"/product/shopAllProducts"}>
-              <li className="hover:text-gray-200 cursor-pointer">All Products</li>
-              </Link>
+             
             </ul>
           </div>
 

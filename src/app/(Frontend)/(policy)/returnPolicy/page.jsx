@@ -20,7 +20,7 @@ const Page = () => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-
+                console.log("Response status:", response); // Debugging API response status
                 const result = await response.json();
                 console.log("Fetched data:", result); // Debugging API response
                 

@@ -61,9 +61,16 @@ const AddCouponForm = () => {
   };
 
   return (
-    <div className="w-full p-4 bg-white shadow-lg h-[80vh] min-w-[100%] mx-auto mt-4 overflow-x-auto overflow-y-auto max-h-[75vh] custom-scrollbar">
+    <div className="w-full p-4 bg-white shadow-lg h-[80vh] min-w-[100%] mx-auto overflow-x-auto overflow-y-auto max-h-[85vh] custom-scrollbar">
+      <h2 className="text-xl font-semibold text-gray-800 mb-2">Coupon Management Form</h2>
+    <p className="text-gray-600 mb-4">
+      Use this form to create and manage discount coupons for your store. Enter the coupon code, 
+      select the discount type, set the validity period, and define usage limits. Ensure all required 
+      fields are filled before submitting.
+    </p>
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Coupon Code */}
+
       <div>
         <label className="block text-sm font-medium text-gray-700">Coupon Code</label>
         <input

@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 
+
+
 const AddCouponForm = () => {
   const [formData, setFormData] = useState({
     code: "",
@@ -16,6 +18,7 @@ const AddCouponForm = () => {
     applicableProducts: [],
     applicableCategories: [],
   });
+
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

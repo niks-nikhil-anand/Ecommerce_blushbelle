@@ -204,9 +204,12 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="max-w-full mx-auto p-4 bg-gray-50  rounded-lg w-full h-[90vh]  overflow-y-auto max-h-[80vh] custom-scrollbar ">
-      <h2 className="text-2xl font-bold mb-6 underline">
-        Add New Product
-        </h2>
+            <h2 className="text-3xl font-bold mb-4 underline text-gray-800">
+        Add a New Product
+      </h2>
+      <p className="text-lg text-gray-600 mb-6">
+        Fill in the details below to add a new product to your inventory. Ensure all required fields are completed accurately.
+      </p>
       <form onSubmit={handleSubmit} className="w-full">
         <motion.div
           key={currentStep}

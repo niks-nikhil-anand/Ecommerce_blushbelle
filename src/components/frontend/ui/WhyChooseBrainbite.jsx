@@ -65,7 +65,7 @@ const StepCard = ({ icon, id, title, description }) => (
 
 const WhyChooseBrainbite = () => {
   return (
-    <div className="relative py-24 mb-60 hidden md:block">
+    <div className="relative pt-[14rem] mb-60 hidden md:block">
       <div className="absolute inset-0 z-[-1]">
         <Image
           src={waveBg}

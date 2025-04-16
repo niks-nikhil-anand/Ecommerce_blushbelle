@@ -3,11 +3,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-
 
   const notifyLoading = () => {
     toast.loading("Sending email...", {
@@ -26,7 +27,6 @@ export default function ForgotPassword() {
       position: "bottom-right",
     });
   };
-
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -78,15 +78,15 @@ export default function ForgotPassword() {
         <h2 className="text-2xl font-bold mb-4">Forgot Password</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block mb-1">Email</label>
-            <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={handleEmailChange}
-          className="w-full p-2 rounded bg-white bg-opacity-50 border-2	"
-          required
-        />
+            <Label htmlFor="email" className="block mb-1">Email</Label>
+            <Input
+              type="email"
+              id="email"
+              value={email}
+              onChange={handleEmailChange}
+              className="w-full"
+              required
+            />
           </div>
           <motion.button type="submit" className={`w-full py-3 mt-2 text-white rounded-2xl ${loading ? 'bg-gray-400' : 'bg-green-700 hover:bg-green-600'} text-sm md:text-base`}
             whileTap={{ scale: 0.95 }}

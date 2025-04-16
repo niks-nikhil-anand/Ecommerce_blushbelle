@@ -201,18 +201,29 @@ const Newsletter = () => {
           <h2 className="text-lg font-semibold text-gray-800">Newsletter Details</h2>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button variant="outline" className="flex items-center gap-2 bg-[#754E1A] text-white hover:bg-[#5c3d14]">
                 <Download size={16} /> Export
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => exportData('csv')}>
+            <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg">
+              <DropdownMenuItem 
+                onClick={() => exportData('csv')}
+                className="hover:bg-blue-100 cursor-pointer px-4 py-2 text-sm"
+              >
                 Export as CSV
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportData('pdf')}>
+              <DropdownMenuSeparator className="bg-gray-200 h-px my-1" />
+              <DropdownMenuItem 
+                onClick={() => exportData('pdf')}
+                className="hover:bg-blue-100 cursor-pointer px-4 py-2 text-sm"
+              >
                 Export as PDF
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportData('docx')}>
+              <DropdownMenuSeparator className="bg-gray-200 h-px my-1" />
+              <DropdownMenuItem 
+                onClick={() => exportData('docx')}
+                className="hover:bg-blue-100 cursor-pointer px-4 py-2 text-sm"
+              >
                 Export as DOCX
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -237,11 +248,11 @@ const Newsletter = () => {
           <div className="flex gap-2">
             <Dialog open={showFilterDialog} onOpenChange={setShowFilterDialog}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
+                <Button variant="outline" className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200">
                   <Filter size={16} /> Filter
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="bg-white">
                 <DialogHeader>
                   <DialogTitle>Filter Newsletters</DialogTitle>
                   <DialogDescription>
@@ -250,10 +261,10 @@ const Newsletter = () => {
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-4">
                   <Select onValueChange={(value) => setFilterConfig({...filterConfig, key: value})}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border border-gray-300">
                       <SelectValue placeholder="Select filter type" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white">
                       <SelectItem value="all">No Filter</SelectItem>
                       <SelectItem value="date">By Date</SelectItem>
                       <SelectItem value="domain">By Domain</SelectItem>
@@ -265,6 +276,7 @@ const Newsletter = () => {
                       type="date"
                       value={filterConfig.value}
                       onChange={(e) => setFilterConfig({...filterConfig, value: e.target.value})}
+                      className="border border-gray-300"
                     />
                   )}
                   
@@ -273,12 +285,13 @@ const Newsletter = () => {
                       placeholder="Enter domain (e.g., gmail.com)"
                       value={filterConfig.value}
                       onChange={(e) => setFilterConfig({...filterConfig, value: e.target.value})}
+                      className="border border-gray-300"
                     />
                   )}
                   
                   <Button 
                     onClick={() => applyFilter(filterConfig.key, filterConfig.value)}
-                    className="mt-2"
+                    className="mt-2 bg-[#754E1A] hover:bg-[#5c3d14] text-white"
                   >
                     Apply Filter
                   </Button>
@@ -288,7 +301,7 @@ const Newsletter = () => {
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
+                <Button variant="outline" className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200">
                   {sortConfig.direction === "asc" ? (
                     <SortAsc size={16} />
                   ) : (
@@ -297,12 +310,18 @@ const Newsletter = () => {
                   Sort
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleSort("email")}>
+              <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg">
+                <DropdownMenuItem 
+                  onClick={() => handleSort("email")}
+                  className="hover:bg-blue-100 cursor-pointer px-4 py-2 text-sm"
+                >
                   Sort by Email {sortConfig.key === "email" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleSort("createdAt")}>
+                <DropdownMenuSeparator className="bg-gray-200 h-px my-1" />
+                <DropdownMenuItem 
+                  onClick={() => handleSort("createdAt")}
+                  className="hover:bg-blue-100 cursor-pointer px-4 py-2 text-sm"
+                >
                   Sort by Date {sortConfig.key === "createdAt" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -379,7 +398,11 @@ const Newsletter = () => {
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
                     <div className="flex justify-center">
-                      <Button variant="destructive" size="sm">
+                      <Button 
+                        variant="destructive" 
+                        size="sm" 
+                        className="bg-red-500 hover:bg-red-600"
+                      >
                         <FaTrash className="h-4 w-4" />
                       </Button>
                     </div>
@@ -409,6 +432,7 @@ const Newsletter = () => {
               size="sm"
               onClick={() => paginate(1)}
               disabled={currentPage === 1}
+              className="bg-gray-50 hover:bg-gray-100"
             >
               First
             </Button>
@@ -417,6 +441,7 @@ const Newsletter = () => {
               size="sm"
               onClick={() => paginate(currentPage - 1)}
               disabled={currentPage === 1}
+              className="bg-gray-50 hover:bg-gray-100"
             >
               Prev
             </Button>
@@ -442,7 +467,11 @@ const Newsletter = () => {
                     variant={currentPage === pageNum ? "default" : "outline"}
                     size="sm"
                     onClick={() => paginate(pageNum)}
-                    className="w-8"
+                    className={`w-8 ${
+                      currentPage === pageNum 
+                        ? "bg-[#754E1A] text-white hover:bg-[#5c3d14]" 
+                        : "bg-gray-50 hover:bg-gray-100"
+                    }`}
                   >
                     {pageNum}
                   </Button>
@@ -455,6 +484,7 @@ const Newsletter = () => {
               size="sm"
               onClick={() => paginate(currentPage + 1)}
               disabled={currentPage === totalPages}
+              className="bg-gray-50 hover:bg-gray-100"
             >
               Next
             </Button>
@@ -463,6 +493,7 @@ const Newsletter = () => {
               size="sm"
               onClick={() => paginate(totalPages)}
               disabled={currentPage === totalPages}
+              className="bg-gray-50 hover:bg-gray-100"
             >
               Last
             </Button>

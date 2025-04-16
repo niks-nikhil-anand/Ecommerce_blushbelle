@@ -440,16 +440,16 @@ const ContactUs = () => {
                     Export
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={exportToPDF}>
+                <DropdownMenuContent align="end" className="bg-amber-50">
+                  <DropdownMenuItem className="hover:bg-amber-100" onClick={exportToPDF}>
                     <FileText className="h-4 w-4 mr-2" />
                     Export as PDF
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => csvLinkRef.current.link.click()}>
+                  <DropdownMenuItem className="hover:bg-amber-100" onClick={() => csvLinkRef.current.link.click()}>
                     <FileSpreadsheet className="h-4 w-4 mr-2" />
                     Export as CSV
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={exportToDocx}>
+                  <DropdownMenuItem className="hover:bg-amber-100" onClick={exportToDocx}>
                     <FileBox className="h-4 w-4 mr-2" />
                     Export as DOCX
                   </DropdownMenuItem>
@@ -648,11 +648,11 @@ const ContactUs = () => {
             <SelectTrigger className="w-[80px]">
               <SelectValue placeholder="10" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5">5</SelectItem>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="25">25</SelectItem>
-              <SelectItem value="50">50</SelectItem>
+            <SelectContent className="bg-amber-50">
+              <SelectItem className="hover:bg-amber-100" value="5">5</SelectItem>
+              <SelectItem className="hover:bg-amber-100" value="10">10</SelectItem>
+              <SelectItem className="hover:bg-amber-100" value="25">25</SelectItem>
+              <SelectItem className="hover:bg-amber-100" value="50">50</SelectItem>
             </SelectContent>
           </Select>
           <span className="text-sm text-gray-500">per page</span>

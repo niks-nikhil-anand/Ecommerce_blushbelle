@@ -1,6 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { CSVLink } from "react-csv";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+import { saveAs } from "file-saver";
 import Loader from "@/components/loader/loader";
 import { FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -29,6 +33,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const Newsletter = () => {
   const [newsLetter, setNewsLetter] = useState([]);
@@ -38,6 +47,7 @@ const Newsletter = () => {
   const [sortConfig, setSortConfig] = useState({ key: "createdAt", direction: "desc" });
   const [filterConfig, setFilterConfig] = useState({ key: "all", value: "" });
   const [showFilterDialog, setShowFilterDialog] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
   const itemsPerPage = 10;
   const router = useRouter();
 
@@ -80,63 +90,6 @@ const Newsletter = () => {
     setCurrentPage(1);
   };
 
-  // Export functions
-  const exportData = (format) => {
-    const dataToExport = filteredData.map(item => ({
-      email: item.email,
-      createdAt: new Date(item.createdAt).toLocaleString()
-    }));
-    
-    switch (format) {
-      case 'csv':
-        exportCSV(dataToExport);
-        break;
-      case 'pdf':
-        exportPDF(dataToExport);
-        break;
-      case 'docx':
-        exportDOCX(dataToExport);
-        break;
-      default:
-        console.error('Unsupported format');
-    }
-  };
-
-  const exportCSV = (data) => {
-    const csvContent = [
-      ['Email', 'Timestamp'],
-      ...data.map(item => [item.email, item.createdAt])
-    ].map(row => row.join(',')).join('\n');
-    
-    downloadFile(csvContent, 'newsletter-subscribers.csv', 'text/csv');
-  };
-
-  const exportPDF = (data) => {
-    // In a real implementation, you would use a library like jsPDF
-    // For this example, we'll just log a message
-    console.log('Exporting to PDF:', data);
-    alert('PDF export would be implemented with a library like jsPDF');
-  };
-
-  const exportDOCX = (data) => {
-    // In a real implementation, you would use a library like docx
-    // For this example, we'll just log a message
-    console.log('Exporting to DOCX:', data);
-    alert('DOCX export would be implemented with a library like docx');
-  };
-
-  const downloadFile = (content, fileName, contentType) => {
-    const blob = new Blob([content], { type: contentType });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
   // Apply sorting, filtering, and searching
   let filteredData = [...newsLetter];
 
@@ -177,6 +130,101 @@ const Newsletter = () => {
     }
   });
 
+  // Export functions
+  const prepareExportData = () => {
+    return filteredData.map(item => ({
+      email: item.email,
+      createdAt: new Date(item.createdAt).toLocaleString()
+    }));
+  };
+
+  const csvData = [
+    ['Email', 'Timestamp'],
+    ...filteredData.map(item => [item.email, new Date(item.createdAt).toLocaleString()])
+  ];
+
+  const exportPDF = () => {
+    setExportLoading(true);
+    try {
+      const doc = new jsPDF();
+      
+      // Add title
+      doc.setFontSize(18);
+      doc.text("Newsletter Subscribers", 14, 20);
+      
+      // Add generation date
+      doc.setFontSize(11);
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
+      
+      // Add table
+      autoTable(doc, {
+        head: [["Email", "Timestamp"]],
+        body: filteredData.map(item => [
+          item.email, 
+          new Date(item.createdAt).toLocaleString()
+        ]),
+        startY: 35,
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [117, 78, 26] },
+        alternateRowStyles: { fillColor: [240, 240, 240] },
+      });
+      
+      doc.save("newsletter-subscribers.pdf");
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const exportDOCX = () => {
+    setExportLoading(true);
+    try {
+      // Create a simple HTML representation of the data
+      const tableRows = filteredData.map(item => 
+        `<tr>
+          <td>${item.email}</td>
+          <td>${new Date(item.createdAt).toLocaleString()}</td>
+        </tr>`
+      ).join('');
+      
+      const htmlContent = `
+        <html>
+          <head>
+            <style>
+              table { border-collapse: collapse; width: 100%; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #754E1A; color: white; }
+            </style>
+          </head>
+          <body>
+            <h1>Newsletter Subscribers</h1>
+            <p>Generated on: ${new Date().toLocaleString()}</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRows}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `;
+      
+      // Create a blob from the HTML content
+      const blob = new Blob([htmlContent], { type: 'application/msword' });
+      saveAs(blob, "newsletter-subscribers.doc");
+    } catch (error) {
+      console.error("Error exporting DOCX:", error);
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -199,35 +247,40 @@ const Newsletter = () => {
       <div className="flex flex-col gap-4">
         <div className="flex justify-between px-4 py-2 bg-gray-200 text-black rounded-md font-medium">
           <h2 className="text-lg font-semibold text-gray-800">Newsletter Details</h2>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <Popover>
+            <PopoverTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2 bg-[#754E1A] text-white hover:bg-[#5c3d14]">
                 <Download size={16} /> Export
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg">
-              <DropdownMenuItem 
-                onClick={() => exportData('csv')}
-                className="hover:bg-blue-100 cursor-pointer px-4 py-2 text-sm"
-              >
-                Export as CSV
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-gray-200 h-px my-1" />
-              <DropdownMenuItem 
-                onClick={() => exportData('pdf')}
-                className="hover:bg-blue-100 cursor-pointer px-4 py-2 text-sm"
-              >
-                Export as PDF
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-gray-200 h-px my-1" />
-              <DropdownMenuItem 
-                onClick={() => exportData('docx')}
-                className="hover:bg-blue-100 cursor-pointer px-4 py-2 text-sm"
-              >
-                Export as DOCX
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </PopoverTrigger>
+            <PopoverContent className="bg-white border border-gray-200 shadow-lg p-0 w-48">
+              <div className="py-1">
+                <CSVLink 
+                  data={csvData}
+                  filename="newsletter-subscribers.csv"
+                  className="flex items-center px-4 py-2 hover:bg-blue-100 cursor-pointer text-sm"
+                >
+                  Export as CSV
+                </CSVLink>
+                <div className="bg-gray-200 h-px my-1"></div>
+                <button 
+                  onClick={exportPDF}
+                  disabled={exportLoading}
+                  className="flex items-center px-4 py-2 hover:bg-blue-100 cursor-pointer text-sm w-full text-left"
+                >
+                  {exportLoading ? "Generating PDF..." : "Export as PDF"}
+                </button>
+                <div className="bg-gray-200 h-px my-1"></div>
+                <button 
+                  onClick={exportDOCX}
+                  disabled={exportLoading}
+                  className="flex items-center px-4 py-2 hover:bg-blue-100 cursor-pointer text-sm w-full text-left"
+                >
+                  {exportLoading ? "Generating DOCX..." : "Export as DOCX"}
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
         
         <div className="flex flex-wrap gap-2 justify-between items-center mb-4">
@@ -264,7 +317,7 @@ const Newsletter = () => {
                     <SelectTrigger className="border border-gray-300">
                       <SelectValue placeholder="Select filter type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectContent className="bg-white border border-gray-300 shadow-md">
                       <SelectItem value="all">No Filter</SelectItem>
                       <SelectItem value="date">By Date</SelectItem>
                       <SelectItem value="domain">By Domain</SelectItem>
@@ -299,8 +352,8 @@ const Newsletter = () => {
               </DialogContent>
             </Dialog>
             
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <Popover>
+              <PopoverTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200">
                   {sortConfig.direction === "asc" ? (
                     <SortAsc size={16} />
@@ -309,23 +362,31 @@ const Newsletter = () => {
                   )}
                   Sort
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white border border-gray-200 shadow-lg">
-                <DropdownMenuItem 
-                  onClick={() => handleSort("email")}
-                  className="hover:bg-blue-100 cursor-pointer px-4 py-2 text-sm"
-                >
-                  Sort by Email {sortConfig.key === "email" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-200 h-px my-1" />
-                <DropdownMenuItem 
-                  onClick={() => handleSort("createdAt")}
-                  className="hover:bg-blue-100 cursor-pointer px-4 py-2 text-sm"
-                >
-                  Sort by Date {sortConfig.key === "createdAt" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </PopoverTrigger>
+              <PopoverContent className="bg-white border border-gray-200 shadow-lg p-0 w-44">
+                <div className="py-1">
+                  <button 
+                    onClick={() => handleSort("email")}
+                    className="flex items-center justify-between px-4 py-2 hover:bg-blue-100 cursor-pointer text-sm w-full text-left"
+                  >
+                    <span>Sort by Email</span>
+                    {sortConfig.key === "email" && (
+                      <span>{sortConfig.direction === "asc" ? "↑" : "↓"}</span>
+                    )}
+                  </button>
+                  <div className="bg-gray-200 h-px my-1"></div>
+                  <button 
+                    onClick={() => handleSort("createdAt")}
+                    className="flex items-center justify-between px-4 py-2 hover:bg-blue-100 cursor-pointer text-sm w-full text-left"
+                  >
+                    <span>Sort by Date</span>
+                    {sortConfig.key === "createdAt" && (
+                      <span>{sortConfig.direction === "asc" ? "↑" : "↓"}</span>
+                    )}
+                  </button>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </div>
@@ -398,13 +459,41 @@ const Newsletter = () => {
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
                     <div className="flex justify-center">
-                      <Button 
-                        variant="destructive" 
-                        size="sm" 
-                        className="bg-red-500 hover:bg-red-600"
-                      >
-                        <FaTrash className="h-4 w-4" />
-                      </Button>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button 
+                            variant="destructive" 
+                            size="sm" 
+                            className="bg-red-500 hover:bg-red-600"
+                          >
+                            <FaTrash className="h-4 w-4" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="bg-white p-0 w-56">
+                          <div className="p-4">
+                            <p className="font-medium mb-2">Confirm Deletion</p>
+                            <p className="text-sm text-gray-500 mb-4">
+                              Are you sure you want to delete this subscription?
+                            </p>
+                            <div className="flex justify-end gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="bg-gray-100 hover:bg-gray-200"
+                              >
+                                Cancel
+                              </Button>
+                              <Button 
+                                variant="destructive" 
+                                size="sm"
+                                className="bg-red-500 hover:bg-red-600"
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                   </td>
                 </tr>

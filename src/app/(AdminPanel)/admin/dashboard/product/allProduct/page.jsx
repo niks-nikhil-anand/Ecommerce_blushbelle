@@ -1,28 +1,89 @@
 "use client"
-import { FaEye, FaTrash } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { FaEye, FaTrash, FaSearch, FaFilter, FaSort } from "react-icons/fa";
 import Loader from "@/components/loader/loader";
-import toast, { Toaster } from "react-hot-toast"; // Import toast and Toaster
+import toast, { Toaster } from "react-hot-toast";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel
+} from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
-  const [status, setStatus] = useState("active");
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [productToDelete, setProductToDelete] = useState(null); // Track the product ID to be deleted
+  const [productToDelete, setProductToDelete] = useState(null);
+  
+  // Search, sort, filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [filters, setFilters] = useState({
+    category: "all",
+    status: "all",
+    isFeatured: "all",
+    isOnSale: "all"
+  });
+  
+  // Unique categories for filter dropdown
+  const [categories, setCategories] = useState([]);
 
-   // Fetch products from API
-   useEffect(() => {
+  // Fetch products from API
+  useEffect(() => {
     axios
       .get('/api/admin/dashboard/product/addProduct')
       .then((response) => {
         if (Array.isArray(response.data)) {
           setProducts(response.data);
+          
+          // Extract unique categories
+          const uniqueCategories = [...new Set(response.data
+            .filter(product => product.category?.name)
+            .map(product => product.category.name))];
+          setCategories(uniqueCategories);
         } else {
           console.error('Unexpected response format:', response);
         }
@@ -34,16 +95,95 @@ const Products = () => {
       });
   }, []);
 
+  // Filter products based on search term and filters
+  const filteredProducts = products.filter(product => {
+    // Search filter
+    const matchesSearch = searchTerm === "" || 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (product.category?.name && product.category.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (product.subCatgeory && product.subCatgeory.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+    // Category filter
+    const matchesCategory = filters.category === "all" || 
+      (product.category?.name && product.category.name === filters.category);
+      
+    // Status filter
+    const matchesStatus = filters.status === "all" || product.status === filters.status;
+    
+    // Featured filter
+    const matchesFeatured = filters.isFeatured === "all" || 
+      (filters.isFeatured === "yes" && product.isFeaturedSale) ||
+      (filters.isFeatured === "no" && !product.isFeaturedSale);
+      
+    // On Sale filter
+    const matchesOnSale = filters.isOnSale === "all" || 
+      (filters.isOnSale === "yes" && product.isOnSale) ||
+      (filters.isOnSale === "no" && !product.isOnSale);
+      
+    return matchesSearch && matchesCategory && matchesStatus && matchesFeatured && matchesOnSale;
+  });
+
+  // Sort products
+  const sortedProducts = React.useMemo(() => {
+    let sortableProducts = [...filteredProducts];
+    
+    if (sortConfig.key) {
+      sortableProducts.sort((a, b) => {
+        let aValue, bValue;
+        
+        // Handle nested properties or special cases
+        if (sortConfig.key === "category") {
+          aValue = a.category?.name || "";
+          bValue = b.category?.name || "";
+        } else if (sortConfig.key === "price") {
+          aValue = a.salePrice || a.originalPrice;
+          bValue = b.salePrice || b.originalPrice;
+        } else {
+          aValue = a[sortConfig.key];
+          bValue = b[sortConfig.key];
+        }
+        
+        // Handle string comparison
+        if (typeof aValue === "string") {
+          if (sortConfig.direction === "ascending") {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        } else {
+          // Handle numeric comparison
+          if (sortConfig.direction === "ascending") {
+            return aValue - bValue;
+          } else {
+            return bValue - aValue;
+          }
+        }
+      });
+    }
+    
+    return sortableProducts;
+  }, [filteredProducts, sortConfig]);
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
+  const currentProducts = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+
+  // Request sort
+  const requestSort = (key) => {
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const truncateName = (name, wordLimit = 4) => {
+    if (!name) return "N/A";
     const words = name.split(" ");
     return words.length > wordLimit
       ? words.slice(0, wordLimit).join(" ") + "..."
@@ -51,15 +191,13 @@ const Products = () => {
   };
 
   const handleToggle = async (productId, currentStatus) => {
-    const newStatus = currentStatus === "active" ? "inactive" : "active"; // Toggle status
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      // Send PATCH request to update the product status
       const response = await axios.patch(`/api/admin/dashboard/product/${productId}`, {
         status: newStatus,
       });
   
       if (response.status === 200) {
-        // Update the state if the status update was successful
         setProducts((prevProducts) =>
           prevProducts.map((product) =>
             product._id === productId ? { ...product, status: newStatus } : product
@@ -75,14 +213,8 @@ const Products = () => {
     }
   };
 
-  // const percentageOff = ((originalPrice - salePrice) / originalPrice) * 100;
-
-
-
-  
-
   const deleteProduct = async () => {
-    if (!productToDelete) return; // Ensure there's a product ID to delete
+    if (!productToDelete) return;
     try {
       const response = await fetch(`/api/admin/dashboard/product/${productToDelete}`, {
         method: "DELETE",
@@ -90,7 +222,7 @@ const Products = () => {
 
       if (response.ok) {
         toast.success("Product deleted successfully");
-        handleDelete(productToDelete); // Remove the product from state
+        handleDelete(productToDelete);
       } else {
         const { msg } = await response.json();
         toast.error(msg || "Failed to delete product");
@@ -108,182 +240,355 @@ const Products = () => {
     );
   };
 
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setFilters({
+      category: "all",
+      status: "all",
+      isFeatured: "all",
+      isOnSale: "all"
+    });
+    setSortConfig({ key: null, direction: null });
+  };
+
   if (loading) return <Loader />;
   if (!products.length) return <p className="text-center">No products available.</p>;
 
   return (
-    <div className="w-full p-4  bg-white shadow-lg  h-[85vh] min-w-[100%]  ">
-     <div className="flex justify-between px-4 py-2 bg-gray-200 text-black  rounded-md my-4 font-medium">
-                <h2 className="text-lg font-semibold text-gray-800">Product Details</h2>
-                <button className="bg-[#754E1A] hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-all">
-                  Export
-                </button>
-              </div>
-      <div className="overflow-x-auto overflow-y-auto max-h-[60vh] custom-scrollbar">
-        <table className="border-collapse border border-gray-300 min-w-[1300px] text-sm">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border px-2 py-1 text-left">Featured Image</th>
-              <th className="border px-2 py-1 text-left">Name</th>
-              <th className="border px-2 py-1 text-center">Stock</th>
-              <th className="border px-2 py-1 text-left">Price</th>
-              <th className="border px-2 py-1 text-left">Category</th>
-              <th className="border px-2 py-1 text-left">SubCategory</th>
-              <th className="border px-2 py-1 text-left">Is-Featured</th>
-              <th className="border px-2 py-1 text-center">On Sale</th>
-              <th className="border px-2 py-1 text-center">Status</th>
-              <th className="border px-2 py-1 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentProducts.map((product) => (
-              <tr key={product._id} className="hover:bg-gray-100">
-                <td className="border px-2 py-1 text-center flex justify-center">
-                <Image
-                  src={product.featuredImage}
-                  alt={product.name}
-                  width={48} // Adjust based on design
-                  height={48} // Adjust based on design
-                  className=" shadow-lg object-cover cursor-pointer"
-                  style={{ width: "30px", height: "60px" }}
-                />
-                </td>
-                <td className="border px-2 py-1">{truncateName(product.name)}</td>
-                <td className="border px-2 py-1 text-center">{product.stock}</td>
-                <td className="border px-2 py-1">
-                    <span className="text-gray-400 text-sm line-through">
-                      ₹{product.originalPrice}
-                    </span>
-                    <span className="text-red-500 text-sm font-semibold ml-2">
-                      {Math.round(((product.originalPrice - product.salePrice) / product.originalPrice) * 100)}% Off
-                    </span>
-                  </td>
-                <td className="border px-2 py-1">{product.category?.name || "N/A"}</td>
-                <td className="border px-2 py-1">{product.subCatgeory || "N/A"}</td>
-                
-                <td className="border px-2 py-1 text-center">
-                  {product.isOnSale ? (
-                    <span className="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">
-                      Yes
-                    </span>
-                  ) : (
-                    <span className="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs">
-                      No
-                    </span>
-                  )}
-                </td>
-
-                <td className="border px-2 py-1 text-center">
-                  {product.isFeaturedSale ? (
-                    <span className="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">
-                      Yes
-                    </span>
-                  ) : (
-                    <span className="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs">
-                      No
-                    </span>
-                  )}
-                </td>
-                
-              <td className="border px-2 py-1 text-center">
-              <div className="flex items-center justify-center gap-2">
-                {/* Toggle Switch */}
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={product.status === "active"}
-                    onChange={() => handleToggle(product._id, product.status)} // Pass product ID and current status
-                    className="sr-only peer"
-                  />
-                  <div className="w-12 h-6 bg-gray-200 rounded-full peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:bg-gray-700 peer-checked:bg-green-500">
-                    <motion.div
-                      className="absolute w-5 h-5 bg-white border border-gray-300 rounded-full top-[2px] left-[1px]"
-                      initial={{ x: 0 }}
-                      animate={{ x: product.status === "active" ? 25 : 0 }} // Adjust the toggle's position based on status
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 30, // Adjust these values for a softer or faster transition
-                      }}
-                    />
-                  </div>
-                </label>
-              </div>
-              </td>
-              <td className="border px-2 py-1 text-center">
-                <div className="flex gap-4 justify-center">
-                  {/* View Button */}
-                  <motion.button
-                    onClick={() => console.log("View product", product._id)}
-                    whileHover={{ scale: 1.1, rotate: 2 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-xl shadow-lg hover:bg-blue-600 transition-all duration-300"
-                  >
-                    <FaEye className="text-lg drop-shadow-md" />
-                  </motion.button>
-
-                  {/* Delete Button */}
-                  <motion.button
-                    onClick={() => {
-                      setProductToDelete(product._id);
-                      setShowDeleteModal(true);
-                    }}
-                    whileHover={{ scale: 1.1, rotate: -2 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-xl shadow-lg hover:bg-red-600 transition-all duration-300"
-                  >
-                    <FaTrash className="text-lg drop-shadow-md" />
-                  </motion.button>
-                </div>
-              </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
-            <h2 className="text-lg font-semibold mb-4 text-center">
-              Are you sure you want to delete this product?
-            </h2>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={deleteProduct}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Yes, Delete
-              </button>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                No, Cancel
-              </button>
-            </div>
-          </div>
+    <Card className="w-full shadow-lg h-[85vh] min-w-full">
+      <CardHeader className="bg-gray-50">
+        <div className="flex justify-between items-center">
+          <CardTitle>Product Details</CardTitle>
+          <Button variant="default" className="bg-[#754E1A] hover:bg-[#5d3e15]">
+            Export
+          </Button>
         </div>
-      )}
-
-      {/* Pagination */}
-      <div className="mt-4 flex justify-center space-x-2">
-        {[...Array(Math.ceil(products.length / itemsPerPage)).keys()].map((number) => (
-          <button
-            key={number}
-            className={`px-2 py-1 rounded-md text-xs ${
-              currentPage === number + 1
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-            onClick={() => paginate(number + 1)}
+      </CardHeader>
+      
+      <CardContent>
+        {/* Search, Filter, and Sort Controls */}
+        <div className="flex flex-wrap gap-4 mb-4">
+          {/* Search */}
+          <div className="relative flex-grow max-w-md">
+            <FaSearch className="absolute left-3 top-3 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          {/* Filters */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex gap-2">
+                <FaFilter /> Filters
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 bg-white shadow-lg border border-gray-200">
+              <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              
+              {/* Category Filter */}
+              <div className="p-2">
+                <p className="text-sm font-medium mb-1">Category</p>
+                <Select 
+                  value={filters.category} 
+                  onValueChange={(value) => setFilters({...filters, category: value})}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Status Filter */}
+              <div className="p-2">
+                <p className="text-sm font-medium mb-1">Status</p>
+                <Select 
+                  value={filters.status} 
+                  onValueChange={(value) => setFilters({...filters, status: value})}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="All Status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Featured Filter */}
+              <div className="p-2">
+                <p className="text-sm font-medium mb-1">Featured</p>
+                <Select 
+                  value={filters.isFeatured} 
+                  onValueChange={(value) => setFilters({...filters, isFeatured: value})}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="All" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="yes">Yes</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* On Sale Filter */}
+              <div className="p-2">
+                <p className="text-sm font-medium mb-1">On Sale</p>
+                <Select 
+                  value={filters.isOnSale} 
+                  onValueChange={(value) => setFilters({...filters, isOnSale: value})}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="All" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="yes">Yes</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <DropdownMenuSeparator />
+              <div className="p-2">
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-center"
+                  onClick={handleResetFilters}
+                >
+                  Reset Filters
+                </Button>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          {/* Sort */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex gap-2">
+                <FaSort /> Sort
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white shadow-lg border border-gray-200">
+              <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => requestSort("name")} className="cursor-pointer hover:bg-gray-100">
+                Name {sortConfig.key === "name" && (sortConfig.direction === "ascending" ? "↑" : "↓")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => requestSort("price")} className="cursor-pointer hover:bg-gray-100">
+                Price {sortConfig.key === "price" && (sortConfig.direction === "ascending" ? "↑" : "↓")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => requestSort("stock")} className="cursor-pointer hover:bg-gray-100">
+                Stock {sortConfig.key === "stock" && (sortConfig.direction === "ascending" ? "↑" : "↓")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => requestSort("category")} className="cursor-pointer hover:bg-gray-100">
+                Category {sortConfig.key === "category" && (sortConfig.direction === "ascending" ? "↑" : "↓")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          {/* Items per page */}
+          <Select 
+            value={itemsPerPage.toString()} 
+            onValueChange={(value) => {
+              setItemsPerPage(Number(value));
+              setCurrentPage(1);
+            }}
           >
-            {number + 1}
-          </button>
-        ))}
-      </div>
-    </div>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Show" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="5">5 per page</SelectItem>
+              <SelectItem value="10">10 per page</SelectItem>
+              <SelectItem value="20">20 per page</SelectItem>
+              <SelectItem value="50">50 per page</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Results info */}
+        <div className="text-sm text-gray-500 mb-2">
+          Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, sortedProducts.length)} of {sortedProducts.length} products
+        </div>
+        
+        {/* Products Table */}
+        <div className="overflow-x-auto overflow-y-auto max-h-[50vh] border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-100 hover:bg-gray-100">
+                <TableHead className="font-medium">Image</TableHead>
+                <TableHead className="font-medium">Name</TableHead>
+                <TableHead className="font-medium text-center">Stock</TableHead>
+                <TableHead className="font-medium">Price</TableHead>
+                <TableHead className="font-medium">Category</TableHead>
+                <TableHead className="font-medium">SubCategory</TableHead>
+                <TableHead className="font-medium text-center">Featured</TableHead>
+                <TableHead className="font-medium text-center">On Sale</TableHead>
+                <TableHead className="font-medium text-center">Status</TableHead>
+                <TableHead className="font-medium text-center">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentProducts.length > 0 ? (
+                currentProducts.map((product) => (
+                  <TableRow key={product._id} className="hover:bg-gray-50">
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        <Image
+                          src={product.featuredImage || "/placeholder.png"}
+                          alt={product.name}
+                          width={30}
+                          height={60}
+                          className="shadow-sm object-cover rounded-sm"
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell>{truncateName(product.name)}</TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant={product.stock > 10 ? "success" : (product.stock > 0 ? "warning" : "destructive")}>
+                        {product.stock}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="text-gray-400 text-xs line-through">₹{product.originalPrice}</span>
+                        <span className="text-sm font-medium">₹{product.salePrice}</span>
+                        <span className="text-green-600 text-xs">
+                          {Math.round(((product.originalPrice - product.salePrice) / product.originalPrice) * 100)}% Off
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{product.category?.name || "N/A"}</TableCell>
+                    <TableCell>{product.subCatgeory || "N/A"}</TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant={product.isFeaturedSale ? "success" : "outline"}>
+                        {product.isFeaturedSale ? "Yes" : "No"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant={product.isOnSale ? "success" : "outline"}>
+                        {product.isOnSale ? "Yes" : "No"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center">
+                        <Switch
+                          checked={product.status === "active"}
+                          onCheckedChange={() => handleToggle(product._id, product.status)}
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2 justify-center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => console.log("View product", product._id)}
+                          className="bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200"
+                        >
+                          <FaEye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setProductToDelete(product._id);
+                            setShowDeleteModal(true);
+                          }}
+                          className="bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
+                        >
+                          <FaTrash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={10} className="text-center py-8 text-gray-500">
+                    No products found matching your criteria
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center mt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <div className="flex space-x-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                <Button
+                  key={number}
+                  variant={currentPage === number ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => paginate(number)}
+                  className={currentPage === number ? "bg-[#754E1A] hover:bg-[#5d3e15]" : ""}
+                >
+                  {number}
+                </Button>
+              ))}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        )}
+      </CardContent>
+      
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this product? This action cannot be undone.  
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={deleteProduct}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Toast notifications */}
+      <Toaster position="top-right" />
+    </Card>
   );
 };
 

@@ -119,15 +119,6 @@ const SidebarAdmin = () => {
                   />
                 </Link>
 
-                <Link href="/admin/dashboard/product/addStocks" passHref>
-                  <SidebarItem
-                    icon={<FaBoxes />}
-                    label="Add Stocks"
-                    selected={selectedItem === "Add Stocks"}
-                    onClick={() => setSelectedItem("Add Stocks")}
-                  />
-                </Link>
-
                 <Link href="/admin/dashboard/coupon" passHref>
                   <SidebarItem
                     icon={<MdOutlineLocalOffer />}

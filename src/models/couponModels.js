@@ -9,7 +9,7 @@ const couponSchema = new mongoose.Schema({
   discountType: {
     type: String,
     required: true,
-    enum: ["percentage", "fixed"], // Discount type can be either percentage or fixed amount
+    enum: ["percentage", "fixed"], 
   },
   discountValue: {
     type: Number,
@@ -33,11 +33,11 @@ const couponSchema = new mongoose.Schema({
   },
   usageLimit: {
     type: Number,
-    default: null, // Maximum number of times the coupon can be used (optional)
+    default: null,
   },
   usedCount: {
     type: Number,
-    default: 0, // Number of times the coupon has been used
+    default: 0, 
   },
   status: {
     type: String,
@@ -47,7 +47,7 @@ const couponSchema = new mongoose.Schema({
   applicableProducts: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product", // Coupon can be applicable to specific products
+      ref: "Product", 
     },
   ],
   applicableCategories: [

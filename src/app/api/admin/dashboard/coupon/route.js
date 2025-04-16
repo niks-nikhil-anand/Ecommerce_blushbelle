@@ -1,5 +1,5 @@
 import connectDB from "@/lib/dbConnect";
-import { Coupon } from "@/models/couponCodeModels";
+import { Coupon } from "@/models/couponModels";
 import { NextResponse } from "next/server";
 
 

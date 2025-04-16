@@ -314,13 +314,16 @@ const ProductForm = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Step progress indicator */}
+          {/* Enhanced Step progress indicator with connected horizontal bar */}
           <div className="mb-8">
-            <div className="flex justify-between mb-2">
+            <div className="flex justify-between mb-2 relative">
+              {/* Horizontal connecting line behind the circles */}
+              <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200" />
+              
               {steps.map((step) => (
                 <div
                   key={step.number}
-                  className={`flex flex-col items-center ${
+                  className={`flex flex-col items-center z-10 ${
                     currentStep === step.number
                       ? "text-primary font-bold"
                       : completedSteps.includes(step.number)
@@ -347,7 +350,9 @@ const ProductForm = () => {
                 </div>
               ))}
             </div>
-            <Progress value={progress} className="h-2" />
+            
+            {/* Using the shadcn Progress component instead of the custom one */}
+            <Progress value={progress} className="h-2 mt-4" />
           </div>
 
           <form onSubmit={handleSubmit} className="w-full">

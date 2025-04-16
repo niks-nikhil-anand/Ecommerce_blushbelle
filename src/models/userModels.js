@@ -42,9 +42,9 @@ const userSchema = new mongoose.Schema({
     }],
     role: {
         type: String,
-        enum: ['User', 'SuperAdmin'],
+        enum: ['User', 'Admin', 'SuperAdmin', 'Moderator', 'Editor', 'Viewer'],
         default: 'User'
-    },
+    },    
     status: {
         type: String,
         enum: ['Blocked', 'Pending', 'inReview', 'Active'],

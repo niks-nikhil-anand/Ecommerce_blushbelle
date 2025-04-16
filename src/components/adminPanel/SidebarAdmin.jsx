@@ -198,12 +198,12 @@ const SidebarAdmin = () => {
                     onClick={() => setSelectedItem("Reviews")}
                   />
                 </Link>
-                <Link href="/admin/dashboard/messages/Feedback" passHref>
+                <Link href="/admin/dashboard/messages/Queries" passHref>
                   <SidebarItem 
                     icon={<FaEnvelopeOpenText />} 
-                    label="Feedbacks" 
-                    selected={selectedItem === "Feedbacks"}
-                    onClick={() => setSelectedItem("Feedbacks")}
+                    label="Queries" 
+                    selected={selectedItem === "Queries"}
+                    onClick={() => setSelectedItem("Queries")}
                   />
                 </Link>
                 <Link href="/admin/dashboard/messages/Newsletter" passHref>

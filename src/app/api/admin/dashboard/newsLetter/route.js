@@ -6,8 +6,6 @@ import NewsLetter from '@/models/newsLetter';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-
-
 export async function POST(req) {
   try {
     console.log("Connecting to the database...");

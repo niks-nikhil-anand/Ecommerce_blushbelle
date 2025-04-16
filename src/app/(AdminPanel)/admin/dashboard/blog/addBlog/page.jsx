@@ -6,13 +6,20 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { ChevronRight, ChevronLeft, Upload, Check } from 'lucide-react';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 const BlogFormComponent = () => {
   const [step, setStep] = useState(1);
   const [fetchingProducts, setFetchingProducts] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
@@ -21,6 +28,7 @@ const BlogFormComponent = () => {
     subtitle: '',
     product: '',
     author: '',
+    category: '',
   });
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +54,6 @@ const BlogFormComponent = () => {
     setFormData({ ...formData, featuredImage: file });
   };
 
-
   useEffect(() => {
     const fetchProducts = async () => {
       setFetchingProducts(true);
@@ -58,7 +65,7 @@ const BlogFormComponent = () => {
           console.error('Unexpected response format:', response.data);
         }
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching products:', error);
       } finally {
         setFetchingProducts(false);
       }
@@ -70,10 +77,9 @@ const BlogFormComponent = () => {
     setFormData({ ...formData, product: productId });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading state
+    setLoading(true);
 
     const formDataToSend = new FormData();
     for (const key in formData) {
@@ -86,7 +92,7 @@ const BlogFormComponent = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      toast.success('Blog added successfully!');
+      toast.success('Blog post created successfully!');
       setFormData({
         title: '',
         content: '',
@@ -94,157 +100,231 @@ const BlogFormComponent = () => {
         subtitle: '',
         product: '',
         author: '',
+        category: '',
       });
       setStep(1);
     } catch (error) {
-      toast.error('Error adding blog');
+      toast.error('Error creating blog post');
+      console.error(error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
+  // Define step titles and descriptions
+  const steps = [
+    { 
+      title: "Content Creation", 
+      description: "Write your blog post content" 
+    },
+    { 
+      title: "Details & Metadata", 
+      description: "Add supporting information" 
+    }
+  ];
 
   return (
-    <div className="max-w-full mx-auto p-4 bg-gray-50  rounded-lg w-full h-[90vh]  overflow-y-auto max-h-[80vh] custom-scrollbar ">
-     <h1 className="text-2xl font-bold mb-6">Add Blog</h1>
-    <form onSubmit={handleSubmit} className="space-y-6">
-        <motion.div
-          className="flex flex-col space-y-4"
-        >
-          {step === 1 && (
-            <>
-              <div className='flex flex-col gap-5'>
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold ">Title</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    placeholder="Enter the title"
-                    className="w-full p-2 border border-gray-300  focus:ring-2 focus:ring-blue-400 rounded-xl"
-                  />
-                </div>
-                <div>
-                  <label className="block mb-3 text-gray-700 font-bold">Content</label>
-                  <ReactQuill
-                    value={formData.content}
-                    onChange={handleQuillChange}
-                    className="w-full h-80 rounded"
-                  />
-                </div>
-                <div className="mt-5 flex justify-end">
-              <motion.button
-                type="button"
-                onClick={handleNextStep}
-                whileHover={{ scale: 1.05, rotate: 1 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-2 mt-6 text-white bg-blue-500 rounded hover:bg-blue-600 transition-all duration-300"
-              >
-                Next
-              </motion.button>
+    <div className="w-full h-[90vh] overflow-y-auto max-h-[80vh] p-6 bg-gray-50 custom-scrollbar">
+      <Card className="w-full shadow-md">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="text-2xl font-bold text-blue-800">Create Blog Post</CardTitle>
+              <CardDescription className="text-blue-600 mt-1">Share your insights with the world</CardDescription>
             </div>
-              </div>
-            </>
-          )}
-          {step === 2 && (
-            <>
-              <div>
-                <label className="block mb-2 text-gray-700 font-bold">Featured Image</label>
-                <input
-                  type="file"
-                  name="featuredImageFile"
-                  onChange={handleFileChange}
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-              <div>
-                <label className="block mb-2 text-gray-700 font-bold">Subtitle</label>
-                <input
-                  type="text"
-                  name="subtitle"
-                  value={formData.subtitle}
-                  onChange={handleChange}
-                  placeholder="Enter the subtitle"
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="col-span-2">
-                  <label className="block text-blue-600 font-bold mb-3">Product</label>
+            <div className="flex items-center space-x-2">
+              {steps.map((s, i) => (
+                <div key={i} className="flex items-center">
+                  <div 
+                    className={`flex items-center justify-center w-8 h-8 rounded-full font-medium
+                    ${step > i + 1 ? 'bg-green-500 text-white' : step === i + 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}
+                  >
+                    {step > i + 1 ? <Check size={16} /> : i + 1}
+                  </div>
+                  {i < steps.length - 1 && (
+                    <div className={`h-1 w-8 ${step > i + 1 ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-2">
+            <p className="text-sm font-medium text-gray-600">
+              Step {step}: {steps[step-1].title}
+            </p>
+            <p className="text-xs text-gray-500">{steps[step-1].description}</p>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="pt-6 pb-20">
+          <form onSubmit={handleSubmit}>
+            {step === 1 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="space-y-6"
+              >
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="title" className="text-base font-medium text-gray-700">Blog Title</Label>
+                    <Input
+                      id="title"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleChange}
+                      placeholder="Enter an engaging title for your blog"
+                      className="mt-1 h-12"
+                    />
+                  </div>
+                  
+                  <div className="mt-4">
+                    <Label htmlFor="content" className="text-base font-medium text-gray-700">Blog Content</Label>
+                    <div className="mt-1 border rounded-md">
+                      <ReactQuill
+                        value={formData.content}
+                        onChange={handleQuillChange}
+                        className="h-96 rounded"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            
+            {step === 2 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="subtitle" className="text-base font-medium text-gray-700">Subtitle</Label>
+                    <Input
+                      id="subtitle"
+                      name="subtitle"
+                      value={formData.subtitle}
+                      onChange={handleChange}
+                      placeholder="Add a descriptive subtitle"
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="author" className="text-base font-medium text-gray-700">Author</Label>
+                    <Input
+                      id="author"
+                      name="author"
+                      value={formData.author}
+                      onChange={handleChange}
+                      placeholder="Who wrote this blog?"
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="category" className="text-base font-medium text-gray-700">Category</Label>
+                    <Input
+                      id="category"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      placeholder="Select or create a category"
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="featuredImage" className="text-base font-medium text-gray-700">Featured Image</Label>
+                    <div className="mt-1 flex items-center">
+                      <label className="w-full flex flex-col items-center px-4 py-6 bg-white text-blue-500 rounded-lg shadow-lg tracking-wide border border-blue-200 cursor-pointer hover:bg-blue-50 transition-colors">
+                        <Upload className="w-8 h-8" />
+                        <span className="mt-2 text-base">Select image</span>
+                        <input
+                          id="featuredImage"
+                          type="file"
+                          className="hidden"
+                          onChange={handleFileChange}
+                        />
+                      </label>
+                    </div>
+                    {formData.featuredImage && (
+                      <p className="mt-2 text-sm text-green-600">
+                        Image selected: {typeof formData.featuredImage === 'object' ? formData.featuredImage.name : formData.featuredImage}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                
+                <div>
+                  <Label className="text-base font-medium text-gray-700">Related Product</Label>
                   {fetchingProducts ? (
-                    <p>Loading products...</p>
+                    <div className="flex justify-center py-4">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                    </div>
                   ) : (
-                    <div className="flex flex-wrap gap-4">
+                    <div className="mt-2 flex flex-wrap gap-2">
                       {products.map((product) => (
-                        <motion.button
+                        <Badge
                           key={product._id}
-                          type="button"
-                          onClick={() => handleProductSelect(product._id)}
-                          className={`p-3 border rounded-lg ${
-                            formData.product === product._id
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-white text-gray-700 hover:bg-gray-200'
+                          variant={formData.product === product._id ? "default" : "outline"}
+                          className={`px-3 py-1 cursor-pointer text-sm ${
+                            formData.product === product._id 
+                              ? "bg-blue-600 hover:bg-blue-700" 
+                              : "hover:bg-blue-50"
                           }`}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          transition={{ duration: 0.3 }}
+                          onClick={() => handleProductSelect(product._id)}
                         >
                           {product.name}
-                        </motion.button>
+                        </Badge>
                       ))}
                     </div>
                   )}
                 </div>
-              </div>
-              <div>
-                <label className="block mb-2 text-gray-700 font-bold">Category</label>
-                <input
-                  type="text"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  placeholder="Enter the category"
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-              <div>
-                <label className="block mb-2 text-gray-700 font-bold">Author</label>
-                <input
-                  type="text"
-                  name="author"
-                  value={formData.author}
-                  onChange={handleChange}
-                  placeholder="Enter the author"
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-              <div className="flex justify-between mt-6">
-              <motion.button
-                type="button"
-                onClick={handlePrevStep}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-3/20 p-2 text-white bg-gray-500 rounded hover:bg-gray-600"
-              >
-                Previous
-              </motion.button>
-
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`w-3/20 p-2 ml-2 text-white ${loading ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
-                disabled={loading}
-              >
-                {loading ? 'Submitting...' : 'Submit'}
-              </motion.button>
-            </div>
-            </>
+              </motion.div>
+            )}
+          </form>
+        </CardContent>
+        
+        <CardFooter className="flex justify-between p-6 border-t bg-gray-50">
+          {step > 1 ? (
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={handlePrevStep}
+              className="flex items-center gap-1"
+            >
+              <ChevronLeft size={16} />
+              Back
+            </Button>
+          ) : (
+            <div></div>
           )}
-        </motion.div>
-      </form>
-      <ToastContainer />
+          
+          {step < steps.length ? (
+            <Button 
+              type="button"
+              onClick={handleNextStep}
+              className="flex items-center gap-1"
+            >
+              Next
+              <ChevronRight size={16} />
+            </Button>
+          ) : (
+            <Button 
+              type="submit"
+              onClick={handleSubmit}
+              disabled={loading}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {loading ? 'Publishing...' : 'Publish Blog'}
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };

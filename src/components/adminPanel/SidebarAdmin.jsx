@@ -221,7 +221,7 @@ const SidebarAdmin = () => {
               <h3 className="text-sm font-medium mb-2 text-black">Account</h3>
               <Separator className="my-2" />
               <div className="space-y-3">
-                <Link href="/admin/dashboard/profile" passHref>
+                <Link href="/admin/dashboard/accounts/profile" passHref>
                   <SidebarItem
                     icon={<ImProfile />}
                     label="Profile"
@@ -239,7 +239,7 @@ const SidebarAdmin = () => {
                   />
                 </Link>
 
-                <Link href="/settings" passHref>
+                <Link href="/admin/dashboard/accounts/settings" passHref>
                   <SidebarItem
                     icon={<FaCog />}
                     label="Settings"

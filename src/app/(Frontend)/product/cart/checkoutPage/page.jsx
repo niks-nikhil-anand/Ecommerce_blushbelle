@@ -6,6 +6,7 @@ import { MdArrowBackIos } from "react-icons/md";
 import Loader from "@/components/loader/loader";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 // Import Shadcn components
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+// Remove the shadcn toast import
+// import { toast } from "@/components/ui/use-toast";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -35,6 +38,10 @@ const CheckoutPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingButton, setLoadingButton] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [applyCouponLoading, setApplyCouponLoading] = useState(false);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -56,6 +63,13 @@ const CheckoutPage = () => {
       if (cartData) {
         console.log("Cart data found in local storage:", cartData);
         setCart(cartData);
+      }
+      
+      // Get coupon from localStorage if exists
+      const savedCoupon = JSON.parse(localStorage.getItem("appliedCoupon"));
+      if (savedCoupon) {
+        setAppliedCoupon(savedCoupon);
+        setDiscountAmount(savedCoupon.discountAmount);
       }
     };
     fetchCartFromLocalStorage();
@@ -92,13 +106,18 @@ const CheckoutPage = () => {
     return (product.salePrice * product.quantity).toFixed(2);
   };
 
-  const estimatedTotal = () => {
+  const subtotal = () => {
     return products
       .reduce(
         (total, product) => total + product.salePrice * product.quantity,
         0
       )
       .toFixed(2);
+  };
+
+  const estimatedTotal = () => {
+    const total = parseFloat(subtotal()) - discountAmount;
+    return Math.max(total, 0).toFixed(2);
   };
 
   if (loading) {
@@ -125,7 +144,69 @@ const CheckoutPage = () => {
     console.log("Country selected:", value);
   };
 
+  const handleCouponChange = (e) => {
+    setCouponCode(e.target.value);
+  };
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      // Use react-hot-toast for error notification
+      toast.error("Please enter a coupon code");
+      return;
+    }
+
+    setApplyCouponLoading(true);
+    try {
+      const response = await axios.post("/api/coupon/validate", {
+        code: couponCode,
+        subtotal: subtotal(),
+      });
+
+      if (response.data.valid) {
+        const couponData = {
+          code: couponCode,
+          discountType: response.data.discountType,
+          discountValue: response.data.discountValue,
+          discountAmount: response.data.discountAmount,
+        };
+        
+        setAppliedCoupon(couponData);
+        setDiscountAmount(response.data.discountAmount);
+        localStorage.setItem("appliedCoupon", JSON.stringify(couponData));
+        
+        // Use react-hot-toast for success notification
+        toast.success(`Coupon "${couponCode}" applied successfully!`);
+        
+        setCouponCode("");
+      } else {
+        // Use react-hot-toast for error notification
+        toast.error(response.data.message || "This coupon cannot be applied");
+      }
+    } catch (error) {
+      console.error("Error applying coupon:", error);
+      // Use react-hot-toast for error notification
+      toast.error("Failed to apply coupon. Please try again.");
+    } finally {
+      setApplyCouponLoading(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+    localStorage.removeItem("appliedCoupon");
+    // Use react-hot-toast for info notification
+    toast.success("Coupon has been removed successfully");
+  };
+
   const handleContinueToShipping = async () => {
+    // Simple form validation
+    if (!formData.email || !formData.firstName || !formData.lastName || !formData.address || 
+        !formData.mobileNumber || !formData.state || !formData.city || !formData.pinCode) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     // Data object for the checkout API
     const checkoutData = {
       email: formData.email,
@@ -140,11 +221,14 @@ const CheckoutPage = () => {
       pinCode: formData.pinCode,
       subscribeChecked: formData.subscribeChecked,
       cart,
+      coupon: appliedCoupon,
     };
 
     try {
       // Submit checkout data
       setLoadingButton(true);
+      toast.loading("Processing your order...");
+      
       console.log("Submitting checkout data:", checkoutData);
       const checkoutResponse = await axios.post(
         "/api/pendingOrder/checkout",
@@ -156,6 +240,7 @@ const CheckoutPage = () => {
         }
       );
 
+      toast.dismiss(); // Dismiss the loading toast
       console.log("Checkout successful!", checkoutResponse.data);
 
       if (checkoutResponse.status === 200) {
@@ -163,12 +248,16 @@ const CheckoutPage = () => {
           "Checkout successful! Response data:",
           checkoutResponse.data
         );
+        toast.success("Information saved! Proceeding to shipping.");
         router.push("/product/cart/checkoutPage/shipping"); // Absolute path
       } else {
         console.error("Checkout failed. Status:", checkoutResponse.status);
+        toast.error("Checkout failed. Please try again.");
       }
     } catch (error) {
+      toast.dismiss(); // Dismiss the loading toast
       console.error("Error during checkout or fetching order ID:", error);
+      toast.error("An error occurred. Please try again later.");
     } finally {
       setLoadingButton(false); // Stop loading
     }
@@ -176,6 +265,29 @@ const CheckoutPage = () => {
 
   return (
     <div className="flex flex-col md:flex-row mx-auto justify-center my-4 md:my-10 gap-4 md:gap-5 px-4 md:px-0">
+      {/* React Hot Toast Container */}
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            style: {
+              background: '#4c1d95', // Purple background for success
+            },
+          },
+          error: {
+            style: {
+              background: '#991b1b', // Red background for error
+            },
+          },
+        }}
+      />
+      
       {/* Checkout Form */}
       <Card className="w-full md:w-2/5 bg-gray-50 shadow-md rounded-md">
         <CardContent className="p-4 md:p-8">
@@ -202,6 +314,7 @@ const CheckoutPage = () => {
               value={formData.email}
               onChange={handleInputChange}
               className="border w-full py-2 px-4 rounded-md focus:ring-purple-600"
+              required
             />
             <div className="flex items-center gap-2 mt-4">
               <Checkbox
@@ -236,6 +349,7 @@ const CheckoutPage = () => {
                   value={formData.firstName}
                   onChange={handleInputChange}
                   className="border w-full py-2 px-4 rounded-md"
+                  required
                 />
                 <Input
                   type="text"
@@ -244,6 +358,7 @@ const CheckoutPage = () => {
                   value={formData.lastName}
                   onChange={handleInputChange}
                   className="border w-full py-2 px-4 rounded-md"
+                  required
                 />
               </div>
 
@@ -254,6 +369,7 @@ const CheckoutPage = () => {
                 value={formData.address}
                 onChange={handleInputChange}
                 className="border w-full py-2 px-4 rounded-md"
+                required
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -272,6 +388,7 @@ const CheckoutPage = () => {
                   value={formData.mobileNumber}
                   onChange={handleInputChange}
                   className="border w-full py-2 px-4 rounded-md"
+                  required
                 />
               </div>
 
@@ -283,6 +400,7 @@ const CheckoutPage = () => {
                   value={formData.state}
                   onChange={handleInputChange}
                   className="border w-full py-2 px-4 rounded-md"
+                  required
                 />
                 <Input
                   type="text"
@@ -302,6 +420,7 @@ const CheckoutPage = () => {
                   value={formData.city}
                   onChange={handleInputChange}
                   className="border w-full py-2 px-4 rounded-md"
+                  required
                 />
                 <Input
                   type="text"
@@ -310,6 +429,7 @@ const CheckoutPage = () => {
                   value={formData.pinCode}
                   onChange={handleInputChange}
                   className="border w-full py-2 px-4 rounded-md"
+                  required
                 />
               </div>
             </div>
@@ -322,7 +442,7 @@ const CheckoutPage = () => {
               className="bg-purple-600 text-white font-bold py-2 px-6 rounded-md hover:bg-purple-700 transition-colors w-full sm:w-auto"
               disabled={loadingButton}
             >
-              {loadingButton ? "Loading..." : "Continue to shipping"}
+              {loadingButton ? "Processing..." : "Continue to shipping"}
             </Button>
           </div>
         </CardContent>
@@ -382,9 +502,65 @@ const CheckoutPage = () => {
             </TableBody>
           </Table>
 
-          <div className="mt-6 flex justify-between font-semibold">
-            <h3>Total:</h3>
-            <h3>₹{estimatedTotal()}</h3>
+          {/* Coupon Section */}
+          <div className="mt-6 border-t pt-4">
+            {!appliedCoupon ? (
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="Enter coupon code"
+                  value={couponCode}
+                  onChange={handleCouponChange}
+                  className="flex-grow"
+                />
+                <Button 
+                  onClick={applyCoupon} 
+                  className="bg-purple-600 text-white hover:bg-purple-700"
+                  disabled={applyCouponLoading}
+                >
+                  {applyCouponLoading ? "Applying..." : "Apply"}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between bg-gray-100 p-2 rounded">
+                <div>
+                  <span className="font-medium text-purple-700">{appliedCoupon.code}</span>
+                  <span className="text-sm text-gray-600 ml-2">
+                    ({appliedCoupon.discountType === 'percentage' 
+                      ? `${appliedCoupon.discountValue}% off` 
+                      : `₹${appliedCoupon.discountValue} off`})
+                  </span>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={removeCoupon}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  Remove
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Order summary */}
+          <div className="mt-6 space-y-2">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Subtotal</span>
+              <span>₹{subtotal()}</span>
+            </div>
+            
+            {appliedCoupon && (
+              <div className="flex justify-between text-purple-700">
+                <span>Discount</span>
+                <span>-₹{discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            
+            <div className="flex justify-between font-semibold text-lg pt-2 border-t">
+              <h3>Total:</h3>
+              <h3>₹{estimatedTotal()}</h3>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -398,7 +574,34 @@ const CheckoutPage = () => {
           </div>
           <div className="text-sm text-gray-600">
             {products.length} {products.length === 1 ? "item" : "items"} in cart
+            {appliedCoupon && (
+              <span className="text-purple-700 ml-2">
+                • Coupon: {appliedCoupon.code}
+              </span>
+            )}
           </div>
+          
+          {/* Mobile Coupon Input */}
+          {!appliedCoupon && (
+            <div className="mt-3 flex gap-2">
+              <Input
+                type="text"
+                placeholder="Coupon code"
+                value={couponCode}
+                onChange={handleCouponChange}
+                className="flex-grow"
+                size="sm"
+              />
+              <Button 
+                onClick={applyCoupon} 
+                className="bg-purple-600 text-white hover:bg-purple-700"
+                size="sm"
+                disabled={applyCouponLoading}
+              >
+                {applyCouponLoading ? "..." : "Apply"}
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

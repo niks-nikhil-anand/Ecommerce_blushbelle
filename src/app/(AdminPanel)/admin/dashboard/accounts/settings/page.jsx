@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,31 @@ import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import 'react-quill/dist/quill.snow.css';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PencilIcon, Trash2Icon, PlusCircleIcon } from "lucide-react";
 
 // Dynamically import ReactQuill to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
@@ -22,17 +47,18 @@ export default function SettingsPage() {
 
   return (
     <div className="container p-6 space-y-6 max-w-7xl mx-auto">
-      <Toaster position="top-right" />
-      
+
+
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Settings</h1>
         <Button className="px-6">Save All Changes</Button>
       </div>
       
       <Tabs defaultValue="general" value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-2 md:grid-cols-6 mb-8">
+        <TabsList className="grid grid-cols-2 md:grid-cols-7 mb-8">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="store">Store</TabsTrigger>
+          <TabsTrigger value="shipping">Shipping Rules</TabsTrigger>
           <TabsTrigger value="payment">Payment</TabsTrigger>
           <TabsTrigger value="privacy">Privacy</TabsTrigger>
           <TabsTrigger value="terms">Terms</TabsTrigger>
@@ -47,6 +73,11 @@ export default function SettingsPage() {
         {/* Store Info Tab */}
         <TabsContent value="store">
           <StoreSettings />
+        </TabsContent>
+        
+        {/* Shipping Settings Tab */}
+        <TabsContent value="shipping">
+          <ShippingSettings />
         </TabsContent>
 
         {/* Payment Settings Tab */}
@@ -181,6 +212,385 @@ function StoreSettings() {
         <div className="flex justify-end">
           <Button onClick={() => toast.success("Store information saved!")}>Save Changes</Button>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Shipping Settings Component
+function ShippingSettings() {
+  const [shippingRules, setShippingRules] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [editingRule, setEditingRule] = useState(null);
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    country: '',
+    state: '',
+    minPrice: 0,
+    maxPrice: null,
+    shippingFee: 0,
+    isFreeShipping: false,
+    minDays: 1,
+    maxDays: 7,
+    isActive: true
+  });
+
+  // Fetch shipping rules on component mount
+  useEffect(() => {
+    fetchShippingRules();
+  }, []);
+
+  const fetchShippingRules = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get('/api/admin/dashboard/shipping');
+      setShippingRules(response.data);
+    } catch (error) {
+      toast.error(`Error fetching shipping rules: ${error.message}`);
+      console.error('Error fetching shipping rules:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      // Transform form data to match schema
+      const payload = {
+        country: formData.country,
+        state: formData.state || null,
+        priceRange: {
+          min: parseFloat(formData.minPrice),
+          max: formData.maxPrice ? parseFloat(formData.maxPrice) : null
+        },
+        shippingFee: parseFloat(formData.shippingFee),
+        isFreeShipping: formData.isFreeShipping,
+        estimatedDeliveryTime: {
+          minDays: parseInt(formData.minDays),
+          maxDays: parseInt(formData.maxDays)
+        },
+        isActive: formData.isActive
+      };
+
+      if (editingRule) {
+        // Update existing rule
+        await axios.put(`'/api/admin/dashboard/shipping/${editingRule._id}`, payload);
+        toast.success('Shipping rule updated successfully!');
+      } else {
+        // Create new rule
+        await axios.post('/api/shipping', payload);
+        toast.success('Shipping rule added successfully!');
+      }
+      
+      // Close dialog and refresh data
+      setIsOpen(false);
+      resetForm();
+      fetchShippingRules();
+    } catch (error) {
+      toast.error(`Error: ${error.response?.data?.msg || error.message}`);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm('Are you sure you want to delete this shipping rule?')) {
+      try {
+        await axios.delete(`'/api/admin/dashboard/shipping/${id}`);
+        toast.success('Shipping rule deleted successfully!');
+        fetchShippingRules();
+      } catch (error) {
+        toast.error(`Error: ${error.response?.data?.msg || error.message}`);
+      }
+    }
+  };
+
+  const handleEdit = (rule) => {
+    setEditingRule(rule);
+    setFormData({
+      country: rule.country,
+      state: rule.state || '',
+      minPrice: rule.priceRange.min,
+      maxPrice: rule.priceRange.max || '',
+      shippingFee: rule.shippingFee,
+      isFreeShipping: rule.isFreeShipping,
+      minDays: rule.estimatedDeliveryTime.minDays,
+      maxDays: rule.estimatedDeliveryTime.maxDays,
+      isActive: rule.isActive
+    });
+    setIsOpen(true);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      country: '',
+      state: '',
+      minPrice: 0,
+      maxPrice: null,
+      shippingFee: 0,
+      isFreeShipping: false,
+      minDays: 1,
+      maxDays: 7,
+      isActive: true
+    });
+    setEditingRule(null);
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  return (
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Shipping Rules</CardTitle>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => {
+              resetForm();
+              setIsOpen(true);
+            }}>
+              <PlusCircleIcon className="mr-2 h-4 w-4" />
+              Add Shipping Rule
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[600px] bg-gray-50">
+            <DialogHeader className="bg-white rounded-t-lg p-4 border-b">
+              <DialogTitle>{editingRule ? 'Edit Shipping Rule' : 'Add New Shipping Rule'}</DialogTitle>
+              <DialogDescription>
+                Define shipping costs and delivery times for different locations and order values.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4 px-4 bg-gray-50">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="country">Country</Label>
+                  <div className="relative">
+                    <Input
+                      id="country"
+                      name="country"
+                      value={formData.country}
+                      onChange={handleChange}
+                      placeholder="India"
+                      required
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="state">State/Province (Optional)</Label>
+                  <Input
+                    id="state"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    placeholder="New Delhi"
+                    className="bg-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="minPrice">Min Order Value ($)</Label>
+                  <Input
+                    id="minPrice"
+                    name="minPrice"
+                    type="number"
+                    value={formData.minPrice}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                    required
+                    className="bg-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="maxPrice">Max Order Value ($) (Optional)</Label>
+                  <Input
+                    id="maxPrice"
+                    name="maxPrice"
+                    type="number"
+                    value={formData.maxPrice || ''}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                    placeholder="No maximum"
+                    className="bg-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="shippingFee">Shipping Fee ($)</Label>
+                  <Input
+                    id="shippingFee"
+                    name="shippingFee"
+                    type="number"
+                    value={formData.shippingFee}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                    required
+                    disabled={formData.isFreeShipping}
+                    className="bg-white"
+                  />
+                </div>
+                <div className="flex items-center space-x-2 pt-8">
+                  <Switch
+                    id="isFreeShipping"
+                    name="isFreeShipping"
+                    checked={formData.isFreeShipping}
+                    onCheckedChange={(checked) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        isFreeShipping: checked,
+                        shippingFee: checked ? 0 : prev.shippingFee
+                      }));
+                    }}
+                  />
+                  <Label htmlFor="isFreeShipping">Free Shipping</Label>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="minDays">Min Delivery Time (Days)</Label>
+                  <Input
+                    id="minDays"
+                    name="minDays"
+                    type="number"
+                    value={formData.minDays}
+                    onChange={handleChange}
+                    min="1"
+                    required
+                    className="bg-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="maxDays">Max Delivery Time (Days)</Label>
+                  <Input
+                    id="maxDays"
+                    name="maxDays"
+                    type="number"
+                    value={formData.maxDays}
+                    onChange={handleChange}
+                    min={formData.minDays}
+                    required
+                    className="bg-white"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="isActive"
+                  name="isActive"
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      isActive: checked
+                    }));
+                  }}
+                />
+                <Label htmlFor="isActive">Active</Label>
+              </div>
+            </div>
+            <DialogFooter className="bg-white rounded-b-lg p-4 border-t">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setIsOpen(false);
+                  resetForm();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSubmit}>{editingRule ? 'Update' : 'Add'} Rule</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="flex justify-center p-8">
+            <div className="text-center">Loading shipping rules...</div>
+          </div>
+        ) : (
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader className="bg-gray-50">
+                <TableRow>
+                  <TableHead>Country</TableHead>
+                  <TableHead>State/Province</TableHead>
+                  <TableHead>Price Range</TableHead>
+                  <TableHead>Shipping Fee</TableHead>
+                  <TableHead>Delivery Time</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {shippingRules.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center">
+                      No shipping rules found. Add one to get started.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  shippingRules.map((rule) => (
+                    <TableRow key={rule._id}>
+                      <TableCell>{rule.country}</TableCell>
+                      <TableCell>{rule.state || '-'}</TableCell>
+                      <TableCell>
+                        ${rule.priceRange.min} - {rule.priceRange.max ? `$${rule.priceRange.max}` : 'No limit'}
+                      </TableCell>
+                      <TableCell>
+                        {rule.isFreeShipping ? 'Free' : `$${rule.shippingFee.toFixed(2)}`}
+                      </TableCell>
+                      <TableCell>
+                        {rule.estimatedDeliveryTime.minDays} - {rule.estimatedDeliveryTime.maxDays} days
+                      </TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          rule.isActive 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {rule.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleEdit(rule)}
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleDelete(rule._id)}
+                          >
+                            <Trash2Icon className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -225,10 +225,7 @@ const Cart = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-2 md:p-4">
-      {/* Add Toaster component for react-hot-toast */}
-      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-      
+    <div className="flex flex-col items-center justify-center min-h-screen p-2 md:p-4">      
       <div className="flex flex-col md:flex-row items-center justify-between w-full">
         <h1 className="text-2xl md:text-5xl font-semibold text-orange-600 mb-2 md:mb-4">My Shopping Cart</h1>
         <Link href={"/"}>

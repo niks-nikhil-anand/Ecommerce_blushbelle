@@ -5,7 +5,8 @@ import axios from "axios";
 import { MdArrowBackIos } from "react-icons/md";
 import Loader from "@/components/loader/loader";
 import { useRouter } from "next/navigation";
-import { FaMoneyBillWave, FaCreditCard } from "react-icons/fa";
+import { FaMoneyBillWave, FaCreditCard, FaTag } from "react-icons/fa";
+import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 // Import Shadcn UI components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,11 +16,12 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 
 // Updated imports or custom breadcrumb implementation
 import { ChevronRight } from "lucide-react";
 
-const CheckoutPage = () => {
+const ShippingPage = () => {
   const router = useRouter();
   const [cart, setCart] = useState([]);
   const [products, setProducts] = useState([]);
@@ -35,6 +37,12 @@ const CheckoutPage = () => {
   });
   const [cartId, setCartId] = useState(null);
   const [addressId, setAddressId] = useState(null);
+  
+  // Coupon related states
+  const [couponCode, setCouponCode] = useState("");
+  const [applyCouponLoading, setApplyCouponLoading] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   useEffect(() => {
     const fetchOrderAndAddress = async () => {
@@ -67,9 +75,11 @@ const CheckoutPage = () => {
           await axios.get(`/api/pendingOrder/shipping/${cartId}`);
         } else {
           console.error("Order ID or Address ID not found.");
+          toast.error("Failed to load order details.");
         }
       } catch (error) {
         console.error("Error fetching order or address details:", error.response || error.message);
+        toast.error("Error loading checkout data.");
       }
     };
 
@@ -81,6 +91,13 @@ const CheckoutPage = () => {
       const cartData = JSON.parse(localStorage.getItem("cart"));
       if (cartData) {
         setCart(cartData);
+      }
+      
+      // Get coupon from localStorage if exists
+      const savedCoupon = JSON.parse(localStorage.getItem("appliedCoupon"));
+      if (savedCoupon) {
+        setAppliedCoupon(savedCoupon);
+        setDiscountAmount(savedCoupon.discountAmount);
       }
     };
     fetchCartFromLocalStorage();
@@ -99,6 +116,7 @@ const CheckoutPage = () => {
         setProducts(productDetails);
       } catch (error) {
         console.error("Error fetching product details:", error);
+        toast.error("Failed to load product details");
       } finally {
         setLoading(false);
       }
@@ -106,6 +124,8 @@ const CheckoutPage = () => {
 
     if (cart.length > 0) {
       fetchProductDetails();
+    } else {
+      setLoading(false);
     }
   }, [cart]);
 
@@ -113,10 +133,67 @@ const CheckoutPage = () => {
     return (product.salePrice * product.quantity).toFixed(2);
   };
 
-  const estimatedTotal = () => {
+  const subtotal = () => {
     return products
-      .reduce((total, product) => total + product.salePrice * product.quantity, 0)
+      .reduce(
+        (total, product) => total + product.salePrice * product.quantity,
+        0
+      )
       .toFixed(2);
+  };
+
+  const estimatedTotal = () => {
+    const total = parseFloat(subtotal()) - discountAmount;
+    return Math.max(total, 0).toFixed(2);
+  };
+
+  const handleCouponChange = (e) => {
+    setCouponCode(e.target.value);
+  };
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast.error("Please enter a coupon code");
+      return;
+    }
+
+    setApplyCouponLoading(true);
+    try {
+      const response = await axios.post("/api/coupon/validate", {
+        code: couponCode,
+        subtotal: subtotal(),
+      });
+
+      if (response.data.valid) {
+        const couponData = {
+          code: couponCode,
+          discountType: response.data.discountType,
+          discountValue: response.data.discountValue,
+          discountAmount: response.data.discountAmount,
+        };
+        
+        setAppliedCoupon(couponData);
+        setDiscountAmount(response.data.discountAmount);
+        localStorage.setItem("appliedCoupon", JSON.stringify(couponData));
+        
+        toast.success(`Coupon "${couponCode}" applied successfully!`);
+        setCouponCode("");
+      } else {
+        toast.error(response.data.message || "This coupon cannot be applied");
+      }
+    } catch (error) {
+      console.error("Error applying coupon:", error);
+      toast.error("Failed to apply coupon. Please try again.");
+    } finally {
+      setApplyCouponLoading(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+    localStorage.removeItem("appliedCoupon");
+    toast.success("Coupon has been removed");
   };
 
   if (loading) {
@@ -194,6 +271,8 @@ const CheckoutPage = () => {
                 quantity: item.quantity,
               })),
               totalAmount: estimatedTotal(),
+              coupon: appliedCoupon,
+              discountAmount,
               razorpay_order_id,
               razorpay_payment_id,
             };
@@ -212,17 +291,18 @@ const CheckoutPage = () => {
             if (placeOrderResponse.ok) {
               const result = await placeOrderResponse.json();
               console.log("Order placed successfully:", result);
-
+              toast.success("Payment successful! Order placed.");
               router.push(
                 `/product/cart/checkoutPage/shipping/${order.id}/ThankYouPage`
               );
-              toast.success("Order placed successfully!");
             } else {
               const errorData = await placeOrderResponse.json();
               console.error("Error placing order:", errorData);
+              toast.error("Payment confirmed but order failed. Please contact support.");
             }
           } catch (error) {
             console.error("Verification or order placement error:", error);
+            toast.error("Payment verification failed. Please contact support.");
           }
         },
         prefill: {
@@ -234,7 +314,7 @@ const CheckoutPage = () => {
           address: contactInfo.address,
         },
         theme: {
-          color: "#FF0080",
+          color: "#6b21a8", // Purple color matching the theme
         },
       };
 
@@ -249,9 +329,13 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     if (!cartId || !addressId) {
       console.error("Order ID, Cart ID, or Address ID missing.");
+      toast.error("Missing order information. Please try again.");
       return;
     }
+    
     setPlacingOrder(true);
+    toast.loading("Processing your order...");
+    
     const checkoutData = {
       cartId,
       addressId,
@@ -263,6 +347,8 @@ const CheckoutPage = () => {
         quantity: item.quantity,
       })),
       totalAmount: estimatedTotal(),
+      coupon: appliedCoupon,
+      discountAmount,
     };
 
     try {
@@ -273,14 +359,19 @@ const CheckoutPage = () => {
           },
         });
 
+        toast.dismiss();
         if (response.status === 200) {
+          toast.success("Order placed successfully!");
           router.push(`/product/cart/checkoutPage/shipping/${cartId}/ThankYouPage`);
         }
       } else if (paymentMethod === "Online Payment") {
+        toast.dismiss();
         await initiateRazorpayPayment(checkoutData);
       }
     } catch (error) {
+      toast.dismiss();
       console.error("Error submitting checkout:", error);
+      toast.error("Failed to place order. Please try again.");
     } finally {
       setPlacingOrder(false);
     }
@@ -288,10 +379,33 @@ const CheckoutPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-10">
+      {/* React Hot Toast Container */}
+      <Toaster
+        position="top-center" 
+        reverseOrder={false}
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            style: {
+              background: '#4c1d95', // Purple background for success
+            },
+          },
+          error: {
+            style: {
+              background: '#991b1b', // Red background for error
+            },
+          },
+        }}
+      />
+      
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="w-full lg:w-3/5">
           {/* Custom Breadcrumb Implementation */}
-          <div className="flex items-center text-sm mb-6">
+          <div className="flex items-center text-sm mb-6 flex-wrap">
             <Link href="/cart" className="text-blue-500 hover:underline">
               Cart
             </Link>
@@ -349,14 +463,62 @@ const CheckoutPage = () => {
                   <Label htmlFor="cod" className="cursor-pointer flex-1">Cash on Delivery</Label>
                 </div>
 
-                {/* Uncomment this for Online Payment Option
+                {/* Online Payment Option */}
                 <div className="flex items-center space-x-4 border rounded-lg p-4">
                   <FaCreditCard className="text-purple-600" size={24} />
                   <RadioGroupItem value="Online Payment" id="online" />
                   <Label htmlFor="online" className="cursor-pointer flex-1">Online Payment</Label>
                 </div>
-                */}
               </RadioGroup>
+            </CardContent>
+          </Card>
+
+          {/* Coupon Card (New) */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <FaTag className="mr-2 text-purple-600" />
+                Apply Coupon
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!appliedCoupon ? (
+                <div className="flex gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Enter coupon code"
+                    value={couponCode}
+                    onChange={handleCouponChange}
+                    className="flex-grow"
+                  />
+                  <Button 
+                    onClick={applyCoupon} 
+                    className="bg-purple-600 text-white hover:bg-purple-700"
+                    disabled={applyCouponLoading}
+                  >
+                    {applyCouponLoading ? "Applying..." : "Apply"}
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between bg-gray-100 p-3 rounded-md">
+                  <div>
+                    <span className="font-medium text-purple-700">{appliedCoupon.code}</span>
+                    <span className="text-sm text-gray-600 ml-2">
+                      ({appliedCoupon.discountType === 'percentage' 
+                        ? `${appliedCoupon.discountValue}% off` 
+                        : `₹${appliedCoupon.discountValue} off`})
+                    </span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={removeCoupon}
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -414,7 +576,7 @@ const CheckoutPage = () => {
                 </TableHeader>
                 <TableBody>
                   {products.map((product) => (
-                    <TableRow key={product.id}>
+                    <TableRow key={product.id || product._id}>
                       <TableCell>
                         <div className="flex items-center space-x-3">
                           <img
@@ -424,7 +586,14 @@ const CheckoutPage = () => {
                           />
                           <div>
                             <p className="font-medium">{product.name}</p>
-                            <p className="text-sm text-gray-500">₹{product.salePrice}</p>
+                            <div className="flex gap-2">
+                              <p className="text-gray-500 text-xs md:text-sm">
+                                ₹<span className="line-through">{product.originalPrice}</span>
+                              </p>
+                              <p className="text-black text-sm md:text-base">
+                                ₹{product.salePrice}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </TableCell>
@@ -438,8 +607,19 @@ const CheckoutPage = () => {
               <div className="mt-6 space-y-2">
                 <div className="flex justify-between py-2 border-t">
                   <span className="text-gray-600">Subtotal</span>
-                  <span>₹{estimatedTotal()}</span>
+                  <span>₹{subtotal()}</span>
                 </div>
+                
+                {appliedCoupon && (
+                  <div className="flex justify-between py-2 text-purple-700">
+                    <span className="flex items-center">
+                      <FaTag className="mr-2" size={12} />
+                      Discount ({appliedCoupon.code})
+                    </span>
+                    <span>-₹{discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                
                 <div className="flex justify-between py-2">
                   <span className="text-gray-600">Shipping</span>
                   <span>Free</span>
@@ -449,6 +629,12 @@ const CheckoutPage = () => {
                   <span>Total</span>
                   <span>₹{estimatedTotal()}</span>
                 </div>
+                
+                {appliedCoupon && (
+                  <div className="bg-green-50 p-2 rounded-md text-green-800 text-sm mt-2">
+                    You saved ₹{discountAmount.toFixed(2)} with this order!
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -458,4 +644,4 @@ const CheckoutPage = () => {
   );
 };
 
-export default CheckoutPage;
+export default ShippingPage;

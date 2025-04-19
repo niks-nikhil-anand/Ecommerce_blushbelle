@@ -17,6 +17,10 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Total amount is required'],
     },
+    coupon:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupon',
+    },
     address: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address',

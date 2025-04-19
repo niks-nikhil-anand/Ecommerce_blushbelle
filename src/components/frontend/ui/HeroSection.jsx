@@ -23,10 +23,10 @@ const HeroSection = () => {
 </div>
 
     <div className="flex flex-col justify-center items-start h-[500px] w-full md:w-[50%] p-6 lg:p-10 ">
-      <h1 className="text-lg lg:text-3xl font-bold text-gray-800 leading-snug lg:leading-tight max-w-[35rem]">
+      <h1 className="text-2xl lg:text-4xl font-bold text-gray-800 leading-snug lg:leading-tight max-w-[35rem]">
         Boost Your Brain Power, Enhance Your Immunity, Age Gracefully with Our <span className="text-green-600">Supplements</span>
       </h1>
-      <p className="mt-4 text-gray-600 text-sm lg:text-base max-w-[28rem] text-start">
+      <p className="mt-4 text-gray-600 text-base lg:text-lg max-w-[28rem] text-start">
         Discover a wide range of authentic Ayurvedic medicines and wellness products, delivered to your doorstep.
       </p>
       <Link href={"/product/shopAllProducts"}>
@@ -47,14 +47,22 @@ const HeroSection = () => {
     </div>
   
     {/* Product Images Section */}
-    <div className="flex justify-center items-center h-[500px] md:w-[50%] w-[75%] mb-8  lg:p-10  relative">
+    <div className="flex justify-center items-center h-[600px] md:w-[50%] w-[100%] mb-8  lg:p-10  relative">
       {/* Ellipse Background */}
+      <div className="absolute hidden">
+        <Image
+          src={EllipseBg}
+          alt="Ellipse Background"
+          className="w-[600px] lg:w-[600px]"
+          height={600}
+        />
+      </div>
       <div className="absolute">
         <Image
           src={EllipseBg}
           alt="Ellipse Background"
-          className="w-[400px] lg:w-[380px]"
-          height={600}
+          className="w-[600px]"
+          height={800}
         />
       </div>
   
@@ -62,7 +70,7 @@ const HeroSection = () => {
       <Image
         src={Group1}
         alt="Main Product"
-        className="relative w-45 lg:w-96 z-10"
+        className="relative w-[40rem] lg:w-[40rem] z-10"
       />
     </div>
   </div>

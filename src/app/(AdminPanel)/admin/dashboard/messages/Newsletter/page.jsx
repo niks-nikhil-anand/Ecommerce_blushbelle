@@ -57,6 +57,7 @@ const Newsletter = () => {
       try {
         const response = await axios.get("/api/admin/dashboard/newsLetter");
         if (Array.isArray(response.data.subscriptions)) {
+          console.log(response)
           setNewsLetter(response.data.subscriptions);
         } else {
           console.error("Unexpected response format:", response);

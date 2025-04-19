@@ -311,7 +311,7 @@ const Cart = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Link href="/product/cart/information" className="w-full">
+              <Link href="/product/cart/checkoutPage" className="w-full">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full">
                   <Button 
                     className="w-full bg-orange-600 hover:bg-orange-700 rounded-full" 

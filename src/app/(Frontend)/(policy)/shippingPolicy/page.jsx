@@ -48,31 +48,37 @@ const Page = () => {
     const sanitizedContent = DOMPurify.sanitize(data.content);
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full bg-white flex flex-col"
-        >
-            <div className='w-full bg-blue-500 h-[60vh] flex justify-center items-center relative'>
-                <h1 className='text-white md:text-6xl text-3xl text-center'>Shipping and Delivery Policy</h1>
-            </div>
-
-            {/* Wave SVG */}
-            <div className="relative w-full overflow-hidden md:-mt-[4rem] -mt-[1rem]">
-                <Image 
-                    src={waveSvg} 
-                    alt="Wave"
-                    layout="responsive"
-                    objectFit="cover" 
-                    className="w-full"
-                    priority 
-                />
-            </div>
+       <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.5 }}
+                                className="w-full bg-white flex flex-col"
+                            >
+                                 <section className="relative h-64 w-full mb-5">
+                                        <div className="absolute inset-0">
+                                          <Image
+                                            src="/frontend/ProductFeatures/Bg.png"
+                                            alt="Background Image"
+                                            layout="fill"
+                                            objectFit="cover "
+                                            quality={100}
+                                          />
+                                        </div>
+                                        <div className="relative h-full flex items-center justify-center">
+                                          <motion.h1
+                                            className="text-4xl font-bold text-white"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ duration: 1 }}
+                                          >
+                                            Shipping Policy
+                                          </motion.h1>
+                                        </div>
+                                      </section>
 
             {/* Content */}
-            <div className="md:w-15/20 w-full px-4 md:px-12 mx-auto overflow-x-hidden">
+            <div className="md:w-15/20 w-full px-4 md:px-12 mx-auto overflow-x-hidden my-5">
                 <div 
                     className="prose md:prose-base prose-sm max-w-none text-gray-800"
                     dangerouslySetInnerHTML={{ __html: sanitizedContent }}

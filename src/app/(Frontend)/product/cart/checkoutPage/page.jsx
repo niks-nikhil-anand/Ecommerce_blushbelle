@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import axios from "axios"; 
+import axios from "axios";
 import { MdArrowBackIos } from "react-icons/md";
 import Loader from "@/components/loader/loader";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 // Import Shadcn components
@@ -13,20 +13,33 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const CheckoutPage = () => {
   const router = useRouter();
   const [cart, setCart] = useState([]);
-  const [products, setProducts] = useState([]); 
-  const [loading, setLoading] = useState(true); 
-  const [loadingButton, setLoadingButton] = useState(false); 
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingButton, setLoadingButton] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
     firstName: "",
-    lastName: "", 
+    lastName: "",
     address: "",
     apartment: "",
     mobileNumber: "",
@@ -34,12 +47,12 @@ const CheckoutPage = () => {
     landmark: "",
     city: "",
     pinCode: "",
-    subscribeChecked: false, 
+    subscribeChecked: false,
   });
 
   useEffect(() => {
     const fetchCartFromLocalStorage = () => {
-      const cartData = JSON.parse(localStorage.getItem("cart")); 
+      const cartData = JSON.parse(localStorage.getItem("cart"));
       if (cartData) {
         console.log("Cart data found in local storage:", cartData);
         setCart(cartData);
@@ -81,7 +94,10 @@ const CheckoutPage = () => {
 
   const estimatedTotal = () => {
     return products
-      .reduce((total, product) => total + product.salePrice * product.quantity, 0)
+      .reduce(
+        (total, product) => total + product.salePrice * product.quantity,
+        0
+      )
       .toFixed(2);
   };
 
@@ -100,7 +116,7 @@ const CheckoutPage = () => {
   const handleCheckboxChange = (checked) => {
     setFormData({
       ...formData,
-      subscribeChecked: checked
+      subscribeChecked: checked,
     });
   };
 
@@ -117,29 +133,36 @@ const CheckoutPage = () => {
       lastName: formData.lastName,
       address: formData.address,
       apartment: formData.apartment,
-      mobileNumber: formData.mobileNumber, 
+      mobileNumber: formData.mobileNumber,
       state: formData.state,
       landmark: formData.landmark,
       city: formData.city,
       pinCode: formData.pinCode,
-      subscribeChecked: formData.subscribeChecked, 
-      cart
+      subscribeChecked: formData.subscribeChecked,
+      cart,
     };
-  
+
     try {
       // Submit checkout data
       setLoadingButton(true);
       console.log("Submitting checkout data:", checkoutData);
-      const checkoutResponse = await axios.post("/api/pendingOrder/checkout", checkoutData, {
-        headers: {
-          'Content-Type': 'application/json', 
-        },
-      });
-      
+      const checkoutResponse = await axios.post(
+        "/api/pendingOrder/checkout",
+        checkoutData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       console.log("Checkout successful!", checkoutResponse.data);
-    
+
       if (checkoutResponse.status === 200) {
-        console.log("Checkout successful! Response data:", checkoutResponse.data);
+        console.log(
+          "Checkout successful! Response data:",
+          checkoutResponse.data
+        );
         router.push("/product/cart/checkoutPage/shipping"); // Absolute path
       } else {
         console.error("Checkout failed. Status:", checkoutResponse.status);
@@ -158,7 +181,9 @@ const CheckoutPage = () => {
         <CardContent className="p-4 md:p-8">
           {/* Breadcrumb */}
           <div className="flex mb-6 gap-2 flex-wrap text-sm text-gray-600">
-            <Link href="/cart" className="text-blue-500">Cart</Link>
+            <Link href="/cart" className="text-blue-500">
+              Cart
+            </Link>
             <span>&gt;</span>
             <span className="text-black font-semibold">Information</span>
             <span>&gt;</span>
@@ -179,12 +204,14 @@ const CheckoutPage = () => {
               className="border w-full py-2 px-4 rounded-md focus:ring-purple-600"
             />
             <div className="flex items-center gap-2 mt-4">
-              <Checkbox 
-                id="subscribeChecked" 
+              <Checkbox
+                id="subscribeChecked"
                 checked={formData.subscribeChecked}
                 onCheckedChange={handleCheckboxChange}
               />
-              <Label htmlFor="subscribeChecked">Email me with news and offers</Label>
+              <Label htmlFor="subscribeChecked">
+                Email me with news and offers
+              </Label>
             </div>
           </div>
 
@@ -308,7 +335,9 @@ const CheckoutPage = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="text-left">Product</TableHead>
-                <TableHead className="text-center hidden md:table-cell">Quantity</TableHead>
+                <TableHead className="text-center hidden md:table-cell">
+                  Quantity
+                </TableHead>
                 <TableHead className="text-right">Total</TableHead>
               </TableRow>
             </TableHeader>
@@ -330,7 +359,10 @@ const CheckoutPage = () => {
                         </h2>
                         <div className="flex gap-2">
                           <p className="text-gray-500 text-xs md:text-sm">
-                            ₹<span className="line-through">{product.originalPrice}</span>
+                            ₹
+                            <span className="line-through">
+                              {product.originalPrice}
+                            </span>
                           </p>
                           <p className="text-black text-sm md:text-lg">
                             ₹{product.salePrice}
@@ -365,7 +397,7 @@ const CheckoutPage = () => {
             <h3 className="font-semibold">₹{estimatedTotal()}</h3>
           </div>
           <div className="text-sm text-gray-600">
-            {products.length} {products.length === 1 ? 'item' : 'items'} in cart
+            {products.length} {products.length === 1 ? "item" : "items"} in cart
           </div>
         </CardContent>
       </Card>

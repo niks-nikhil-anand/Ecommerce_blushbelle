@@ -5,6 +5,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import toast, { Toaster } from 'react-hot-toast'; // Import react-hot-toast
 import Loader from '@/components/loader/loader';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,8 @@ const Cart = () => {
   const [loading, setLoading] = useState(true); // Track loading state
   const [checkoutLoading, setCheckoutLoading] = useState(false); // Track checkout button loading state
   const [couponCode, setCouponCode] = useState(''); // Store coupon code
+  const [appliedCoupon, setAppliedCoupon] = useState(null); // Store applied coupon details
+  const [couponLoading, setCouponLoading] = useState(false); // Track coupon loading state
 
   // Fetch cart from localStorage and product details from API
   useEffect(() => {
@@ -32,7 +35,7 @@ const Cart = () => {
 
   useEffect(() => {
     const fetchProductDetails = async () => {
-        setLoading(true); 
+      setLoading(true); 
       try {
         const productDetails = await Promise.all(
           cart.map(async (item) => {
@@ -52,6 +55,8 @@ const Cart = () => {
       fetchProductDetails();
     } else {
       setLoading(false);
+      // Clear applied coupon when cart is empty
+      setAppliedCoupon(null);
     }
   }, [cart]);
 
@@ -71,6 +76,11 @@ const Cart = () => {
     );
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
+    
+    // Re-validate coupon if one is applied
+    if (appliedCoupon) {
+      validateCoupon(appliedCoupon.code);
+    }
   };
   
   const decrementQuantity = (productId) => {
@@ -91,6 +101,11 @@ const Cart = () => {
     );
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
+    
+    // Re-validate coupon if one is applied
+    if (appliedCoupon) {
+      validateCoupon(appliedCoupon.code);
+    }
   };
 
   // Calculate total price for a specific product
@@ -98,11 +113,23 @@ const Cart = () => {
     return (product.salePrice * product.quantity).toFixed(2);
   };
 
-  // Calculate estimated total for the entire cart
-  const estimatedTotal = () => {
+  // Calculate subtotal for the entire cart
+  const calculateSubtotal = () => {
     return products.reduce((total, product) => {
       return total + product.salePrice * product.quantity;
-    }, 0).toFixed(2);
+    }, 0);
+  };
+
+  // Calculate estimated total for the entire cart
+  const estimatedTotal = () => {
+    const subtotal = calculateSubtotal();
+    
+    // Apply discount if a coupon is applied
+    if (appliedCoupon) {
+      return (subtotal - appliedCoupon.discountAmount).toFixed(2);
+    }
+    
+    return subtotal.toFixed(2);
   };
 
   // Remove item from cart
@@ -114,18 +141,94 @@ const Cart = () => {
     const updatedCart = cart.filter((item) => item.id !== productId);
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
+    
+    // Re-validate coupon if one is applied and cart is not empty
+    if (appliedCoupon && updatedCart.length > 0) {
+      validateCoupon(appliedCoupon.code);
+    } else if (updatedCart.length === 0) {
+      // Clear applied coupon if cart is empty
+      setAppliedCoupon(null);
+    }
+  };
+
+  // Validate and apply coupon
+  const validateCoupon = async (code) => {
+    if (!code) return;
+    
+    setCouponLoading(true);
+    try {
+      const cartTotal = calculateSubtotal();
+      const productIds = products.map(product => product._id);
+      
+      const response = await axios.post('/api/admin/dashboard/coupon/validate', {
+        code,
+        cartTotal,
+        productIds
+      });
+      
+      if (response.data.success) {
+        setAppliedCoupon(response.data.coupon);
+        toast.success(`Discount of ₹${response.data.coupon.discountAmount} applied to your order.`);
+      }
+    } catch (error) {
+      console.error('Error validating coupon:', error);
+      setAppliedCoupon(null);
+      
+      // Display error message from API or a default one
+      const errorMessage = error.response?.data?.error || 'Failed to apply coupon';
+      toast.error(errorMessage);
+    } finally {
+      setCouponLoading(false);
+    }
   };
 
   // Handle coupon application
   const handleApplyCoupon = () => {
-    // Implement coupon logic here
-    console.log("Applying coupon:", couponCode);
-    // For now just show an alert
-    alert(`Coupon ${couponCode} applied!`);
+    if (!couponCode.trim()) {
+      toast.error("Please enter a coupon code");
+      return;
+    }
+    
+    validateCoupon(couponCode);
+  };
+
+  // Handle coupon removal
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    toast.success("Coupon has been removed from your order");
+  };
+
+  // Store cart and coupon data in localStorage before checkout
+  const handleProceedToCheckout = () => {
+    if (appliedCoupon) {
+      localStorage.setItem('appliedCoupon', JSON.stringify(appliedCoupon));
+    } else {
+      localStorage.removeItem('appliedCoupon');
+    }
+    
+    // If we want to redeem the coupon when proceeding to checkout
+    if (appliedCoupon) {
+      redeemCoupon(appliedCoupon.code);
+    }
+  };
+  
+  // Redeem coupon when proceeding to checkout
+  const redeemCoupon = async (code) => {
+    try {
+      await axios.post('/api/admin/dashboard/coupon/redeem', { code });
+      // No need to notify the user about this backend operation
+    } catch (error) {
+      console.error('Error redeeming coupon:', error);
+      // Silent fail - don't block checkout if redeeming fails
+    }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-2 md:p-4">
+      {/* Add Toaster component for react-hot-toast */}
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+      
       <div className="flex flex-col md:flex-row items-center justify-between w-full">
         <h1 className="text-2xl md:text-5xl font-semibold text-orange-600 mb-2 md:mb-4">My Shopping Cart</h1>
         <Link href={"/"}>
@@ -267,22 +370,47 @@ const Cart = () => {
                 <div className="flex flex-col md:flex-row items-center justify-between">
                   <h2 className="text-lg font-semibold mb-2 md:mb-0">Coupon Code</h2>
                   <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-2">
-                    <Input
-                      type="text"
-                      placeholder="Enter code"
-                      className="rounded-full flex-1"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
-                    />
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                      <Button 
-                        variant="default" 
-                        className="rounded-full bg-orange-600 hover:bg-orange-700 w-full"
-                        onClick={handleApplyCoupon}
-                      >
-                        Apply Coupon
-                      </Button>
-                    </motion.div>
+                    {!appliedCoupon ? (
+                      <>
+                        <Input
+                          type="text"
+                          placeholder="Enter code"
+                          className="rounded-full flex-1"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                          disabled={couponLoading}
+                        />
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+                          <Button 
+                            variant="default" 
+                            className="rounded-full bg-orange-600 hover:bg-orange-700 w-full"
+                            onClick={handleApplyCoupon}
+                            disabled={couponLoading}
+                          >
+                            {couponLoading ? "Applying..." : "Apply Coupon"}
+                          </Button>
+                        </motion.div>
+                      </>
+                    ) : (
+                      <div className="flex items-center w-full justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-sm text-gray-500">Applied coupon:</span>
+                          <span className="font-semibold">{appliedCoupon.code}</span>
+                          <span className="text-sm text-green-600">
+                            {appliedCoupon.discountType === 'percentage' 
+                              ? `${appliedCoupon.discountValue}% off` 
+                              : `₹${appliedCoupon.discountValue} off`}
+                          </span>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          className="text-red-500 hover:text-red-700"
+                          onClick={handleRemoveCoupon}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -299,19 +427,28 @@ const Cart = () => {
             <CardContent>
               <div className="flex justify-between mb-2">
                 <span className="text-gray-600">Subtotal:</span>
-                <span className="text-gray-900">₹{products.length > 0 ? estimatedTotal() : '0.00'}</span>
+                <span className="text-gray-900">₹{products.length > 0 ? calculateSubtotal().toFixed(2) : '0.00'}</span>
               </div>
+              
+              {appliedCoupon && (
+                <div className="flex justify-between mb-2 text-green-600">
+                  <span>Discount:</span>
+                  <span>-₹{appliedCoupon.discountAmount}</span>
+                </div>
+              )}
+              
               <div className="flex justify-between mb-2">
                 <span className="text-gray-600">Shipping:</span>
                 <span className="text-green-600 font-medium">Free</span>
               </div>
+              
               <div className="flex justify-between border-t pt-2 font-semibold">
                 <span>Total:</span>
                 <span className="text-gray-900">₹{products.length > 0 ? estimatedTotal() : '0.00'}</span>
               </div>
             </CardContent>
             <CardFooter>
-              <Link href="/product/cart/checkoutPage" className="w-full">
+              <Link href="/product/cart/checkoutPage" className="w-full" onClick={handleProceedToCheckout}>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full">
                   <Button 
                     className="w-full bg-orange-600 hover:bg-orange-700 rounded-full" 

@@ -274,7 +274,7 @@ const CheckoutPage = () => {
         });
 
         if (response.status === 200) {
-          router.push(`/product/cart/information/shipping/${cartId}/ThankYouPage`);
+          router.push(`/product/cart/checkoutPage/shipping/${cartId}/ThankYouPage`);
         }
       } else if (paymentMethod === "Online Payment") {
         await initiateRazorpayPayment(checkoutData);

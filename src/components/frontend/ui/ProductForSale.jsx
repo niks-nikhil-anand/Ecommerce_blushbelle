@@ -1,145 +1,168 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { FaRegHeart } from "react-icons/fa";
-import Image from 'next/image';
-import Loader from '@/components/loader/loader';
-import { FiArrowRight } from 'react-icons/fi'; // Importing the arrow icon from react-icons
-import { motion } from 'framer-motion';
-import { FaHeart, FaEye, FaLock } from 'react-icons/fa';
-
-
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Heart, Eye, Lock, ArrowRight, Star } from "lucide-react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 const ProductCard = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [progress, setProgress] = useState(0);
-    const router = useRouter();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-    useEffect(() => {
-        if (loading) {
-            const interval = setInterval(() => {
-                setProgress(prev => {
-                    if (prev < 100) return prev + 1;
-                    clearInterval(interval);
-                    return 100;
-                });
-            }, 30);
-        }
+  useEffect(() => {
+    axios
+      .get("/api/admin/dashboard/product/addProduct")
+      .then((response) => {
+        console.log(response.data);
+        setProducts(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the product data!", error);
+        setLoading(false);
+      });
+  }, []);
 
-        axios.get('/api/admin/dashboard/product/addProduct')
-            .then(response => {
-                console.log(response.data)
-                setProducts(response.data);
-                setLoading(false);
-            })
-            .catch(error => {
-                console.error("There was an error fetching the product data!", error);
-                setLoading(false);
-            });
-    }, [loading]);
+  const handleCardClick = (id) => {
+    router.push(`/product/${id}`);
+  };
 
-    if (loading) {
-        return (
-            <Loader />
-        );
-    }
+  const handleWishlistClick = (e) => {
+    e.stopPropagation();
+    router.push("/auth/signIn");
+  };
 
-    if (products.length === 0) {
-        return <div>No products found.</div>;
-    }
+  const handleViewAllClick = () => {
+    router.push("/products");
+  };
 
-    const truncateText = (text, limit) => {
-        return text.length > limit ? `${text.substring(0, limit)}...` : text;
-    };
-
-    const handleCardClick = (id) => {
-        router.push(`/product/${id}`);
-    };
-
-    const handleWishlistClick = () => {
-        router.push('/auth/signIn');
-    };
-
-    return (
-      <div className="my-7 flex flex-col w-full relative px-4 sm:px-8">
+  return (
+    <div className="w-full px-4 sm:px-8 py-6">
       {/* Header Section */}
-      <div className="flex items-center justify-between w-full py-3">
-        <h2 className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900">
-          Top Selling Products
-        </h2>
-        <div className="flex items-center text-blue-500 hover:text-blue-700 cursor-pointer">
-          <p className="mr-2 text-sm font-medium">View All</p>
-          <FiArrowRight className="text-lg" />
-        </div>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold">Top Selling Products</h2>
+        <Button 
+          variant="ghost" 
+          className="flex items-center text-blue-600 font-medium"
+          onClick={handleViewAllClick}
+        >
+          View All
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
       </div>
-    
+
       {/* Products Section */}
-      <div className="flex gap-4 px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:overflow-visible sm:flex-wrap ">
-        {products.map((product) => (
-          <motion.div
-            key={product.id}
-            className="relative flex-shrink-0 snap-center flex flex-col items-center justify-center bg-white rounded-xl p-6 border hover:shadow-lg transition-all duration-300 w-[80%] sm:w-[220px] md:w-[250px] lg:w-[280px] h-[250px] md:h-[300px] text-center group cursor-pointer"
-            onClick={() => handleCardClick(product._id)}
-          >
-            {/* Discount Badge */}
-            {product.discount && (
-              <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                {product.discount}
-              </span>
-            )}
-    
-            {/* Product Image */}
-            <div className="relative">
-              <Image
-                src={product.featuredImage}
-                alt={product.name}
-                width={100}
-                height={100}
-                className="object-contain w-32 h-32 sm:w-32 sm:h-32 md:w-44 md:h-44"
-              />
-            </div>
-    
-            {/* Product Details */}
-            <p className="mt-2 text-xs sm:text-sm font-semibold text-gray-800">{product.name}</p>
-    
-            {/* Price Section */}
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm sm:text-base font-bold text-black">₹{product.salePrice}</span>
-              <span className="text-xs sm:text-sm font-bold text-[#999999] line-through">
-                ₹{product.originalPrice}
-              </span>
-            </div>
-    
-            {/* Rating */}
-            <div className="flex mt-1">
-              {"★".repeat(product.rating).padEnd(5, "☆").split("").map((star, index) => (
-                <span key={index} className="text-yellow-400 text-xs sm:text-sm">{star}</span>
-              ))}
-            </div>
-    
-            {/* Lock Icon */}
-            {product.locked && (
-              <div className="absolute bottom-2 right-2 text-gray-400">
-                <FaLock size={14} />
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((item) => (
+            <Card key={item} className="w-full overflow-hidden">
+              <div className="p-6">
+                <div className="flex justify-center">
+                  <Skeleton className="h-40 w-40 rounded" />
+                </div>
+                <Skeleton className="h-4 w-3/4 mt-4" />
+                <div className="flex items-center gap-2 mt-4">
+                  <Skeleton className="h-4 w-1/4" />
+                  <Skeleton className="h-4 w-1/4" />
+                </div>
+                <Skeleton className="h-4 w-1/2 mt-2" />
               </div>
-            )}
-    
-            {/* Hover Icons */}
-            <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <FaHeart className="text-gray-500 hover:text-red-500 cursor-pointer" />
-              <FaEye className="text-gray-500 hover:text-blue-500 cursor-pointer" />
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            </Card>
+          ))}
+        </div>
+      ) : products.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">No products found.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-x-auto pb-4 sm:overflow-visible">
+          {products.map((product) => (
+            <motion.div
+              key={product._id}
+              whileHover={{ y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card 
+                className="w-full h-full overflow-hidden cursor-pointer relative group"
+                onClick={() => handleCardClick(product._id)}
+              >
+                {product.discount && (
+                  <Badge className="absolute top-3 left-3 bg-red-500 hover:bg-red-600 z-10">
+                    {product.discount}
+                  </Badge>
+                )}
+                
+                <CardContent className="p-6">
+                  <div className="relative flex justify-center mb-4">
+                    <div className="w-full h-40 flex items-center justify-center">
+                      <Image
+                        src={product.featuredImage}
+                        alt={product.name}
+                        width={100}
+                        height={100}
+                        className="object-cover"
+                      />
+                    </div>
+                    
+                    {/* Action buttons overlay */}
+                    <div className="absolute right-0 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="h-8 w-8 rounded-full bg-white"
+                        onClick={handleWishlistClick}
+                      >
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="h-8 w-8 rounded-full bg-white"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <h3 className="font-medium text-sm">{product.name}</h3>
+                  
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="font-bold text-base">₹{product.salePrice}</span>
+                    <span className="text-sm text-gray-400 line-through">₹{product.originalPrice}</span>
+                  </div>
+                  
+                  <div className="flex items-center mt-2">
+                    {Array(5).fill(0).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={cn(
+                          "h-4 w-4",
+                          i < product.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                        )}
+                      />
+                    ))}
+                  </div>
+                </CardContent>
+                
+                {product.locked && (
+                  <div className="absolute bottom-3 right-3 text-gray-400">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                )}
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
-    
-      
-
-    );
+  );
 };
-
 
 export default ProductCard;

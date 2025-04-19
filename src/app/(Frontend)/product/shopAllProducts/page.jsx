@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import { FaStar, FaCartPlus } from "react-icons/fa";
+import { Star, ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Import shadcn components
@@ -48,27 +48,44 @@ const AllProducts = () => {
   const [productsPerPage, setProductsPerPage] = useState(9);
   const router = useRouter();
 
-  // Fetch products whenever sort option, filters, or current page changes
+  // Fetch products whenever sort option or filters change
   useEffect(() => {
     fetchProducts();
-  }, [sortOption, filters, currentPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortOption, filters]);
 
   // Fetch products from the API
   const fetchProducts = async () => {
     setLoading(true);
     try {
       const response = await fetch("/api/admin/dashboard/product/addProduct");
+      if (!response.ok) {
+        throw new Error(`API returned status: ${response.status}`);
+      }
       const data = await response.json();
-      setProducts(data);
+      // Ensure we're working with an array and that each item is properly formatted
+      const formattedData = Array.isArray(data) ? data.map(product => {
+        if (typeof product === 'object' && product !== null) {
+          return product;
+        }
+        return {}; // Return empty object for invalid items
+      }) : [];
+      
+      setProducts(formattedData);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setProducts([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleCardClick = (id) => {
-    router.push(`/product/${id}`);
+    if (id) {
+      router.push(`/product/${id}`);
+    } else {
+      console.warn("Product ID is undefined");
+    }
   };
 
   // Handle sort change
@@ -89,18 +106,30 @@ const AllProducts = () => {
   // Handle page change
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Get categories from products
-  const categories = [...new Set(products.map(product => product.category))].filter(Boolean);
+  // Extract categories safely from products
+  const categories = [...new Set(products
+    .filter(product => product && typeof product === 'object')
+    .map(product => {
+      const category = product.category;
+      return typeof category === 'string' ? category : "Uncategorized";
+    })
+  )].filter(Boolean).sort();
   
-  // Filter and sort products based on user selection
+  // Filter and sort products with safeguards
   const filteredProducts = products
     .filter((product) => {
+      if (!product || typeof product !== 'object') return false;
+      
       if (filters.availability && product.availability !== filters.availability)
         return false;
+      
       if (filters.category && product.category !== filters.category)
         return false;
+      
       if (filters.price) {
-        const price = parseFloat(product.salePrice);
+        const price = typeof product.salePrice === 'number' ? product.salePrice : 
+                     typeof product.salePrice === 'string' ? parseFloat(product.salePrice) || 0 : 0;
+                     
         if (filters.price === "under-500" && price >= 500) return false;
         if (filters.price === "500-1000" && (price < 500 || price > 1000)) return false;
         if (filters.price === "1000-5000" && (price < 1000 || price > 5000)) return false;
@@ -109,26 +138,68 @@ const AllProducts = () => {
       return true;
     })
     .sort((a, b) => {
-      if (sortOption === "best-selling") return b.sales - a.sales;
-      if (sortOption === "price-low-high") return a.salePrice - b.salePrice;
-      if (sortOption === "price-high-low") return b.salePrice - a.salePrice;
-      if (sortOption === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+      // Handle sorting with type safety
+      if (sortOption === "best-selling") {
+        const salesA = typeof a.sales === 'number' ? a.sales : 0;
+        const salesB = typeof b.sales === 'number' ? b.sales : 0;
+        return salesB - salesA;
+      }
+      
+      if (sortOption === "price-low-high") {
+        const priceA = typeof a.salePrice === 'number' ? a.salePrice : 
+                      typeof a.salePrice === 'string' ? parseFloat(a.salePrice) || 0 : 0;
+        const priceB = typeof b.salePrice === 'number' ? b.salePrice : 
+                      typeof b.salePrice === 'string' ? parseFloat(b.salePrice) || 0 : 0;
+        return priceA - priceB;
+      }
+      
+      if (sortOption === "price-high-low") {
+        const priceA = typeof a.salePrice === 'number' ? a.salePrice : 
+                      typeof a.salePrice === 'string' ? parseFloat(a.salePrice) || 0 : 0;
+        const priceB = typeof b.salePrice === 'number' ? b.salePrice : 
+                      typeof b.salePrice === 'string' ? parseFloat(b.salePrice) || 0 : 0;
+        return priceB - priceA;
+      }
+      
+      if (sortOption === "newest") {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      }
+      
       return 0;
     });
 
   // Calculate pagination info
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / productsPerPage));
   const startIndex = (currentPage - 1) * productsPerPage;
   const endIndex = Math.min(startIndex + productsPerPage, filteredProducts.length);
   const displayedProducts = filteredProducts.slice(startIndex, endIndex);
 
   // Product card component
   const ProductCard = ({ product }) => {
-    // Ensure we have a valid number for the discount calculation
-    const originalPrice = parseFloat(product.originalPrice) || 0;
-    const salePrice = parseFloat(product.salePrice) || 0;
-    const discount = originalPrice > 0 ? 
+    // Safeguard for product being undefined
+    if (!product || typeof product !== 'object') return null;
+    
+    // Safely extract values with fallbacks
+    const name = typeof product.name === 'string' ? product.name : "Unnamed Product";
+    const productId = product._id || "";
+    const featuredImage = typeof product.featuredImage === 'string' ? product.featuredImage : "";
+    const category = typeof product.category === 'string' ? product.category : "";
+    
+    // Safely handle numerical values
+    const originalPrice = typeof product.originalPrice === 'number' ? product.originalPrice : 
+                         typeof product.originalPrice === 'string' ? parseFloat(product.originalPrice) || 0 : 0;
+    const salePrice = typeof product.salePrice === 'number' ? product.salePrice : 
+                     typeof product.salePrice === 'string' ? parseFloat(product.salePrice) || 0 : 0;
+    
+    // Calculate discount safely
+    const discount = originalPrice > 0 && originalPrice > salePrice ? 
       Math.round(((originalPrice - salePrice) / originalPrice) * 100) : 0;
+
+    // Safely handle review data
+    const reviewCount = typeof product.reviewCount === 'number' ? product.reviewCount : 0;
+    const rating = typeof product.rating === 'number' ? product.rating : 4;
 
     return (
       <motion.div
@@ -136,7 +207,7 @@ const AllProducts = () => {
         transition={{ duration: 0.3 }}
       >
         <Card className="h-full overflow-hidden group cursor-pointer border-2 hover:border-indigo-500">
-          <div onClick={() => handleCardClick(product._id)} className="h-full flex flex-col">
+          <div onClick={() => handleCardClick(productId)} className="h-full flex flex-col">
             {/* Discount badge */}
             {discount > 0 && (
               <Badge className="absolute top-2 right-2 bg-red-500 hover:bg-red-600">
@@ -146,28 +217,32 @@ const AllProducts = () => {
 
             {/* Product Image */}
             <div className="relative h-48 overflow-hidden bg-gray-50">
-              {product.featuredImage && (
+              {featuredImage ? (
                 <img
-                  src={product.featuredImage}
-                  alt={product.name || "Product image"}
+                  src={featuredImage}
+                  alt={name}
                   className="object-contain w-full h-full transition-transform duration-500 group-hover:scale-110"
                 />
+              ) : (
+                <div className="flex items-center justify-center h-full bg-gray-100">
+                  <span className="text-gray-400">No image</span>
+                </div>
               )}
             </div>
 
             <CardHeader className="p-4 pb-0">
-              <h3 className="font-semibold text-lg line-clamp-1">{product.name || "Unnamed Product"}</h3>
+              <h3 className="font-semibold text-lg line-clamp-1">{name}</h3>
             </CardHeader>
 
             <CardContent className="p-4 flex-grow">
               {/* Price Section */}
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-lg font-bold text-black">
-                  ₹{product.salePrice || "N/A"}
+                  ₹{salePrice.toFixed(2)}
                 </span>
                 {originalPrice > salePrice && (
                   <span className="text-sm font-medium text-gray-500 line-through">
-                    ₹{product.originalPrice}
+                    ₹{originalPrice.toFixed(2)}
                   </span>
                 )}
               </div>
@@ -176,20 +251,22 @@ const AllProducts = () => {
               <div className="flex items-center mt-2">
                 <div className="flex text-yellow-500">
                   {[...Array(5)].map((_, i) => (
-                    <FaStar
+                    <Star
                       key={i}
                       size={14}
-                      className={i < 4 ? "text-yellow-500" : "text-gray-300"}
+                      className={i < rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}
                     />
                   ))}
                 </div>
-                <span className="text-xs text-gray-500 ml-2">(120 reviews)</span>
+                <span className="text-xs text-gray-500 ml-2">
+                  ({reviewCount} {reviewCount !== 1 ? 'reviews' : 'review'})
+                </span>
               </div>
 
               {/* Category */}
-              {product.category && (
+              {category && (
                 <Badge variant="outline" className="mt-2 text-xs">
-                  {product.category}
+                  {category}
                 </Badge>
               )}
             </CardContent>
@@ -200,7 +277,7 @@ const AllProducts = () => {
                 size="sm"
                 className="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300"
               >
-                <FaCartPlus className="mr-2" /> Add to Cart
+                <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
               </Button>
             </CardFooter>
           </div>
@@ -234,13 +311,13 @@ const AllProducts = () => {
   );
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8">
+    <div className="container mx-auto max-w-7xl px-4 py-8 min-h-[90vh]">
       {loading ? (
         <>
           <div className="mb-6">
             <Skeleton className="h-10 w-full max-w-xs ml-auto" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {[...Array(productsPerPage)].map((_, index) => (
               <ProductCardSkeleton key={index} />
             ))}
@@ -258,12 +335,13 @@ const AllProducts = () => {
                     Category
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Select Category</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-56 bg-gray-50">
+                  <DropdownMenuLabel className="bg-gray-100">Select Category</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuCheckboxItem
                     checked={filters.category === ""}
-                    onCheckedChange={() => handleFilterChange("category", "")}
+                    onClick={() => handleFilterChange("category", "")}
+                    className="hover:bg-gray-100"
                   >
                     All Categories
                   </DropdownMenuCheckboxItem>
@@ -271,7 +349,8 @@ const AllProducts = () => {
                     <DropdownMenuCheckboxItem
                       key={category}
                       checked={filters.category === category}
-                      onCheckedChange={() => handleFilterChange("category", category)}
+                      onClick={() => handleFilterChange("category", category)}
+                      className="hover:bg-gray-100"
                     >
                       {category}
                     </DropdownMenuCheckboxItem>
@@ -286,36 +365,41 @@ const AllProducts = () => {
                     Price Range
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Select Price Range</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-56 bg-gray-50">
+                  <DropdownMenuLabel className="bg-gray-100">Select Price Range</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuCheckboxItem
                     checked={filters.price === ""}
-                    onCheckedChange={() => handleFilterChange("price", "")}
+                    onClick={() => handleFilterChange("price", "")}
+                    className="hover:bg-gray-100"
                   >
                     All Prices
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={filters.price === "under-500"}
-                    onCheckedChange={() => handleFilterChange("price", "under-500")}
+                    onClick={() => handleFilterChange("price", "under-500")}
+                    className="hover:bg-gray-100"
                   >
                     Under ₹500
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={filters.price === "500-1000"}
-                    onCheckedChange={() => handleFilterChange("price", "500-1000")}
+                    onClick={() => handleFilterChange("price", "500-1000")}
+                    className="hover:bg-gray-100"
                   >
                     ₹500 - ₹1,000
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={filters.price === "1000-5000"}
-                    onCheckedChange={() => handleFilterChange("price", "1000-5000")}
+                    onClick={() => handleFilterChange("price", "1000-5000")}
+                    className="hover:bg-gray-100"
                   >
                     ₹1,000 - ₹5,000
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={filters.price === "above-5000"}
-                    onCheckedChange={() => handleFilterChange("price", "above-5000")}
+                    onClick={() => handleFilterChange("price", "above-5000")}
+                    className="hover:bg-gray-100"
                   >
                     Above ₹5,000
                   </DropdownMenuCheckboxItem>
@@ -329,24 +413,27 @@ const AllProducts = () => {
                     Availability
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Product Availability</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-56 bg-gray-50">
+                  <DropdownMenuLabel className="bg-gray-100">Product Availability</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuCheckboxItem
                     checked={filters.availability === ""}
-                    onCheckedChange={() => handleFilterChange("availability", "")}
+                    onClick={() => handleFilterChange("availability", "")}
+                    className="hover:bg-gray-100"
                   >
                     All Products
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={filters.availability === "in-stock"}
-                    onCheckedChange={() => handleFilterChange("availability", "in-stock")}
+                    onClick={() => handleFilterChange("availability", "in-stock")}
+                    className="hover:bg-gray-100"
                   >
                     In Stock
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
                     checked={filters.availability === "out-of-stock"}
-                    onCheckedChange={() => handleFilterChange("availability", "out-of-stock")}
+                    onClick={() => handleFilterChange("availability", "out-of-stock")}
+                    className="hover:bg-gray-100"
                   >
                     Out of Stock
                   </DropdownMenuCheckboxItem>
@@ -365,11 +452,11 @@ const AllProducts = () => {
                   <SelectTrigger className="w-20 bg-white">
                     <SelectValue placeholder="9" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="6">6</SelectItem>
-                    <SelectItem value="9">9</SelectItem>
-                    <SelectItem value="12">12</SelectItem>
-                    <SelectItem value="24">24</SelectItem>
+                  <SelectContent className="bg-gray-50">
+                    <SelectItem value="6" className="hover:bg-gray-100">6</SelectItem>
+                    <SelectItem value="9" className="hover:bg-gray-100">9</SelectItem>
+                    <SelectItem value="12" className="hover:bg-gray-100">12</SelectItem>
+                    <SelectItem value="24" className="hover:bg-gray-100">24</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -381,11 +468,11 @@ const AllProducts = () => {
                   <SelectTrigger className="w-40 bg-white">
                     <SelectValue placeholder="Best Selling" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="best-selling">Best Selling</SelectItem>
-                    <SelectItem value="price-low-high">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high-low">Price: High to Low</SelectItem>
-                    <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectContent className="bg-gray-50">
+                    <SelectItem value="best-selling" className="hover:bg-gray-100">Best Selling</SelectItem>
+                    <SelectItem value="price-low-high" className="hover:bg-gray-100">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high-low" className="hover:bg-gray-100">Price: High to Low</SelectItem>
+                    <SelectItem value="newest" className="hover:bg-gray-100">Newest First</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -395,7 +482,7 @@ const AllProducts = () => {
           {/* Results Summary */}
           <div className="mb-6">
             <p className="text-sm text-gray-500">
-              Showing {startIndex + 1}-{endIndex} of {filteredProducts.length} products
+              Showing {filteredProducts.length > 0 ? startIndex + 1 : 0}-{endIndex} of {filteredProducts.length} products
             </p>
           </div>
 
@@ -460,9 +547,12 @@ const AllProducts = () => {
 
           {/* Products Grid */}
           {displayedProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {displayedProducts.map((product, index) => (
-                <ProductCard key={product._id || `product-${index}`} product={product} />
+                <ProductCard 
+                  key={product._id ? product._id.toString() : `product-${index}`} 
+                  product={product} 
+                />
               ))}
             </div>
           ) : (
@@ -517,10 +607,10 @@ const AllProducts = () => {
                     );
                   }
 
-                  // Show ellipsis for skipped pages
+                  // Show ellipsis for skipped pages (but only once)
                   if (
-                    index === 1 ||
-                    index === totalPages - 2
+                    (index === 1 && currentPage > 3) ||
+                    (index === totalPages - 2 && currentPage < totalPages - 2)
                   ) {
                     return (
                       <PaginationItem key={index}>

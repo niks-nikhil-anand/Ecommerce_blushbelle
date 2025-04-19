@@ -54,7 +54,7 @@ const CategoriesSection = () => {
   </div>
 
   {/* Categories Section */}
-  <div className="flex gap-4 px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:overflow-visible sm:flex-wrap sm:justify-center">
+  <div className="flex gap-4 px-2 py-3 overflow-x-auto snap-x snap-mandatory sm:overflow-visible sm:flex-wrap sm:justify-start">
     {displayedCategories.map((category) => (
       <motion.div
         key={category.id}

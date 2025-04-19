@@ -176,7 +176,7 @@ export default function Contact() {
                 <Card className="border-none shadow-xl">
                   <CardHeader>
                     <CardTitle className="text-2xl font-bold text-gray-900 md:text-3xl">Leave Us a Message</CardTitle>
-                    <CardDescription>Fill out the form below and we'll get back to you shortly.</CardDescription>
+                    <CardDescription>Fill out the form below and we&apos;ll get back to you shortly.</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form className="space-y-5" onSubmit={handleSubmit}>
@@ -275,7 +275,7 @@ export default function Contact() {
                   className="object-cover w-full h-full rounded-xl"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                  <h3 className="text-white text-xl font-bold">We'd love to hear from you</h3>
+                  <h3 className="text-white text-xl font-bold">We&apos;d love to hear from you</h3>
                   <p className="text-white/80 mt-2">Our team is ready to answer all your questions</p>
                 </div>
               </div>

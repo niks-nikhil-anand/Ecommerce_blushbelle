@@ -247,7 +247,7 @@ const SidebarAdmin = () => {
                     onClick={() => setSelectedItem("Settings")}
                   />
                 </Link>
-                <Link href="/admin/dashboard/policy/privacyPolicy" passHref>
+                <Link href="/admin/dashboard/policy/termsAndCondition" passHref>
                   <SidebarItem
                     icon={<FaCog />}
                     label="Settings"

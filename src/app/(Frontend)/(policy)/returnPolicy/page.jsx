@@ -14,21 +14,20 @@ const Page = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                console.log("Fetching return policy data...");
+                console.log("[DEBUG] Fetching return policy data...");
                 const response = await fetch(`/api/admin/dashboard/policy/returnPolicy`);
-                
-                if (!response.ok) {
+                                if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                console.log("Response status:", response); // Debugging API response status
+
                 const result = await response.json();
-                console.log("Fetched data:", result); // Debugging API response
-                
+                console.log("[DEBUG] Parsed response JSON:", result);
                 setData(result);
             } catch (error) {
-                console.error("Error fetching data:", error); // Debugging error
+                console.error("[DEBUG] Error occurred while fetching data:", error);
                 setError(error.message);
             } finally {
+                console.log("[DEBUG] Fetching complete. Setting loading to false.");
                 setLoading(false);
             }
         };
@@ -37,15 +36,17 @@ const Page = () => {
     }, []);
 
     if (loading) {
+        console.log("[DEBUG] Component is in loading state...");
         return <Loader />;
     }
 
     if (error) {
+        console.log("[DEBUG] Error state triggered:", error);
         return <div className="text-center text-red-500 text-lg p-4">Error: {error}</div>;
     }
 
-    // Sanitize the HTML content before rendering
     const sanitizedContent = DOMPurify.sanitize(data.content);
+    console.log("[DEBUG] Sanitized HTML content ready for rendering.");
 
     return (
         <motion.div
@@ -73,12 +74,11 @@ const Page = () => {
 
             {/* Content */}
             <div className="md:w-15/20 w-full px-4 md:px-12 mx-auto overflow-x-hidden">
-       <div 
-        className="prose md:prose-base prose-sm max-w-none text-gray-800"
-        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-    />
-     </div>
-
+                <div 
+                    className="prose md:prose-base prose-sm max-w-none text-gray-800"
+                    dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+                />
+            </div>
         </motion.div>
     );
 };

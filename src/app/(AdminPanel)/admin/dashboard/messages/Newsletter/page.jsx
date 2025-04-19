@@ -250,7 +250,7 @@ const Newsletter = () => {
           <h2 className="text-lg font-semibold text-gray-800">Newsletter Details</h2>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2 bg-[#754E1A] text-white hover:bg-[#5c3d14]">
+              <Button variant="outline" className="flex items-center gap-2 bg-[#754E1A] text-white cursor-pointer">
                 <Download size={16} /> Export
               </Button>
             </PopoverTrigger>

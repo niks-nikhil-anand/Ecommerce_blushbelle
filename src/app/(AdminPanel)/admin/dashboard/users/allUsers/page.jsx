@@ -1,19 +1,73 @@
 "use client";
-import { FaEye, FaTrash } from "react-icons/fa";
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { CSVLink } from "react-csv";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+import { saveAs } from "file-saver";
 import { motion } from "framer-motion";
-import Loader from "@/components/loader/loader";
+import { FaEye, FaTrash } from "react-icons/fa";
+import { 
+  ArrowUpDown, 
+  Search, 
+  Download, 
+  FileText, 
+  FileSpreadsheet, 
+  FileUp,
+  CheckCircle,
+  XCircle
+} from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import Image from "next/image";
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
+import Loader from "@/components/loader/loader";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(15);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'ascending'
+  });
 
   // Fetch users from API
   useEffect(() => {
@@ -22,6 +76,7 @@ const Users = () => {
       .then((response) => {
         if (Array.isArray(response.data.users)) {
           setUsers(response.data.users);
+          setFilteredUsers(response.data.users);
         } else {
           console.error("Unexpected response format:", response);
         }
@@ -29,20 +84,74 @@ const Users = () => {
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
+        toast.error("Failed to fetch users");
         setLoading(false);
       });
   }, []);
 
+  // Filter users based on search term
+  useEffect(() => {
+    const results = users.filter((user) => {
+      return (
+        user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.mobileNumber.includes(searchTerm) ||
+        user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.status.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+    setFilteredUsers(results);
+    setCurrentPage(1);
+  }, [searchTerm, users]);
+
+  // Sorting function
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  // Apply sorting
+  useEffect(() => {
+    let sortedUsers = [...filteredUsers];
+    if (sortConfig.key) {
+      sortedUsers.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    setFilteredUsers(sortedUsers);
+  }, [sortConfig.key, sortConfig.direction]);
+
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
+  const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleToggle = async (userId, currentStatus) => {
-    const newStatus = currentStatus === "active" ? "inactive" : "active";
+  // Check if status is active, case-insensitive
+  const isStatusActive = (status) => {
+    return status.toLowerCase() === "active";
+  };
+
+  const handleToggleStatus = async (userId, currentStatus) => {
+    // Convert using case-insensitive comparison
+    const isActive = isStatusActive(currentStatus);
+    const newStatus = isActive ? "Inactive" : "Active";
+    
+    // Create loading toast that will be updated later
+    const loadingToastId = toast.loading(`Updating user status...`);
+    
     try {
       const response = await axios.patch(`/api/admin/dashboard/user/${userId}`, {
         status: newStatus,
@@ -54,18 +163,28 @@ const Users = () => {
             user._id === userId ? { ...user, status: newStatus } : user
           )
         );
+        // Dismiss loading toast and show success toast
+        toast.dismiss(loadingToastId);
         toast.success(`User status updated to ${newStatus}`);
       } else {
+        // Dismiss loading toast and show error toast
+        toast.dismiss(loadingToastId);
         toast.error("Failed to update user status");
       }
     } catch (error) {
       console.error("Error updating user status:", error);
+      // Dismiss loading toast and show error toast
+      toast.dismiss(loadingToastId);
       toast.error("An error occurred while updating the user status");
     }
   };
 
   const deleteUser = async () => {
     if (!userToDelete) return;
+    
+    // Create loading toast
+    const loadingToastId = toast.loading("Deleting user...");
+    
     try {
       const response = await fetch(
         `/api/admin/dashboard/user/${userToDelete}`,
@@ -75,154 +194,393 @@ const Users = () => {
       );
 
       if (response.ok) {
+        // Dismiss loading toast and show success toast
+        toast.dismiss(loadingToastId);
         toast.success("User deleted successfully");
-        handleDelete(userToDelete);
+        
+        setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userToDelete));
+        setFilteredUsers((prevUsers) => prevUsers.filter((user) => user._id !== userToDelete));
       } else {
         const { msg } = await response.json();
+        // Dismiss loading toast and show error toast
+        toast.dismiss(loadingToastId);
         toast.error(msg || "Failed to delete user");
       }
     } catch (error) {
+      // Dismiss loading toast and show error toast
+      toast.dismiss(loadingToastId);
       toast.error("An error occurred while deleting the user");
     } finally {
       setShowDeleteModal(false);
     }
   };
 
-  const handleDelete = (userId) => {
-    setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
+  // Export functions
+  const exportToCSV = () => {
+    // The CSVLink component will handle this
+    return filteredUsers;
   };
 
-  if (loading) return <Loader />;
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    
+    const tableColumn = ["Full Name", "Email", "Mobile Number", "Role", "Status"];
+    const tableRows = [];
+
+    filteredUsers.forEach(user => {
+      const userData = [
+        user.fullName,
+        user.email,
+        user.mobileNumber,
+        user.role,
+        user.status
+      ];
+      tableRows.push(userData);
+    });
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+      styles: {
+        fontSize: 8,
+        cellPadding: 2,
+      },
+    });
+
+    doc.text("User Data Report", 14, 15);
+    doc.save("users-report.pdf");
+    toast.success("PDF exported successfully");
+  };
+
+  const exportToDOCX = () => {
+    // Create a formatted text content
+    let content = "User Data Report\n\n";
+    
+    filteredUsers.forEach((user, index) => {
+      content += `User ${index + 1}:\n`;
+      content += `Name: ${user.fullName}\n`;
+      content += `Email: ${user.email}\n`;
+      content += `Mobile: ${user.mobileNumber}\n`;
+      content += `Role: ${user.role}\n`;
+      content += `Status: ${user.status}\n\n`;
+    });
+    
+    // Convert the content to a Blob
+    const blob = new Blob([content], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+    
+    // Save the file
+    saveAs(blob, "users-report.docx");
+    toast.success("DOCX exported successfully");
+  };
+
+  const getCSVData = () => {
+    return filteredUsers.map(user => ({
+      "Full Name": user.fullName,
+      "Email": user.email,
+      "Mobile Number": user.mobileNumber,
+      "Role": user.role,
+      "Status": user.status
+    }));
+  }
+
+  const handleCSVExport = () => {
+    toast.success("CSV exported successfully");
+  };
+
+  // Loading state
+  if (loading) return <div className="flex justify-center items-center h-screen"><Loader /></div>;
   if (!users.length) return <p className="text-center">No users available.</p>;
 
   return (
-    <div className="w-full p-4 bg-white shadow-lg h-[85vh] min-w-[100%]">
-      <div className="flex justify-between px-4 py-2 bg-gray-200 text-black rounded-md my-4 font-medium">
-        <h2 className="text-lg font-semibold text-gray-800">
-          Registered Users Details
-        </h2>
-        <button className="bg-[#754E1A] hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-md transition-all">
-          Export
-        </button>
-      </div>
-      <div className="overflow-x-auto overflow-y-auto max-h-[60vh] custom-scrollbar">
-        <table className="border-collapse border border-gray-300 min-w-[1300px] text-sm">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border px-2 py-1 text-left">Full Name</th>
-              <th className="border px-2 py-1 text-left">Email</th>
-              <th className="border px-2 py-1 text-center">Mobile Number</th>
-              <th className="border px-2 py-1 text-left">Role</th>
-              <th className="border px-2 py-1 text-center">Status</th>
-              <th className="border px-2 py-1 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentUsers.map((user) => (
-              <tr key={user._id} className="hover:bg-gray-100">
-                <td className="border px-2 py-1">{user.fullName}</td>
-                <td className="border px-2 py-1">{user.email}</td>
-                <td className="border px-2 py-1 text-center">
-                  {user.mobileNumber}
-                </td>
-                <td className="border px-2 py-1">{user.role}</td>
-                <td className="border px-2 py-1 text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={user.status === "active"}
-                        onChange={() => handleToggle(user._id, user.status)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-12 h-6 bg-gray-200 rounded-full peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:bg-gray-700 peer-checked:bg-green-500">
-                        <motion.div
-                          className="absolute w-5 h-5 bg-white border border-gray-300 rounded-full top-[2px] left-[1px]"
-                          initial={{ x: 0 }}
-                          animate={{ x: user.status === "active" ? 25 : 0 }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 300,
-                            damping: 30,
-                          }}
-                        />
-                      </div>
-                    </label>
-                  </div>
-                </td>
-                <td className="border px-2 py-1 text-center">
-                  <div className="flex gap-4 justify-center">
-                    <motion.button
-                      onClick={() => console.log("View user", user._id)}
-                      whileHover={{ scale: 1.1, rotate: 2 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-xl shadow-lg hover:bg-blue-600 transition-all duration-300"
-                    >
-                      <FaEye className="text-lg drop-shadow-md" />
-                    </motion.button>
-                    <motion.button
-                      onClick={() => {
-                        setUserToDelete(user._id);
-                        setShowDeleteModal(true);
-                      }}
-                      whileHover={{ scale: 1.1, rotate: -2 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-xl shadow-lg hover:bg-red-600 transition-all duration-300"
-                    >
-                      <FaTrash className="text-lg drop-shadow-md" />
-                    </motion.button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-80">
-            <h2 className="text-lg font-semibold mb-4 text-center">
-              Are you sure you want to delete this user?
-            </h2>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={deleteUser}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Yes, Delete
-              </button>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                No, Cancel
-              </button>
-            </div>
-          </div>
+    <Card className="w-full bg-white text-gray-800">
+      {/* Add Toaster component with light mode styling */}
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          success: {
+            style: {
+              background: '#ffffff',
+              color: '#16a34a',
+              borderLeft: '4px solid #16a34a',
+              padding: '16px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              borderRadius: '4px',
+            },
+            iconTheme: {
+              primary: '#16a34a',
+              secondary: '#ffffff',
+            },
+          },
+          error: {
+            style: {
+              background: '#ffffff',
+              color: '#dc2626',
+              borderLeft: '4px solid #dc2626',
+              padding: '16px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              borderRadius: '4px',
+            },
+            iconTheme: {
+              primary: '#dc2626',
+              secondary: '#ffffff',
+            },
+          },
+          loading: {
+            style: {
+              background: '#ffffff',
+              color: '#2563eb',
+              borderLeft: '4px solid #2563eb',
+              padding: '16px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              borderRadius: '4px',
+            },
+          },
+          duration: 3000, // Duration for all toasts
+        }}
+      />
+      
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="text-xl font-bold">User Management</CardTitle>
+          <CardDescription className="text-gray-500">
+            Manage registered users and their access
+          </CardDescription>
         </div>
-      )}
+        <div className="flex gap-4">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search users..."
+              className="pl-8 bg-white border-gray-300 text-gray-800"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="bg-white text-gray-800 border-gray-300">
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white border-gray-300">
+              <CSVLink
+                data={getCSVData()}
+                filename={"users-report.csv"}
+                className="w-full"
+                onClick={handleCSVExport}
+              >
+                <DropdownMenuItem className="cursor-pointer hover:bg-gray-100">
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Export to CSV
+                </DropdownMenuItem>
+              </CSVLink>
+              <DropdownMenuItem onClick={exportToPDF} className="cursor-pointer hover:bg-gray-100">
+                <FileText className="mr-2 h-4 w-4" />
+                Export to PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportToDOCX} className="cursor-pointer hover:bg-gray-100">
+                <FileUp className="mr-2 h-4 w-4" />
+                Export to DOCX
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="rounded-md border border-gray-200 overflow-hidden">
+          <Table>
+            <TableHeader className="bg-gray-50">
+              <TableRow className="hover:bg-gray-100">
+                <TableHead className="text-gray-600 font-medium">
+                  <Button
+                    variant="ghost"
+                    onClick={() => requestSort('fullName')}
+                    className="p-0 hover:bg-transparent text-gray-600"
+                  >
+                    Full Name
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium">
+                  <Button
+                    variant="ghost"
+                    onClick={() => requestSort('email')}
+                    className="p-0 hover:bg-transparent text-gray-600"
+                  >
+                    Email
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium text-center">
+                  Mobile Number
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium">
+                  <Button
+                    variant="ghost"
+                    onClick={() => requestSort('role')}
+                    className="p-0 hover:bg-transparent text-gray-600"
+                  >
+                    Role
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium text-center">
+                  <Button
+                    variant="ghost"
+                    onClick={() => requestSort('status')}
+                    className="p-0 hover:bg-transparent text-gray-600"
+                  >
+                    Status
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium text-center">
+                  Actions
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-10 text-gray-500">
+                    No users found matching your search criteria.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                currentUsers.map((user) => (
+                  <TableRow key={user._id} className="border-gray-200 hover:bg-gray-50">
+                    <TableCell className="font-medium text-gray-700">
+                      {user.fullName}
+                    </TableCell>
+                    <TableCell className="text-gray-600">{user.email}</TableCell>
+                    <TableCell className="text-gray-600 text-center">
+                      {user.mobileNumber}
+                    </TableCell>
+                    <TableCell className="text-gray-600">{user.role}</TableCell>
+                    <TableCell className="text-center">
+                      <Badge
+                        variant={isStatusActive(user.status) ? "success" : "secondary"}
+                        className={`${
+                          isStatusActive(user.status)
+                            ? "bg-green-100 text-green-600 hover:bg-green-200"
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        } cursor-pointer`}
+                        onClick={() => handleToggleStatus(user._id, user.status)}
+                      >
+                        {isStatusActive(user.status) ? (
+                          <><CheckCircle className="h-3.5 w-3.5 mr-1" /> Active</>
+                        ) : (
+                          <><XCircle className="h-3.5 w-3.5 mr-1" /> Inactive</>
+                        )}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-center gap-2">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                          onClick={() => {
+                            console.log("View user", user._id);
+                            toast.success("User view functionality coming soon!");
+                          }}
+                        >
+                          <FaEye className="h-4 w-4" />
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                          onClick={() => {
+                            setUserToDelete(user._id);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          <FaTrash className="h-4 w-4" />
+                        </motion.button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-      {/* Pagination */}
-      <div className="mt-4 flex justify-center space-x-2">
-        {[
-          ...Array(Math.ceil(users.length / itemsPerPage)).keys(),
-        ].map((number) => (
-          <button
-            key={number}
-            className={`px-2 py-1 rounded-md text-xs ${
-              currentPage === number + 1
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-            onClick={() => paginate(number + 1)}
-          >
-            {number + 1}
-          </button>
-        ))}
-      </div>
-    </div>
+        {/* Pagination */}
+        <Pagination className="mt-4">
+          <PaginationContent>
+            {currentPage > 1 && (
+              <PaginationItem>
+                <PaginationLink 
+                  onClick={() => paginate(currentPage - 1)}
+                  className="cursor-pointer bg-white border-gray-200 hover:bg-gray-50"
+                >
+                  Previous
+                </PaginationLink>
+              </PaginationItem>
+            )}
+            
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+              <PaginationItem key={number}>
+                <PaginationLink
+                  onClick={() => paginate(number)}
+                  isActive={currentPage === number}
+                  className={`cursor-pointer ${
+                    currentPage === number 
+                      ? "bg-blue-500 text-white hover:bg-blue-600" 
+                      : "bg-white border-gray-200 hover:bg-gray-50"
+                  }`}
+                >
+                  {number}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            
+            {currentPage < totalPages && (
+              <PaginationItem>
+                <PaginationLink 
+                  onClick={() => paginate(currentPage + 1)}
+                  className="cursor-pointer bg-white border-gray-200 hover:bg-gray-50"
+                >
+                  Next
+                </PaginationLink>
+              </PaginationItem>
+            )}
+          </PaginationContent>
+        </Pagination>
+      </CardContent>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="bg-white border-gray-200 text-gray-800">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription className="text-gray-500">
+              Are you sure you want to delete this user? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-between">
+            <Button
+              variant="outline"
+              className="bg-white border-gray-300 text-gray-800 hover:bg-gray-50"
+              onClick={() => setShowDeleteModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={deleteUser}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Card>
   );
 };
 

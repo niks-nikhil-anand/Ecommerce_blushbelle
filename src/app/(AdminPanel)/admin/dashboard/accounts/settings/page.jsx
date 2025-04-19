@@ -276,11 +276,11 @@ function ShippingSettings() {
 
       if (editingRule) {
         // Update existing rule
-        await axios.put(`'/api/admin/dashboard/shipping/${editingRule._id}`, payload);
+        await axios.put(`/api/admin/dashboard/shipping/${editingRule._id}`, payload);
         toast.success('Shipping rule updated successfully!');
       } else {
         // Create new rule
-        await axios.post('/api/shipping', payload);
+        await axios.post('/api/admin/dashboard/shipping', payload);
         toast.success('Shipping rule added successfully!');
       }
       
@@ -344,6 +344,42 @@ function ShippingSettings() {
     }));
   };
 
+  // Custom Switch component with 3D styling
+  const Switch3D = ({ id, name, checked, onChange, activeColor = "bg-green-500", inactiveColor = "bg-gray-300" }) => {
+    return (
+      <div className="relative inline-block w-12 h-6 align-middle select-none transition duration-200 ease-in">
+        <input
+          type="checkbox"
+          name={name}
+          id={id}
+          checked={checked}
+          onChange={onChange}
+          className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-400 appearance-none cursor-pointer transition-transform duration-200 ease-in"
+        />
+        <label
+          htmlFor={id}
+          className={`toggle-label block overflow-hidden h-6 rounded-full cursor-pointer shadow-md ${checked ? activeColor : inactiveColor}`}
+          style={{
+            boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)",
+          }}
+        ></label>
+        <style jsx>{`
+          .toggle-checkbox:checked {
+            transform: translateX(100%);
+            border-color: #2f855a;
+          }
+          .toggle-label {
+            transition: background-color 0.2s ease;
+          }
+          .toggle-checkbox {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            z-index: 1;
+          }
+        `}</style>
+      </div>
+    );
+  };
+
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -358,17 +394,17 @@ function ShippingSettings() {
               Add Shipping Rule
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px] bg-gray-50">
+          <DialogContent className="sm:max-w-[600px] bg-gray-100">
             <DialogHeader className="bg-white rounded-t-lg p-4 border-b">
               <DialogTitle>{editingRule ? 'Edit Shipping Rule' : 'Add New Shipping Rule'}</DialogTitle>
               <DialogDescription>
                 Define shipping costs and delivery times for different locations and order values.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4 px-4 bg-gray-50">
+            <div className="grid gap-4 py-4 px-4 bg-gray-100">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="country">Country</Label>
+                  <Label htmlFor="country" className="text-gray-700 font-medium">Country</Label>
                   <div className="relative">
                     <Input
                       id="country"
@@ -377,26 +413,26 @@ function ShippingSettings() {
                       onChange={handleChange}
                       placeholder="India"
                       required
-                      className="bg-white"
+                      className="bg-white shadow-sm border-gray-300"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="state">State/Province (Optional)</Label>
+                  <Label htmlFor="state" className="text-gray-700 font-medium">State/Province (Optional)</Label>
                   <Input
                     id="state"
                     name="state"
                     value={formData.state}
                     onChange={handleChange}
                     placeholder="New Delhi"
-                    className="bg-white"
+                    className="bg-white shadow-sm border-gray-300"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="minPrice">Min Order Value ($)</Label>
+                  <Label htmlFor="minPrice" className="text-gray-700 font-medium">Min Order Value (₹)</Label>
                   <Input
                     id="minPrice"
                     name="minPrice"
@@ -406,11 +442,11 @@ function ShippingSettings() {
                     min="0"
                     step="0.01"
                     required
-                    className="bg-white"
+                    className="bg-white shadow-sm border-gray-300"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="maxPrice">Max Order Value ($) (Optional)</Label>
+                  <Label htmlFor="maxPrice" className="text-gray-700 font-medium">Max Order Value (₹) (Optional)</Label>
                   <Input
                     id="maxPrice"
                     name="maxPrice"
@@ -420,14 +456,14 @@ function ShippingSettings() {
                     min="0"
                     step="0.01"
                     placeholder="No maximum"
-                    className="bg-white"
+                    className="bg-white shadow-sm border-gray-300"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="shippingFee">Shipping Fee ($)</Label>
+                  <Label htmlFor="shippingFee" className="text-gray-700 font-medium">Shipping Fee (₹)</Label>
                   <Input
                     id="shippingFee"
                     name="shippingFee"
@@ -438,29 +474,31 @@ function ShippingSettings() {
                     step="0.01"
                     required
                     disabled={formData.isFreeShipping}
-                    className="bg-white"
+                    className="bg-white shadow-sm border-gray-300"
                   />
                 </div>
-                <div className="flex items-center space-x-2 pt-8">
-                  <Switch
+                <div className="flex items-center space-x-3 pt-8">
+                  <Switch3D
                     id="isFreeShipping"
                     name="isFreeShipping"
                     checked={formData.isFreeShipping}
-                    onCheckedChange={(checked) => {
+                    onChange={(e) => {
+                      const checked = e.target.checked;
                       setFormData(prev => ({
                         ...prev,
                         isFreeShipping: checked,
                         shippingFee: checked ? 0 : prev.shippingFee
                       }));
                     }}
+                    activeColor="bg-blue-500"
                   />
-                  <Label htmlFor="isFreeShipping">Free Shipping</Label>
+                  <Label htmlFor="isFreeShipping" className="text-gray-800 font-medium">Free Shipping</Label>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="minDays">Min Delivery Time (Days)</Label>
+                  <Label htmlFor="minDays" className="text-gray-700 font-medium">Min Delivery Time (Days)</Label>
                   <Input
                     id="minDays"
                     name="minDays"
@@ -469,11 +507,11 @@ function ShippingSettings() {
                     onChange={handleChange}
                     min="1"
                     required
-                    className="bg-white"
+                    className="bg-white shadow-sm border-gray-300"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="maxDays">Max Delivery Time (Days)</Label>
+                  <Label htmlFor="maxDays" className="text-gray-700 font-medium">Max Delivery Time (Days)</Label>
                   <Input
                     id="maxDays"
                     name="maxDays"
@@ -482,24 +520,25 @@ function ShippingSettings() {
                     onChange={handleChange}
                     min={formData.minDays}
                     required
-                    className="bg-white"
+                    className="bg-white shadow-sm border-gray-300"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Switch
+              <div className="flex items-center space-x-3 p-3 rounded bg-gray-200 shadow-inner border border-gray-300">
+                <Switch3D
                   id="isActive"
                   name="isActive"
                   checked={formData.isActive}
-                  onCheckedChange={(checked) => {
+                  onChange={(e) => {
+                    const checked = e.target.checked;
                     setFormData(prev => ({
                       ...prev,
                       isActive: checked
                     }));
                   }}
                 />
-                <Label htmlFor="isActive">Active</Label>
+                <Label htmlFor="isActive" className="text-gray-800 font-semibold">Active</Label>
               </div>
             </div>
             <DialogFooter className="bg-white rounded-b-lg p-4 border-t">
@@ -509,10 +548,16 @@ function ShippingSettings() {
                   setIsOpen(false);
                   resetForm();
                 }}
+                className="border-gray-300 text-gray-700 hover:bg-gray-100"
               >
                 Cancel
               </Button>
-              <Button onClick={handleSubmit}>{editingRule ? 'Update' : 'Add'} Rule</Button>
+              <Button 
+                onClick={handleSubmit}
+                className="bg-indigo-600 hover:bg-indigo-700"
+              >
+                {editingRule ? 'Update' : 'Add'} Rule
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -523,45 +568,45 @@ function ShippingSettings() {
             <div className="text-center">Loading shipping rules...</div>
           </div>
         ) : (
-          <div className="rounded-md border">
+          <div className="rounded-md border border-gray-300 shadow-sm">
             <Table>
-              <TableHeader className="bg-gray-50">
+              <TableHeader className="bg-gray-100">
                 <TableRow>
-                  <TableHead>Country</TableHead>
-                  <TableHead>State/Province</TableHead>
-                  <TableHead>Price Range</TableHead>
-                  <TableHead>Shipping Fee</TableHead>
-                  <TableHead>Delivery Time</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="text-gray-700">Country</TableHead>
+                  <TableHead className="text-gray-700">State/Province</TableHead>
+                  <TableHead className="text-gray-700">Price Range</TableHead>
+                  <TableHead className="text-gray-700">Shipping Fee</TableHead>
+                  <TableHead className="text-gray-700">Delivery Time</TableHead>
+                  <TableHead className="text-gray-700">Status</TableHead>
+                  <TableHead className="text-gray-700">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {shippingRules.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center">
+                    <TableCell colSpan={7} className="text-center text-gray-600">
                       No shipping rules found. Add one to get started.
                     </TableCell>
                   </TableRow>
                 ) : (
                   shippingRules.map((rule) => (
-                    <TableRow key={rule._id}>
-                      <TableCell>{rule.country}</TableCell>
-                      <TableCell>{rule.state || '-'}</TableCell>
-                      <TableCell>
-                        ${rule.priceRange.min} - {rule.priceRange.max ? `$${rule.priceRange.max}` : 'No limit'}
+                    <TableRow key={rule._id} className="border-b border-gray-200">
+                      <TableCell className="text-gray-800">{rule.country}</TableCell>
+                      <TableCell className="text-gray-800">{rule.state || '-'}</TableCell>
+                      <TableCell className="text-gray-800">
+                        ₹{rule.priceRange.min} - {rule.priceRange.max ? `₹${rule.priceRange.max}` : 'No limit'}
                       </TableCell>
-                      <TableCell>
-                        {rule.isFreeShipping ? 'Free' : `$${rule.shippingFee.toFixed(2)}`}
+                      <TableCell className="text-gray-800">
+                        {rule.isFreeShipping ? 'Free' : `₹${rule.shippingFee.toFixed(2)}`}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-gray-800">
                         {rule.estimatedDeliveryTime.minDays} - {rule.estimatedDeliveryTime.maxDays} days
                       </TableCell>
                       <TableCell>
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           rule.isActive 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-gray-100 text-gray-800'
+                            ? 'bg-green-100 text-green-800 border border-green-200' 
+                            : 'bg-gray-100 text-gray-800 border border-gray-200'
                         }`}>
                           {rule.isActive ? 'Active' : 'Inactive'}
                         </span>
@@ -572,6 +617,7 @@ function ShippingSettings() {
                             variant="ghost" 
                             size="sm"
                             onClick={() => handleEdit(rule)}
+                            className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                           >
                             <PencilIcon className="h-4 w-4" />
                           </Button>
@@ -579,8 +625,9 @@ function ShippingSettings() {
                             variant="ghost" 
                             size="sm"
                             onClick={() => handleDelete(rule._id)}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
                           >
-                            <Trash2Icon className="h-4 w-4 text-red-500" />
+                            <Trash2Icon className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>

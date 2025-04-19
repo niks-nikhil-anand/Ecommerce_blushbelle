@@ -1,7 +1,7 @@
-// /app/api/shipping/[id]/route.js
 import connectDB from "@/lib/dbConnect";
-import { ShippingPrice } from "@/models/ShippingPrice";
+import { ShippingPrice } from "@/models/shippingModels";
 import { NextResponse } from "next/server";
+
 
 // GET a single shipping rule
 export async function GET(req, { params }) {

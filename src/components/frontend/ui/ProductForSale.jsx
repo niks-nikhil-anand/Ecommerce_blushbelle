@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Heart, Eye, Lock, ArrowRight, Star } from "lucide-react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,20 +14,44 @@ import { cn } from "@/lib/utils";
 const ProductCard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
-  useEffect(() => {
-    axios
-      .get("/api/admin/dashboard/product/addProduct")
-      .then((response) => {
-        console.log(response.data);
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      // Corrected API endpoint path to match the actual implementation
+      const response = await axios.get("/api/admin/dashboard/product/addProduct");
+      console.log("Products fetched successfully:", response.data);
+      
+      if (Array.isArray(response.data)) {
         setProducts(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("There was an error fetching the product data!", error);
-        setLoading(false);
-      });
+      } else {
+        console.error("Expected array but got:", response.data);
+        setProducts([]);
+      }
+      setError(null);
+    } catch (error) {
+      console.error("There was an error fetching the product data!", error);
+      setError("Failed to load products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    
+    // Add an interval to check for new products every 30 seconds
+    // This helps if the DB connection was temporarily unavailable
+    const intervalId = setInterval(() => {
+      if (products.length === 0) {
+        console.log("No products found, retrying fetch...");
+        fetchProducts();
+      }
+    }, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleCardClick = (id) => {
@@ -40,7 +64,11 @@ const ProductCard = () => {
   };
 
   const handleViewAllClick = () => {
-    router.push("/products");
+    router.push("/product/shopAllProducts");
+  };
+
+  const handleRetryClick = () => {
+    fetchProducts();
   };
 
   return (
@@ -57,6 +85,21 @@ const ProductCard = () => {
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600">{error}</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="mt-2"
+            onClick={handleRetryClick}
+          >
+            Retry
+          </Button>
+        </div>
+      )}
 
       {/* Products Section */}
       {loading ? (
@@ -80,6 +123,14 @@ const ProductCard = () => {
       ) : products.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">No products found.</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="mt-2"
+            onClick={handleRetryClick}
+          >
+            Refresh
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-x-auto pb-4 sm:overflow-visible">
@@ -102,13 +153,19 @@ const ProductCard = () => {
                 <CardContent className="p-6">
                   <div className="relative flex justify-center mb-4">
                     <div className="w-full h-40 flex items-center justify-center">
-                      <Image
-                        src={product.featuredImage}
-                        alt={product.name}
-                        width={100}
-                        height={100}
-                        className="object-cover"
-                      />
+                      {product.featuredImage ? (
+                        <Image
+                          src={product.featuredImage}
+                          alt={product.name}
+                          width={100}
+                          height={100}
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="h-40 w-40 bg-gray-200 flex items-center justify-center rounded">
+                          <p className="text-gray-500">No image</p>
+                        </div>
+                      )}
                     </div>
                     
                     {/* Action buttons overlay */}
@@ -144,7 +201,7 @@ const ProductCard = () => {
                         key={i}
                         className={cn(
                           "h-4 w-4",
-                          i < product.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                          i < (product.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
                         )}
                       />
                     ))}

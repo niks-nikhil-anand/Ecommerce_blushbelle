@@ -23,6 +23,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItemCount, setCartItemCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const router = useRouter();
 
   // Update cart count whenever localStorage changes
@@ -72,6 +73,29 @@ const Navbar = () => {
     };
   }, []);
 
+  // Add scroll event listener to detect scrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      if (scrollPosition > 10) {
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
+      }
+    };
+
+    // Add scroll event listener
+    window.addEventListener("scroll", handleScroll);
+
+    // Initial check in case page loads scrolled
+    handleScroll();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const handleSearch = () => {
     if (searchQuery.trim()) {
       router.push(`/product/search?q=${encodeURIComponent(searchQuery)}`);
@@ -89,7 +113,9 @@ const Navbar = () => {
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className=" shadow-md px-4 md:px-6 py-3 sticky top-0 z-50"
+      className={`shadow-md px-4 md:px-6 py-3 sticky top-0 z-50 transition-colors duration-300 ${
+        hasScrolled ? "bg-white" : "bg-transparent"
+      }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Mobile Header Section */}

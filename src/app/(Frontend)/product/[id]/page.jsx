@@ -12,9 +12,15 @@ import {
   FaInstagram,
   FaFacebook,
   FaTwitter,
-  FaWhatsapp
+  FaWhatsapp,
 } from "react-icons/fa";
-import { AiOutlineMinus, AiOutlinePlus, AiOutlineLeft, AiOutlineRight, AiOutlineClose } from "react-icons/ai";
+import {
+  AiOutlineMinus,
+  AiOutlinePlus,
+  AiOutlineLeft,
+  AiOutlineRight,
+  AiOutlineClose,
+} from "react-icons/ai";
 import Loader from "@/components/loader/loader";
 import ReviewProductPage from "@/components/frontend/ui/ReviewProductPage";
 import RelatedBlogs from "@/components/frontend/ui/RelatedBlogs";
@@ -32,7 +38,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { 
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -171,7 +177,7 @@ const ProductDetail = () => {
   if (!product) {
     return <div>Product not found.</div>;
   }
-  
+
   const {
     name,
     description,
@@ -186,7 +192,7 @@ const ProductDetail = () => {
     ingredients,
     productHighlights,
   } = product;
-  
+
   const averageRating = ratings?.average || 4.2;
   const currentImage = images[currentImageIndex];
   const percentageOff = ((originalPrice - salePrice) / originalPrice) * 100;
@@ -238,7 +244,9 @@ const ProductDetail = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className={`w-full aspect-square rounded-lg overflow-hidden border-2 cursor-pointer ${
-                        currentImageIndex === index ? "border-green-500" : "border-gray-200"
+                        currentImageIndex === index
+                          ? "border-green-500"
+                          : "border-gray-200"
                       }`}
                       onClick={() => setCurrentImageIndex(index)}
                     >
@@ -276,9 +284,11 @@ const ProductDetail = () => {
                       <CarouselContent>
                         {images.map((image, index) => (
                           <CarouselItem key={index} className="basis-1/4">
-                            <div 
+                            <div
                               className={`aspect-square rounded-md overflow-hidden border-2 ${
-                                currentImageIndex === index ? "border-green-500" : "border-gray-200"
+                                currentImageIndex === index
+                                  ? "border-green-500"
+                                  : "border-gray-200"
                               }`}
                               onClick={() => setCurrentImageIndex(index)}
                             >
@@ -310,11 +320,14 @@ const ProductDetail = () => {
                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                       {name}
                     </h1>
-                    <Badge variant={product.stock > 0 ? "success" : "destructive"} className="text-xs">
+                    <Badge
+                      variant={product.stock > 0 ? "success" : "destructive"}
+                      className="text-xs"
+                    >
                       {product.stock > 0 ? "In Stock" : "Out of Stock"}
                     </Badge>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 mt-2">
                     <div className="flex items-center">
                       {[1, 2, 3, 4, 5].map((star) => (
@@ -329,9 +342,7 @@ const ProductDetail = () => {
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
-                          <path
-                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"
-                          />
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
                         </svg>
                       ))}
                     </div>
@@ -350,7 +361,10 @@ const ProductDetail = () => {
                     <span className="text-sm text-gray-400 line-through">
                       ₹{originalPrice}
                     </span>
-                    <Badge variant="outline" className="text-red-500 border-red-200 bg-red-50">
+                    <Badge
+                      variant="outline"
+                      className="text-red-500 border-red-200 bg-red-50"
+                    >
                       {Math.round(percentageOff)}% Off
                     </Badge>
                   </div>
@@ -361,46 +375,58 @@ const ProductDetail = () => {
                 {/* Short Description */}
                 <div>
                   <p className="text-gray-700">
-                    Brain Bite is a powerful supplement designed to boost cognitive
-                    function, memory, and focus. Made with natural ingredients.
+                    Brain Bite is a powerful supplement designed to boost
+                    cognitive function, memory, and focus. Made with natural
+                    ingredients.
                   </p>
                 </div>
 
                 {/* Product Highlights */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {productHighlights && productHighlights.map((highlight, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="text-green-500">
-                        <FaCheckCircle size={16} />
+                  {productHighlights &&
+                    productHighlights.map((highlight, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="text-green-500">
+                          <FaCheckCircle size={16} />
+                        </div>
+                        <span className="text-sm text-gray-700">
+                          {highlight}
+                        </span>
                       </div>
-                      <span className="text-sm text-gray-700">{highlight}</span>
-                    </div>
-                  ))}
+                    ))}
                   {!productHighlights && (
                     <>
                       <div className="flex items-center gap-2">
                         <div className="text-green-500">
                           <FaCheckCircle size={16} />
                         </div>
-                        <span className="text-sm text-gray-700">100% Natural Ingredients</span>
+                        <span className="text-sm text-gray-700">
+                          100% Natural Ingredients
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="text-green-500">
                           <FaCheckCircle size={16} />
                         </div>
-                        <span className="text-sm text-gray-700">Clinically Tested</span>
+                        <span className="text-sm text-gray-700">
+                          Clinically Tested
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="text-green-500">
                           <FaCheckCircle size={16} />
                         </div>
-                        <span className="text-sm text-gray-700">Improves Focus</span>
+                        <span className="text-sm text-gray-700">
+                          Improves Focus
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="text-green-500">
                           <FaCheckCircle size={16} />
                         </div>
-                        <span className="text-sm text-gray-700">Enhances Memory</span>
+                        <span className="text-sm text-gray-700">
+                          Enhances Memory
+                        </span>
                       </div>
                     </>
                   )}
@@ -411,20 +437,24 @@ const ProductDetail = () => {
                 {/* Quantity and Add to Cart */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <div className="flex items-center">
-                    <span className="text-sm text-gray-700 mr-3">Quantity:</span>
+                    <span className="text-sm text-gray-700 mr-3">
+                      Quantity:
+                    </span>
                     <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={decreaseQuantity}
                         className="h-8 w-8 rounded-none"
                       >
                         <AiOutlineMinus size={14} />
                       </Button>
-                      <span className="w-10 text-center text-sm">{quantity}</span>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <span className="w-10 text-center text-sm">
+                        {quantity}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={increaseQuantity}
                         className="h-8 w-8 rounded-none"
                       >
@@ -432,12 +462,12 @@ const ProductDetail = () => {
                       </Button>
                     </div>
                   </div>
-                  
-                  <Button 
-                    onClick={handleAddToCart} 
+
+                  <Button
+                    onClick={handleAddToCart}
                     className={`${
-                      addedToCart 
-                        ? "bg-green-700 hover:bg-green-800" 
+                      addedToCart
+                        ? "bg-green-700 hover:bg-green-800"
                         : "bg-green-600 hover:bg-green-700"
                     } text-white rounded-full px-8 transition-colors`}
                     disabled={addedToCart}
@@ -458,7 +488,11 @@ const ProductDetail = () => {
                     <span className="text-gray-700 font-medium">Tags:</span>
                     <div className="flex flex-wrap gap-1">
                       {product.tags?.map((tag, index) => (
-                        <Badge key={index} variant="outline" className="bg-gray-50">
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="bg-gray-50"
+                        >
                           {tag}
                         </Badge>
                       ))}
@@ -482,19 +516,37 @@ const ProductDetail = () => {
       {/* Tabs Section */}
       <div className="mt-8">
         <Tabs defaultValue="descriptions" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="descriptions">Description</TabsTrigger>
-            <TabsTrigger value="additionalInfo">Additional Information</TabsTrigger>
-            <TabsTrigger value="reviews">Customer Reviews</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 md:p-5 p-2 gap-1">
+            <TabsTrigger
+              value="descriptions"
+              className="text-xs sm:text-sm md:text-base px-1 py-1.5"
+            >
+              Description
+            </TabsTrigger>
+            <TabsTrigger
+              value="additionalInfo"
+              className="text-xs sm:text-sm md:text-base px-1 py-1.5"
+            >
+              Specifications
+            </TabsTrigger>
+            <TabsTrigger
+              value="reviews"
+              className="text-xs sm:text-sm md:text-base px-1 py-1.5"
+            >
+               Reviews
+            </TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="descriptions" className="mt-6 bg-white p-6 rounded-lg shadow-sm">
+
+          <TabsContent
+            value="descriptions"
+            className="mt-6 bg-white p-6 rounded-lg shadow-sm"
+          >
             <div className="flex flex-col lg:flex-row gap-8">
               <div className="lg:w-1/2">
                 <div className="prose max-w-none">
                   <div dangerouslySetInnerHTML={{ __html: description }} />
                 </div>
-                
+
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-green-50 p-4 rounded-lg border border-green-100">
                     <div className="flex items-center gap-3 mb-2">
@@ -504,10 +556,11 @@ const ProductDetail = () => {
                       <h3 className="font-medium">Quality Guarantee</h3>
                     </div>
                     <p className="text-sm text-gray-600">
-                      Made with 100% natural ingredients and rigorously tested for purity
+                      Made with 100% natural ingredients and rigorously tested
+                      for purity
                     </p>
                   </div>
-                  
+
                   <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="bg-blue-100 p-2 rounded-full">
@@ -521,7 +574,7 @@ const ProductDetail = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="lg:w-1/2">
                 <div className="rounded-xl overflow-hidden shadow-md">
                   <Image
@@ -535,50 +588,71 @@ const ProductDetail = () => {
               </div>
             </div>
           </TabsContent>
-          
-          <TabsContent value="additionalInfo" className="mt-6 bg-white p-6 rounded-lg shadow-sm">
+
+          <TabsContent
+            value="additionalInfo"
+            className="mt-6 bg-white p-6 rounded-lg shadow-sm"
+          >
             <div className="space-y-6">
               <h3 className="text-xl font-semibold">Product Specifications</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
                 <div className="border-b pb-2">
-                  <div className="text-sm font-medium text-gray-500">Serving Size</div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Serving Size
+                  </div>
                   <div>{servingPerBottle || "1 capsule daily"}</div>
                 </div>
-                
+
                 <div className="border-b pb-2">
-                  <div className="text-sm font-medium text-gray-500">Bottle Contains</div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Bottle Contains
+                  </div>
                   <div>60 capsules (2 month supply)</div>
                 </div>
-                
+
                 <div className="border-b pb-2">
-                  <div className="text-sm font-medium text-gray-500">Suggested Use</div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Suggested Use
+                  </div>
                   <div>{suggestedUse || "Take 1 capsule daily with food"}</div>
                 </div>
-                
+
                 <div className="border-b pb-2">
-                  <div className="text-sm font-medium text-gray-500">Storage</div>
+                  <div className="text-sm font-medium text-gray-500">
+                    Storage
+                  </div>
                   <div>Store in a cool, dry place</div>
                 </div>
               </div>
-              
+
               <div>
                 <h4 className="font-medium mb-2">Ingredients</h4>
                 <p className="text-sm text-gray-700">
-                  {ingredients || "Bacopa Monnieri, Ginkgo Biloba, Lion's Mane Mushroom, Phosphatidylserine, Vitamin B Complex"}
+                  {ingredients ||
+                    "Bacopa Monnieri, Ginkgo Biloba, Lion's Mane Mushroom, Phosphatidylserine, Vitamin B Complex"}
                 </p>
               </div>
-              
-              <div dangerouslySetInnerHTML={{ __html: product.additionalInfo || "" }} />
+
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: product.additionalInfo || "",
+                }}
+              />
             </div>
           </TabsContent>
-          
-          <TabsContent value="reviews" className="mt-6 bg-white p-6 rounded-lg shadow-sm">
+
+          <TabsContent
+            value="reviews"
+            className="mt-6 bg-white p-6 rounded-lg shadow-sm"
+          >
             <div className="space-y-4">
               <div className="flex flex-col md:flex-row gap-6 items-start">
                 <div className="md:w-1/3 bg-gray-50 p-4 rounded-lg">
                   <div className="text-center">
-                    <div className="text-5xl font-bold text-green-600">{averageRating}</div>
+                    <div className="text-5xl font-bold text-green-600">
+                      {averageRating}
+                    </div>
                     <div className="flex justify-center my-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <svg
@@ -592,9 +666,7 @@ const ProductDetail = () => {
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
-                          <path
-                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"
-                          />
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
                         </svg>
                       ))}
                     </div>
@@ -602,22 +674,45 @@ const ProductDetail = () => {
                       Based on {ratings?.count || 42} reviews
                     </div>
                   </div>
-                  
+
                   <div className="mt-4 space-y-2">
                     {[5, 4, 3, 2, 1].map((rating) => (
                       <div key={rating} className="flex items-center">
-                        <div className="w-12 text-sm text-gray-600">{rating} star</div>
+                        <div className="w-12 text-sm text-gray-600">
+                          {rating} star
+                        </div>
                         <div className="flex-1 mx-2">
-                          <Progress value={rating === 5 ? 70 : rating === 4 ? 20 : rating === 3 ? 7 : rating === 2 ? 2 : 1} className="h-2" />
+                          <Progress
+                            value={
+                              rating === 5
+                                ? 70
+                                : rating === 4
+                                ? 20
+                                : rating === 3
+                                ? 7
+                                : rating === 2
+                                ? 2
+                                : 1
+                            }
+                            className="h-2"
+                          />
                         </div>
                         <div className="w-8 text-xs text-gray-500 text-right">
-                          {rating === 5 ? '70%' : rating === 4 ? '20%' : rating === 3 ? '7%' : rating === 2 ? '2%' : '1%'}
+                          {rating === 5
+                            ? "70%"
+                            : rating === 4
+                            ? "20%"
+                            : rating === 3
+                            ? "7%"
+                            : rating === 2
+                            ? "2%"
+                            : "1%"}
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="md:w-2/3 flex-1">
                   <ReviewProductPage />
                 </div>
@@ -634,13 +729,21 @@ const ProductDetail = () => {
       <div className="mt-16">
         <RelatedProducts />
       </div>
-      
+
       {/* Fullscreen Image Modal */}
       {isFullScreen && (
         <Sheet open={isFullScreen} onOpenChange={setIsFullScreen}>
-          <SheetContent side="center" className="w-screen h-screen flex items-center justify-center bg-black bg-opacity-90 p-0 max-w-full sm:max-w-full">
+          <SheetContent
+            side="center"
+            className="w-screen h-screen flex items-center justify-center bg-black bg-opacity-90 p-0 max-w-full sm:max-w-full"
+          >
             <SheetHeader className="absolute top-4 right-4 z-10">
-              <Button variant="ghost" size="icon" onClick={toggleFullScreen} className="text-white hover:bg-white/20">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleFullScreen}
+                className="text-white hover:bg-white/20"
+              >
                 <AiOutlineClose size={24} />
               </Button>
             </SheetHeader>
@@ -652,19 +755,19 @@ const ProductDetail = () => {
                 height={1200}
                 className="object-contain max-h-full max-w-full"
               />
-              
-              <Button 
-                variant="ghost" 
-                size="icon" 
+
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={prevImage}
                 className="absolute left-4 text-white hover:bg-white/20 rounded-full"
               >
                 <AiOutlineLeft size={24} />
               </Button>
-              
-              <Button 
-                variant="ghost" 
-                size="icon" 
+
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={nextImage}
                 className="absolute right-4 text-white hover:bg-white/20 rounded-full"
               >

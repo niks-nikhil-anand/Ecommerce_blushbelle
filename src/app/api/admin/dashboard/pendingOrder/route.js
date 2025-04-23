@@ -1,28 +1,16 @@
 import connectDB from "@/lib/dbConnect";
-import orderModels from "@/models/orderModels";
-import addressModels from "@/models/addressModels";
-import cartModels from "@/models/cartModels";
-import { Coupon } from "@/models/couponModels";
-import userModels from "@/models/userModels";
-
+import pendingOrder from "@/models/pendingOrder";
 import { NextResponse } from "next/server";
-
 
 export const GET = async (request) => {
   try {
     await connectDB();
     console.log("Database connected successfully for GET request on Orders");
 
-    const orders = await orderModels
-    .find()
-    .populate("user")
-    .populate("cart")
-    .populate("address")
-    .populate("coupon")
+    const orders = await pendingOrder
+      .find().populate()
 
-
-
-    console.log("Order data fetched:", orders);
+    console.log("Order data fetched:", orders); // Debug fetched order data
 
     if (!orders || orders.length === 0) {
       return NextResponse.json(

@@ -6,7 +6,7 @@ import { MdArrowBackIos } from "react-icons/md";
 import Loader from "@/components/loader/loader";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
+import toast, { Toaster } from "react-hot-toast";
 
 // Import Shadcn components
 import { Input } from "@/components/ui/input";
@@ -29,8 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-// Remove the shadcn toast import
-// import { toast } from "@/components/ui/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -42,6 +41,14 @@ const CheckoutPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const [applyCouponLoading, setApplyCouponLoading] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [shipping, setShipping] = useState({
+    countries: [],
+    states: [],
+    selectedShippingInfo: null,
+    fee: 0,
+    deliveryTime: { minDays: 0, maxDays: 0 }
+  });
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     email: "",
@@ -50,6 +57,7 @@ const CheckoutPage = () => {
     address: "",
     apartment: "",
     mobileNumber: "",
+    country: "India",
     state: "",
     landmark: "",
     city: "",
@@ -73,6 +81,42 @@ const CheckoutPage = () => {
       }
     };
     fetchCartFromLocalStorage();
+  }, []);
+
+  useEffect(() => {
+    const fetchShippingInfo = async () => {
+      try {
+        const response = await axios.get('/api/admin/dashboard/shipping');
+        const shippingData = response.data;
+        console.log("Shipping data:", shippingData);
+        
+        if (shippingData && shippingData.length > 0) {
+          // Get unique countries
+          const countries = [...new Set(shippingData.map(item => item.country))];
+          setShipping(prev => ({
+            ...prev,
+            countries
+          }));
+          
+          // Set default country states
+          if (formData.country) {
+            const countryStates = shippingData
+              .filter(item => item.country === formData.country && item.state)
+              .map(item => item.state);
+            
+            setShipping(prev => ({
+              ...prev,
+              states: [...new Set(countryStates)]
+            }));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching shipping data:", error);
+        toast.error("Failed to load shipping information");
+      }
+    };
+    
+    fetchShippingInfo();
   }, []);
 
   useEffect(() => {
@@ -102,6 +146,38 @@ const CheckoutPage = () => {
     }
   }, [cart]);
 
+  useEffect(() => {
+    // Update shipping fee and delivery time when country, state or cart changes
+    const updateShippingInfo = async () => {
+      if (!formData.country) return;
+      
+      try {
+        const subtotalValue = parseFloat(subtotal());
+        const response = await axios.get('/api/admin/dashboard/shipping', {
+          params: {
+            country: formData.country,
+            state: formData.state || null,
+            orderValue: subtotalValue
+          }
+        });
+        
+        const shippingInfo = response.data;
+        if (shippingInfo) {
+          setShipping(prev => ({
+            ...prev,
+            selectedShippingInfo: shippingInfo,
+            fee: shippingInfo.isFreeShipping ? 0 : shippingInfo.shippingFee,
+            deliveryTime: shippingInfo.estimatedDeliveryTime
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching shipping information:", error);
+      }
+    };
+    
+    updateShippingInfo();
+  }, [formData.country, formData.state, products]);
+
   const totalPriceForProduct = (product) => {
     return (product.salePrice * product.quantity).toFixed(2);
   };
@@ -116,7 +192,7 @@ const CheckoutPage = () => {
   };
 
   const estimatedTotal = () => {
-    const total = parseFloat(subtotal()) - discountAmount;
+    const total = parseFloat(subtotal()) - discountAmount + shipping.fee;
     return Math.max(total, 0).toFixed(2);
   };
 
@@ -130,6 +206,14 @@ const CheckoutPage = () => {
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     });
+    
+    // Clear the error for this field
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null
+      });
+    }
   };
 
   const handleCheckboxChange = (checked) => {
@@ -139,9 +223,45 @@ const CheckoutPage = () => {
     });
   };
 
-  const handleSelectChange = (value) => {
-    // Handle country selection change if needed
-    console.log("Country selected:", value);
+  const handleCountryChange = async (value) => {
+    setFormData({
+      ...formData,
+      country: value,
+      state: "" // Reset state when country changes
+    });
+    
+    try {
+      const response = await axios.get('/api/admin/dashboard/shipping', {
+        params: { country: value }
+      });
+      
+      const shippingData = response.data;
+      if (shippingData && shippingData.length > 0) {
+        // Get states for selected country
+        const countryStates = shippingData
+          .filter(item => item.country === value && item.state)
+          .map(item => item.state);
+        
+        // Fix for Frankfurt typo
+        const fixedStates = countryStates.map(state => 
+          state === "Franfrut" ? "Frankfurt" : state
+        );
+        
+        setShipping(prev => ({
+          ...prev,
+          states: [...new Set(fixedStates)]
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching states for country:", error);
+    }
+  };
+
+  const handleStateChange = (value) => {
+    setFormData({
+      ...formData,
+      state: value
+    });
   };
 
   const handleCouponChange = (e) => {
@@ -150,7 +270,6 @@ const CheckoutPage = () => {
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) {
-      // Use react-hot-toast for error notification
       toast.error("Please enter a coupon code");
       return;
     }
@@ -174,17 +293,14 @@ const CheckoutPage = () => {
         setDiscountAmount(response.data.discountAmount);
         localStorage.setItem("appliedCoupon", JSON.stringify(couponData));
         
-        // Use react-hot-toast for success notification
         toast.success(`Coupon "${couponCode}" applied successfully!`);
         
         setCouponCode("");
       } else {
-        // Use react-hot-toast for error notification
         toast.error(response.data.message || "This coupon cannot be applied");
       }
     } catch (error) {
       console.error("Error applying coupon:", error);
-      // Use react-hot-toast for error notification
       toast.error("Failed to apply coupon. Please try again.");
     } finally {
       setApplyCouponLoading(false);
@@ -195,15 +311,55 @@ const CheckoutPage = () => {
     setAppliedCoupon(null);
     setDiscountAmount(0);
     localStorage.removeItem("appliedCoupon");
-    // Use react-hot-toast for info notification
     toast.success("Coupon has been removed successfully");
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    
+    // Required fields
+    const requiredFields = {
+      email: "Email is required",
+      firstName: "First name is required",
+      lastName: "Last name is required",
+      address: "Address is required",
+      apartment: "Apartment/Suite is required",
+      mobileNumber: "Mobile number is required",
+      state: "State is required",
+      city: "City is required",
+      pinCode: "PIN code is required"
+    };
+    
+    // Check each required field
+    Object.keys(requiredFields).forEach(field => {
+      if (!formData[field]) {
+        newErrors[field] = requiredFields[field];
+      }
+    });
+    
+    // Email validation
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    
+    // Mobile validation
+    if (formData.mobileNumber && !/^\d{10}$/.test(formData.mobileNumber)) {
+      newErrors.mobileNumber = "Please enter a valid 10-digit mobile number";
+    }
+    
+    // PIN code validation
+    if (formData.pinCode && !/^\d{6}$/.test(formData.pinCode)) {
+      newErrors.pinCode = "Please enter a valid 6-digit PIN code";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleContinueToShipping = async () => {
-    // Simple form validation
-    if (!formData.email || !formData.firstName || !formData.lastName || !formData.address || 
-        !formData.mobileNumber || !formData.state || !formData.city || !formData.pinCode) {
-      toast.error("Please fill in all required fields");
+    // Validate form
+    if (!validateForm()) {
+      toast.error("Please correct the errors in the form");
       return;
     }
 
@@ -215,13 +371,18 @@ const CheckoutPage = () => {
       address: formData.address,
       apartment: formData.apartment,
       mobileNumber: formData.mobileNumber,
-      state: formData.state,
+      country: formData.country,
+      state: formData.state === "Franfrut" ? "Frankfurt" : formData.state, // Fix typo when submitting
       landmark: formData.landmark,
       city: formData.city,
       pinCode: formData.pinCode,
       subscribeChecked: formData.subscribeChecked,
       cart,
       coupon: appliedCoupon,
+      shipping: {
+        fee: shipping.fee,
+        deliveryTime: shipping.deliveryTime
+      }
     };
 
     try {
@@ -261,6 +422,29 @@ const CheckoutPage = () => {
     } finally {
       setLoadingButton(false); // Stop loading
     }
+  };
+
+  const renderInputField = (name, placeholder, required = false) => {
+    return (
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center">
+          <Input
+            type="text"
+            name={name}
+            placeholder={placeholder + (required ? " *" : "")}
+            value={formData[name]}
+            onChange={handleInputChange}
+            className={`border w-full py-2 px-4 rounded-md ${
+              errors[name] ? "border-red-500" : ""
+            }`}
+            required={required}
+          />
+        </div>
+        {errors[name] && (
+          <p className="text-red-500 text-xs mt-1">{errors[name]}</p>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -307,15 +491,22 @@ const CheckoutPage = () => {
           {/* Contact Information */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">Contact</h3>
-            <Input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="border w-full py-2 px-4 rounded-md focus:ring-purple-600"
-              required
-            />
+            <div className="flex flex-col gap-1">
+              <Input
+                type="email"
+                name="email"
+                placeholder="Email *"
+                value={formData.email}
+                onChange={handleInputChange}
+                className={`border w-full py-2 px-4 rounded-md ${
+                  errors.email ? "border-red-500" : ""
+                }`}
+                required
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
+            </div>
             <div className="flex items-center gap-2 mt-4">
               <Checkbox
                 id="subscribeChecked"
@@ -332,108 +523,114 @@ const CheckoutPage = () => {
           <div>
             <h3 className="text-lg font-semibold mb-3">Shipping Address</h3>
             <div className="flex flex-col gap-4">
-              <Select onValueChange={handleSelectChange} defaultValue="India">
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a country" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="India">India</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  type="text"
-                  name="firstName"
-                  placeholder="First name"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  className="border w-full py-2 px-4 rounded-md"
-                  required
-                />
-                <Input
-                  type="text"
-                  name="lastName"
-                  placeholder="Last name"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  className="border w-full py-2 px-4 rounded-md"
-                  required
-                />
-              </div>
-
-              <Input
-                type="text"
-                name="address"
-                placeholder="Address"
-                value={formData.address}
-                onChange={handleInputChange}
-                className="border w-full py-2 px-4 rounded-md"
-                required
-              />
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  type="text"
-                  name="apartment"
-                  placeholder="Apartment, suite, etc. (optional)"
-                  value={formData.apartment}
-                  onChange={handleInputChange}
-                  className="border w-full py-2 px-4 rounded-md"
-                />
-                <Input
-                  type="text"
-                  name="mobileNumber"
-                  placeholder="Mobile Number"
-                  value={formData.mobileNumber}
-                  onChange={handleInputChange}
-                  className="border w-full py-2 px-4 rounded-md"
-                  required
-                />
+              {/* Country Select */}
+              <div className="flex flex-col gap-1">
+                <Select 
+                  value={formData.country} 
+                  onValueChange={handleCountryChange} 
+                  defaultValue="India"
+                >
+                  <SelectTrigger className={`w-full ${errors.country ? "border-red-500" : ""}`}>
+                    <SelectValue placeholder="Select a country *" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {shipping.countries.length > 0 ? (
+                      shipping.countries.map(country => (
+                        <SelectItem key={country} value={country}>
+                          {country}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="India">India</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+                {errors.country && (
+                  <p className="text-red-500 text-xs mt-1">{errors.country}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  type="text"
-                  name="state"
-                  placeholder="State"
-                  value={formData.state}
-                  onChange={handleInputChange}
-                  className="border w-full py-2 px-4 rounded-md"
-                  required
-                />
-                <Input
-                  type="text"
-                  name="landmark"
-                  placeholder="Landmark"
-                  value={formData.landmark}
-                  onChange={handleInputChange}
-                  className="border w-full py-2 px-4 rounded-md"
-                />
+                {renderInputField("firstName", "First name", true)}
+                {renderInputField("lastName", "Last name", true)}
+              </div>
+
+              {renderInputField("address", "Address", true)}
+              {renderInputField("apartment", "Apartment, suite, etc.", true)}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <Input
+                    type="text"
+                    name="mobileNumber"
+                    placeholder="Mobile Number *"
+                    value={formData.mobileNumber}
+                    onChange={handleInputChange}
+                    className={`border w-full py-2 px-4 rounded-md ${
+                      errors.mobileNumber ? "border-red-500" : ""
+                    }`}
+                    required
+                  />
+                  {errors.mobileNumber && (
+                    <p className="text-red-500 text-xs mt-1">{errors.mobileNumber}</p>
+                  )}
+                </div>
+                {renderInputField("landmark", "Landmark")}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  type="text"
-                  name="city"
-                  placeholder="City"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="border w-full py-2 px-4 rounded-md"
-                  required
-                />
-                <Input
-                  type="text"
-                  name="pinCode"
-                  placeholder="PinCode"
-                  value={formData.pinCode}
-                  onChange={handleInputChange}
-                  className="border w-full py-2 px-4 rounded-md"
-                  required
-                />
+                {/* State Select */}
+                <div className="flex flex-col gap-1">
+                  <Select 
+                    value={formData.state} 
+                    onValueChange={handleStateChange}
+                  >
+                    <SelectTrigger className={`w-full ${errors.state ? "border-red-500" : ""}`}>
+                      <SelectValue placeholder="Select a state *" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {shipping.states.length > 0 ? (
+                        shipping.states.map(state => (
+                          <SelectItem key={state} value={state}>
+                            {state}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="" disabled>No states available</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {errors.state && (
+                    <p className="text-red-500 text-xs mt-1">{errors.state}</p>
+                  )}
+                </div>
+                {renderInputField("city", "City", true)}
               </div>
+
+              {renderInputField("pinCode", "PIN Code", true)}
             </div>
           </div>
+
+          {/* Shipping Info Display */}
+          {shipping.selectedShippingInfo && (
+            <div className="mt-4 mb-2">
+              <Alert className="bg-blue-50 border-blue-200">
+                <AlertDescription>
+                  <div className="flex flex-col gap-1 text-sm">
+                    <p className="font-medium">
+                      {/* Fix the wrong order of min and max days */}
+                      {/* Estimated Delivery: {shipping.deliveryTime.minDays}-{shipping.deliveryTime.maxDays} days */}
+                    </p>
+                    <p>
+                      {shipping.fee > 0 
+                        ? `Shipping Fee: ₹${shipping.fee.toFixed(2)}` 
+                        : "Free Shipping"}
+                    </p>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
 
           {/* Continue Button */}
           <div className="flex justify-between mt-6">
@@ -557,6 +754,16 @@ const CheckoutPage = () => {
               </div>
             )}
             
+            {/* Display shipping fee */}
+            <div className="flex justify-between">
+              <span className="text-gray-600">Shipping</span>
+              <span>
+                {shipping.fee > 0 
+                  ? `₹${shipping.fee.toFixed(2)}` 
+                  : "Free"}
+              </span>
+            </div>
+            
             <div className="flex justify-between font-semibold text-lg pt-2 border-t">
               <h3>Total:</h3>
               <h3>₹{estimatedTotal()}</h3>
@@ -574,6 +781,9 @@ const CheckoutPage = () => {
           </div>
           <div className="text-sm text-gray-600">
             {products.length} {products.length === 1 ? "item" : "items"} in cart
+            {shipping.fee > 0 && (
+              <span className="ml-2">• Shipping: ₹{shipping.fee.toFixed(2)}</span>
+            )}
             {appliedCoupon && (
               <span className="text-purple-700 ml-2">
                 • Coupon: {appliedCoupon.code}

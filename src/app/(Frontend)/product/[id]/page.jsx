@@ -223,12 +223,7 @@ const ProductDetail = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
-      {addedToCart && (
-        <div className="fixed top-6 right-6 z-50 bg-green-100 border border-green-200 rounded-lg shadow-md p-4 flex items-center gap-3 animate-in fade-in slide-in-from-top duration-300">
-          <FaCheckCircle className="text-green-500" size={20} />
-          <span className="font-medium text-green-800">Added to Cart!</span>
-        </div>
-      )}
+     
 
       <Card className="overflow-hidden border-none shadow-md">
         <CardContent className="p-0">

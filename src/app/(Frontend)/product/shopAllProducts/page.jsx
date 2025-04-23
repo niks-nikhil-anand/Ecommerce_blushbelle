@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import { Star, ShoppingCart } from "lucide-react";
+import { Star, ShoppingCart, Check } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Import shadcn components
@@ -39,13 +39,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const AllProducts = () => {
+const ShopProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortOption, setSortOption] = useState("best-selling");
   const [filters, setFilters] = useState({ availability: "", category: "", price: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage, setProductsPerPage] = useState(9);
+  const [addedToCartItems, setAddedToCartItems] = useState({});
   const router = useRouter();
 
   // Fetch products whenever sort option or filters change
@@ -86,6 +87,64 @@ const AllProducts = () => {
     } else {
       console.warn("Product ID is undefined");
     }
+  };
+
+  // Handle adding product to cart
+  const handleAddToCart = (e, product) => {
+    e.stopPropagation(); // Prevent navigating to product detail page
+    
+    if (!product?._id) return;
+    
+    const productId = product._id;
+    
+    // Update the addedToCartItems state
+    setAddedToCartItems(prev => ({
+      ...prev,
+      [productId]: true
+    }));
+    
+    // Retrieve the existing cart from localStorage
+    let existingCart = localStorage.getItem("cart");
+
+    try {
+      // Parse the cart if it exists and is valid JSON, otherwise initialize an empty array
+      existingCart = existingCart ? JSON.parse(existingCart) : [];
+    } catch (e) {
+      // If parsing fails, initialize as an empty array
+      existingCart = [];
+    }
+
+    // Ensure existingCart is an array
+    if (!Array.isArray(existingCart)) {
+      existingCart = [];
+    }
+
+    // Check if the product is already in the cart
+    const existingProductIndex = existingCart.findIndex(
+      (item) => item.id === productId
+    );
+
+    if (existingProductIndex !== -1) {
+      // If the product is already in the cart, update its quantity
+      existingCart[existingProductIndex].quantity += 1;
+    } else {
+      // If the product is not in the cart, add it
+      existingCart.push({
+        id: productId,
+        quantity: 1
+      });
+    }
+
+    // Update the cart in localStorage
+    localStorage.setItem("cart", JSON.stringify(existingCart));
+    
+    // Reset the button after 3 seconds
+    setTimeout(() => {
+      setAddedToCartItems(prev => ({
+        ...prev,
+        [productId]: false
+      }));
+    }, 3000);
   };
 
   // Handle sort change
@@ -200,6 +259,9 @@ const AllProducts = () => {
     // Safely handle review data
     const reviewCount = typeof product.reviewCount === 'number' ? product.reviewCount : 0;
     const rating = typeof product.rating === 'number' ? product.rating : 4;
+    
+    // Check if this product is currently in "added to cart" state
+    const isAddedToCart = addedToCartItems[productId] === true;
 
     return (
       <motion.div
@@ -275,9 +337,23 @@ const AllProducts = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300"
+                className={`w-full transition-colors duration-300 ${
+                  isAddedToCart 
+                    ? "bg-green-600 hover:bg-green-700 text-white border-green-500" 
+                    : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white"
+                }`}
+                onClick={(e) => handleAddToCart(e, product)}
+                disabled={isAddedToCart}
               >
-                <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+                {isAddedToCart ? (
+                  <>
+                    <Check className="mr-2 h-4 w-4" /> Added to Cart
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+                  </>
+                )}
               </Button>
             </CardFooter>
           </div>
@@ -641,4 +717,4 @@ const AllProducts = () => {
   );
 };
 
-export default AllProducts;
+export default ShopProducts;

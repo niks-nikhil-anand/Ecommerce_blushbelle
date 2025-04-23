@@ -1,10 +1,18 @@
+"use client"
 import React from "react";
-import Image from "next/image"; // Use for Next.js
+import Image from "next/image";
 import ApplePay from '../../../../public/icons/Method=ApplePay.png';
 import Discover from '../../../../public/icons/Discover.png';
 import Mastercard from '../../../../public/icons/Mastercard.png';
 import Visa from '../../../../public/icons/visa-logo.png';
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import { ArrowUpRight } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -13,9 +21,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* About Us */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold mb-2 border-b border-gray-600 pb-2">About Us</h3>
+            <h3 className="text-lg font-bold mb-2 pb-2">About Us</h3>
+            <Separator className="bg-gray-600 mb-4" />
             <p className="text-sm text-gray-400">
-            CleanVeda offers plant-based Ayurvedic supplements, like BrainBite™ Smart IQ, enhancing focus and mental clarity.</p>
+              CleanVeda offers plant-based Ayurvedic supplements, like BrainBite™ Smart IQ, enhancing focus and mental clarity.
+            </p>
             <p className="text-sm text-gray-300">
               <span className="text-green-500">+91 9876543210</span> <br />
               <span className="text-green-500">support@cleanveda.com</span>
@@ -24,90 +34,140 @@ const Footer = () => {
 
           {/* My Account */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold mb-2  pb-2">My Account</h3>
+            <h3 className="text-lg font-bold mb-2 pb-2">My Account</h3>
+            <Separator className="bg-gray-600 mb-4" />
             <ul className="text-sm space-y-2 text-gray-400">
-            <Link href={"/product/shopAllProducts"}>
-              <li className="hover:text-gray-200 cursor-pointer">All Products</li>
-              </Link>
-              <Link href={"/auth/signIn"}> 
-              <li className="hover:text-gray-200 cursor-pointer">My Account</li>
-              </Link>
-              <Link href={"/auth/signIn"}>
-              <li className="hover:text-gray-200 cursor-pointer">Order History</li>
-              </Link>
-              <Link href={"/auth/signIn"}>
-              <li className="hover:text-gray-200 cursor-pointer">Shopping Cart</li>
-              </Link>
-             
+              <li>
+                <Link href="/product/shopAllProducts" className="flex items-center hover:text-gray-200">
+                  <span>All Products</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/auth/signIn" className="flex items-center hover:text-gray-200">
+                  <span>My Account</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/auth/signIn" className="flex items-center hover:text-gray-200">
+                  <span>Order History</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/auth/signIn" className="flex items-center hover:text-gray-200">
+                  <span>Shopping Cart</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Helps */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold mb-2  pb-2">Helps</h3>
+            <h3 className="text-lg font-bold mb-2 pb-2">Helps</h3>
+            <Separator className="bg-gray-600 mb-4" />
             <ul className="text-sm space-y-2 text-gray-400">
-              <Link href={"/aboutUs"}>
-              <li className="hover:text-gray-200 cursor-pointer">About Us</li>
-              </Link>
-              <Link href={"/contactUs"}>
-              <li className="hover:text-gray-200 cursor-pointer">Contact</li>
-              </Link>
-              <Link href={"/FAQs"}>
-              <li className="hover:text-gray-200 cursor-pointer">FAQs</li>
-              </Link>
-              <Link href={"/blog"}>
-              <li className="hover:text-gray-200 cursor-pointer">Blogs</li>
-              </Link>
+              <li>
+                <Link href="/aboutUs" className="flex items-center hover:text-gray-200">
+                  <span>About Us</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/contactUs" className="flex items-center hover:text-gray-200">
+                  <span>Contact</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/FAQs" className="flex items-center hover:text-gray-200">
+                  <span>FAQs</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="flex items-center hover:text-gray-200">
+                  <span>Blogs</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
             </ul>
           </div>
-
-
 
           {/* Categories */}
           <div className="space-y-4">
             <h3 className="text-lg font-bold mb-2 pb-2">Categories</h3>
+            <Separator className="bg-gray-600 mb-4" />
             <ul className="text-sm space-y-2 text-gray-400">
-              <li className="hover:text-gray-200 cursor-pointer">Students</li>
-              <li className="hover:text-gray-200 cursor-pointer">
-              Health-conscious individuals
+              <li className="flex items-center hover:text-gray-200 cursor-pointer">
+                <span>Students</span>
+                <ArrowUpRight className="ml-1 h-3 w-3" />
               </li>
-              <li className="hover:text-gray-200 cursor-pointer">Parents</li>
-              <li className="hover:text-gray-200 cursor-pointer">Brain Booster</li>
-              <li className="hover:text-gray-200 cursor-pointer">Immunity Booster</li>
+              <li className="flex items-center hover:text-gray-200 cursor-pointer">
+                <span>Health-conscious individuals</span>
+                <ArrowUpRight className="ml-1 h-3 w-3" />
+              </li>
+              <li className="flex items-center hover:text-gray-200 cursor-pointer">
+                <span>Parents</span>
+                <ArrowUpRight className="ml-1 h-3 w-3" />
+              </li>
+              <li className="flex items-center hover:text-gray-200 cursor-pointer">
+                <span>Brain Booster</span>
+                <ArrowUpRight className="ml-1 h-3 w-3" />
+              </li>
+              <li className="flex items-center hover:text-gray-200 cursor-pointer">
+                <span>Immunity Booster</span>
+                <ArrowUpRight className="ml-1 h-3 w-3" />
+              </li>
             </ul>
           </div>
 
-          
           {/* Proxy */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold mb-2  pb-2">Proxy</h3>
+            <h3 className="text-lg font-bold mb-2 pb-2">Proxy</h3>
+            <Separator className="bg-gray-600 mb-4" />
             <ul className="text-sm space-y-2 text-gray-400">
-              <Link href={"/returnPolicy"}>
-              <li className="hover:text-gray-200 cursor-pointer">Return Policy</li>
-              </Link>
-              <Link href={"/shippingPolicy"}>
-              <li className="hover:text-gray-200 cursor-pointer">Shipping Policy</li>
-              </Link>
-              <Link href={"/privacyPolicy"}>
-              <li className="hover:text-gray-200 cursor-pointer">Privacy Policy</li>
-              </Link>
-              <Link href={"/termsAndConditions"}>
-              <li className="hover:text-gray-200 cursor-pointer">Terms & Condition</li>
-              </Link>
+              <li>
+                <Link href="/returnPolicy" className="flex items-center hover:text-gray-200">
+                  <span>Return Policy</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/shippingPolicy" className="flex items-center hover:text-gray-200">
+                  <span>Shipping Policy</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacyPolicy" className="flex items-center hover:text-gray-200">
+                  <span>Privacy Policy</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/termsAndConditions" className="flex items-center hover:text-gray-200">
+                  <span>Terms & Condition</span>
+                  <ArrowUpRight className="ml-1 h-3 w-3" />
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
 
+        <Separator className="bg-gray-700 my-8" />
 
-        <div className="border-t border-gray-700 mt-8 pt-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            {/* Footer Bottom */}
-            <p className="text-sm text-gray-400 mb-4 md:mb-0">
-              Clean Veda © 2025. All Rights Reserved
-            </p>
-            <div className="flex items-center space-x-4">
-              {/* Payment Icons */}
-              <div className="p-2 border border-gray-500 rounded-md">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          {/* Footer Bottom */}
+          <p className="text-sm text-gray-400 mb-4 md:mb-0">
+            Clean Veda © 2025. All Rights Reserved
+          </p>
+          <div className="flex items-center space-x-4">
+            {/* Payment Icons */}
+            <Card className="bg-transparent border-gray-500">
+              <CardContent className="p-2">
                 <Image
                   src={ApplePay}
                   alt="Apple Pay"
@@ -115,8 +175,10 @@ const Footer = () => {
                   width={32}
                   height={32}
                 />
-              </div>
-              <div className="p-2 border border-gray-500 rounded-md">
+              </CardContent>
+            </Card>
+            <Card className="bg-transparent border-gray-500">
+              <CardContent className="p-2">
                 <Image
                   src={Visa}
                   alt="Visa"
@@ -124,8 +186,10 @@ const Footer = () => {
                   width={32}
                   height={32}
                 />
-              </div>
-              <div className="px-3 py-2 border border-gray-500 rounded-md">
+              </CardContent>
+            </Card>
+            <Card className="bg-transparent border-gray-500">
+              <CardContent className="p-2">
                 <Image
                   src={Mastercard}
                   alt="Mastercard"
@@ -133,8 +197,10 @@ const Footer = () => {
                   width={32}
                   height={32}
                 />
-              </div>
-              <div className="p-2 border border-gray-500 rounded-md">
+              </CardContent>
+            </Card>
+            <Card className="bg-transparent border-gray-500">
+              <CardContent className="p-2">
                 <Image
                   src={Discover}
                   alt="Discover"
@@ -142,8 +208,8 @@ const Footer = () => {
                   width={32}
                   height={32}
                 />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

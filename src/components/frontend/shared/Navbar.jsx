@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiShoppingCart, FiSearch, FiMenu, FiX, FiUser, FiHeart } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -20,7 +20,55 @@ import {
 const Navbar = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cartItemCount, setCartItemCount] = useState(0);
   const router = useRouter();
+
+  // Update cart count whenever localStorage changes
+  useEffect(() => {
+    // Function to get cart count from localStorage
+    const updateCartCount = () => {
+      try {
+        const cart = localStorage.getItem("cart");
+        if (cart) {
+          const cartItems = JSON.parse(cart);
+          if (Array.isArray(cartItems)) {
+            // Calculate total count by summing quantities of all items
+            const totalCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+            setCartItemCount(totalCount);
+          } else {
+            setCartItemCount(0);
+          }
+        } else {
+          setCartItemCount(0);
+        }
+      } catch (error) {
+        console.error("Error parsing cart data:", error);
+        setCartItemCount(0);
+      }
+    };
+
+    // Initial count
+    updateCartCount();
+
+    // Listen for storage events to update cart count when localStorage changes
+    const handleStorageChange = (e) => {
+      if (e.key === "cart") {
+        updateCartCount();
+      }
+    };
+
+    // Add event listener for storage changes
+    window.addEventListener("storage", handleStorageChange);
+
+    // Check for changes every second (handles changes within the same window)
+    const interval = setInterval(updateCartCount, 1000);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -95,7 +143,7 @@ const Navbar = () => {
               <div className="relative">
                 <FiShoppingCart className="text-gray-700 text-2xl cursor-pointer" />
                 <Badge className="absolute -top-2 -right-2 bg-orange-500 h-4 w-4 p-0 flex items-center justify-center">
-                  0
+                  {cartItemCount}
                 </Badge>
               </div>
             </Link>
@@ -171,7 +219,7 @@ const Navbar = () => {
               >
                 <FiShoppingCart className="text-gray-700 text-2xl cursor-pointer" />
                 <Badge className="absolute -top-2 -right-2 bg-orange-500 h-4 w-4 p-0 flex items-center justify-center">
-                  0
+                  {cartItemCount}
                 </Badge>
               </motion.div>
             </Link>

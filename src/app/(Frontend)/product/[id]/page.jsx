@@ -86,6 +86,17 @@ const ProductDetail = () => {
     }
   }, []);
 
+  // Reset the "Added to Cart" status after 3 seconds
+  useEffect(() => {
+    let timer;
+    if (addedToCart) {
+      timer = setTimeout(() => {
+        setAddedToCart(false);
+      }, 3000);
+    }
+    return () => clearTimeout(timer);
+  }, [addedToCart]);
+
   if (loading) {
     return <Loader />;
   }
@@ -128,9 +139,8 @@ const ProductDetail = () => {
     // Update the cart in localStorage
     localStorage.setItem("cart", JSON.stringify(existingCart));
 
-    // Navigate to the cart page
+    // Show the "Added to Cart" message instead of redirecting
     setAddedToCart(true);
-    router.push("/product/cart");
   };
 
   const increaseQuantity = () => {
@@ -207,6 +217,13 @@ const ProductDetail = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
+      {addedToCart && (
+        <div className="fixed top-6 right-6 z-50 bg-green-100 border border-green-200 rounded-lg shadow-md p-4 flex items-center gap-3 animate-in fade-in slide-in-from-top duration-300">
+          <FaCheckCircle className="text-green-500" size={20} />
+          <span className="font-medium text-green-800">Added to Cart!</span>
+        </div>
+      )}
+
       <Card className="overflow-hidden border-none shadow-md">
         <CardContent className="p-0">
           <div className="flex flex-col lg:flex-row">
@@ -418,9 +435,14 @@ const ProductDetail = () => {
                   
                   <Button 
                     onClick={handleAddToCart} 
-                    className="bg-green-600 hover:bg-green-700 text-white rounded-full px-8"
+                    className={`${
+                      addedToCart 
+                        ? "bg-green-700 hover:bg-green-800" 
+                        : "bg-green-600 hover:bg-green-700"
+                    } text-white rounded-full px-8 transition-colors`}
+                    disabled={addedToCart}
                   >
-                    Add to Cart
+                    {addedToCart ? "Added to Cart" : "Add to Cart"}
                   </Button>
                 </div>
 
@@ -613,8 +635,6 @@ const ProductDetail = () => {
         <RelatedProducts />
       </div>
       
-      
-
       {/* Fullscreen Image Modal */}
       {isFullScreen && (
         <Sheet open={isFullScreen} onOpenChange={setIsFullScreen}>

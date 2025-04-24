@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import toast from "react-hot-toast";
 import { getAuth, signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
-import { firebaseApp } from '@/lib/firebaseConfig';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +12,8 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { firebaseApp } from '@/lib/firebaseConfig';
+
 
 const PhoneOTPLogin = ({ router }) => {
   const [phoneNumber, setPhoneNumber] = useState('');

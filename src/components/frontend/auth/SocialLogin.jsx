@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { firebaseApp } from '@/lib/firebaseConfig';
 import { Button } from "@/components/ui/button";
 
 const SocialLogin = ({ router }) => {

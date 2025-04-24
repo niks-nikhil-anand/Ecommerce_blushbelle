@@ -2,15 +2,12 @@ import { useState } from 'react';
 import axios from 'axios';
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { getAuth, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from "firebase/auth";
-import { firebaseApp } from '@/lib/firebaseConfig';
 import { Button } from "@/components/ui/button";
 
 const SocialLogin = ({ router }) => {
   const [loading, setLoading] = useState(false);
   
   // Initialize Firebase auth
-  const auth = getAuth(firebaseApp);
 
   const handleProviderSignIn = async (provider) => {
     try {

@@ -12,7 +12,7 @@ export const POST = async (req) => {
     await connectDB();
     console.log("Database connected.");
     
-    const { email } = await req.json();  // Parse request as JSON
+    const { email } = await req.json();
     console.log("Received email:", email);
 
     if (!email) {
@@ -26,8 +26,8 @@ export const POST = async (req) => {
       return NextResponse.json({ msg: "User not found" }, { status: 404 });
     }
 
-    // Generate a random 4-digit OTP and expiration time
-    const LoginOTP = Math.floor(1000 + Math.random() * 9000); // 4-digit OTP
+    // Generate a random 6-digit OTP and expiration time
+    const LoginOTP = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
     const expiration = new Date(Date.now() + 3600000); // OTP expires in 1 hour
 
     // Save OTP and expiration to the user record

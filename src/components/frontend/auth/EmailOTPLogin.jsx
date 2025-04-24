@@ -123,7 +123,7 @@ const EmailOTPLogin = ({ email, setEmail, router }) => {
           </InputOTP>
         </div>
         <p className="text-xs text-gray-500 mt-2 text-center">
-          We've sent a 6-digit code to your email address. Please enter it above.
+          We&apos;ve sent a 6-digit code to your email address. Please enter it above.
         </p>
       </div>
       

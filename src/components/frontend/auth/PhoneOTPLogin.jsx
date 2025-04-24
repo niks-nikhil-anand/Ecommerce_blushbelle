@@ -247,7 +247,7 @@ const PhoneOTPLogin = ({ router }) => {
           </div>
           
           <div className="space-y-3">
-            <Label className="text-gray-700 font-medium">Verify you're not a robot</Label>
+            <Label className="text-gray-700 font-medium">Verify you&apos;re not a robot</Label>
             <div id="recaptcha-container" className="flex justify-center py-3"></div>
           </div>
           
@@ -315,7 +315,7 @@ const PhoneOTPLogin = ({ router }) => {
               </InputOTP>
             </div>
             <p className="text-xs text-gray-500 mt-2 text-center">
-              We've sent a 6-digit code to your phone number. Please enter it above.
+              We&apos;ve sent a 6-digit code to your phone number. Please enter it above.
             </p>
           </div>
           

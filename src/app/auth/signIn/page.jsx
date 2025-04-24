@@ -67,13 +67,13 @@ const LoginForm = () => {
         </CardContent>
         <CardFooter className="flex flex-col space-y-2 text-center">
           <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/signup" className="font-medium text-green-600 hover:text-green-500">
               Sign up
             </Link>
           </p>
           <p className="text-xs text-gray-500">
-            By continuing, you agree to Cleanveda's{' '}
+            By continuing, you agree to Cleanveda&apos;s{' '}
             <Link href="/terms" className="underline hover:text-green-600">
               Terms of Service
             </Link>{' '}

@@ -48,7 +48,7 @@ const LoginForm = () => {
               <EmailOTPLogin setEmail={setEmail} />
             </TabsContent>
             <TabsContent value="phoneOTP">
-              <PhoneOTPLogin />
+              {/* <PhoneOTPLogin />  */}
             </TabsContent>
           </Tabs>
           

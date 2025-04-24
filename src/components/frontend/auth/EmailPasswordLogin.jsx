@@ -4,8 +4,6 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import axios from 'axios';
 import toast from "react-hot-toast";
-import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
-import { firebaseApp } from '@/lib/firebaseConfig';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,47 +16,28 @@ const EmailPasswordLogin = ({ email, setEmail, router }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Initialize Firebase auth
-  const auth = getAuth(firebaseApp);
-
   const handleLoginWithPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      // First, authenticate with Firebase
-      const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
-      await setPersistence(auth, persistence);
-      
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      const idToken = await user.getIdToken();
-      
-      // Then, authenticate with your backend
-      const response = await axios.post('/api/auth/firebase-login', { 
-        idToken,
+      const response = await axios.post('/api/auth/login', {
         email,
-        provider: 'password'
+        password,
+        rememberMe,
       });
-      
+
       if (response.status === 200) {
         toast.success("Login successful!");
-        setEmail(''); setPassword(''); setRememberMe(false);
+        setEmail('');
+        setPassword('');
+        setRememberMe(false);
         router.push(`/users/${response.data.userId}`);
       }
     } catch (error) {
       console.error("Login error:", error);
-      let errorMessage = "Login failed. Please check your credentials.";
-      
-      // Handle specific Firebase auth errors
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        errorMessage = "Invalid email or password";
-      } else if (error.code === 'auth/too-many-requests') {
-        errorMessage = "Too many failed login attempts. Please try again later.";
-      } else if (error.code === 'auth/user-disabled') {
-        errorMessage = "This account has been disabled. Please contact support.";
-      }
-      
-      toast.error(errorMessage);
+      const message = error.response?.data?.message || "Login failed. Please check your credentials.";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -78,7 +57,7 @@ const EmailPasswordLogin = ({ email, setEmail, router }) => {
           required
         />
       </div>
-      
+
       <div className="space-y-3">
         <div className="flex justify-between items-center">
           <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
@@ -107,7 +86,7 @@ const EmailPasswordLogin = ({ email, setEmail, router }) => {
           </Button>
         </div>
       </div>
-      
+
       <div className="flex items-center space-x-2 pt-2">
         <Checkbox 
           id="remember" 
@@ -117,7 +96,7 @@ const EmailPasswordLogin = ({ email, setEmail, router }) => {
         />
         <Label htmlFor="remember" className="text-sm text-gray-600">Remember me for 30 days</Label>
       </div>
-      
+
       <motion.div
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}

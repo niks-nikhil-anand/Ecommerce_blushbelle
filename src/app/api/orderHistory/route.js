@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import orderModels from '@/models/orderModels';
-import connectDB from '@/lib/mongodb'; // make sure this connects Mongoose
+import connectDB from '@/lib/dbConnect';
 
 export async function GET(req) {
   try {

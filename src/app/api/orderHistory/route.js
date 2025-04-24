@@ -2,30 +2,38 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import orderModels from '@/models/orderModels';
+import connectDB from '@/lib/mongodb'; // make sure this connects Mongoose
 
 export async function GET(req) {
   try {
+    // Connect to MongoDB
+    await connectDB();
+
     const cookieStore = cookies();
     const authToken = cookieStore.get('userAuthToken');
 
-    if (!authToken) {
+    if (!authToken?.value) {
       console.log('No authentication token found.');
-      return NextResponse.json({ message: 'User not logged in' }, { status: 400 });
+      return NextResponse.json({ message: 'User not logged in' }, { status: 401 });
     }
 
-    const decodedToken = jwt.decode(authToken.value);
-    console.log(decodedToken)
-    if (!decodedToken || !decodedToken.id) {
-      console.log('Invalid token or token does not contain user ID:', decodedToken);
-      throw new Error("Invalid token.");
+    // Verify and decode the token
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(authToken.value, process.env.JWT_SECRET);
+    } catch (error) {
+      console.error('JWT verification failed:', error);
+      return NextResponse.json({ message: 'Invalid or expired token' }, { status: 401 });
     }
 
-    const id = decodedToken.id;
-    console.log('Decoded Token ID:', id);
+    const userId = decodedToken.id;
+    if (!userId) {
+      console.log('Decoded token does not contain user ID:', decodedToken);
+      return NextResponse.json({ message: 'Invalid token payload' }, { status: 400 });
+    }
 
-    // Retrieve order history
-    const orderHistory = await orderModels.find({ user: id });
-    console.log('Order History Retrieved:', orderHistory);
+    // Fetch order history
+    const orderHistory = await orderModels.find({ user: userId });
 
     return NextResponse.json(orderHistory);
   } catch (error) {

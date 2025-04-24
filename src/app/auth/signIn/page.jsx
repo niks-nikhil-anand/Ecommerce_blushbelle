@@ -1,324 +1,90 @@
-"use client";
+"use client"
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import axios from 'axios';
-import toast from "react-hot-toast";
-import Image from "next/image";
-import React from 'react';
-
-// shadcn UI components
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SocialLogin from '@/components/frontend/auth/SocialLogin';
+import PhoneOTPLogin from '@/components/frontend/auth/PhoneOTPLogin';
+import EmailOTPLogin from '@/components/frontend/auth/EmailOTPLogin';
+import EmailPasswordLogin from '@/components/frontend/auth/EmailPasswordLogin';
 
-// Import the shadcn OTP input components
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 
 const LoginForm = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [otpValue, setOtpValue] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [countdown, setCountdown] = useState(0);
+  const [activeTab, setActiveTab] = useState('password');
 
-  const handleProviderSignIn = async (provider) => {
-    try {
-      const result = await signIn(provider);
-      if (result?.error) throw new Error(result.error);
-      console.log("User signed in successfully:", result);
-    } catch (error) {
-      console.error("Error during sign-in:", error.message);
-    }
-  };
-
-  const handleLoginWithPassword = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const formData = { email, password, rememberMe };
-    try {
-      const response = await axios.post('/api/auth/login', formData, { headers: { 'Content-Type': 'application/json' } });
-      if (response.status === 200) {
-        const cookieResponse = await axios.get('/api/auth/userAuthTokenCookies');
-        if (cookieResponse.status === 200 ) {
-          toast.success("Login successful!");
-          setEmail(''); setPassword(''); setRememberMe(false);
-          console.log("User ID:", cookieResponse.data[0]._id);
-          router.push(`/users/${cookieResponse.data[0]._id}`);
-        }
-      }
-    } catch (error) {
-      toast.error("Login failed. Please check your credentials.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSendOtp = async () => {
-    if (!email) {
-      toast.error("Please enter your email address");
-      return;
-    }
-    
-    try {
-      const response = await axios.post('/api/auth/login/sendOTP', { email });
-      if (response.status === 200) {
-        toast.success("OTP sent successfully!");
-        setOtpSent(true);
-        setCountdown(60);
-        startCountdown();
-      }
-    } catch (error) {
-      toast.error("Failed to send OTP. Please try again.");
-    }
-  };
-
-  const startCountdown = () => {
-    const timer = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const handleLoginWithOTP = async (e) => {
-    e.preventDefault();
-    
-    if (otpValue.length !== 6) {
-      toast.error("Please enter a valid 6-digit OTP");
-      return;
-    }
-    
-    setLoading(true);
-    try {
-      const response = await axios.post('/api/auth/login/loginWithOTP', { email, otp: otpValue });
-
-      if (response.status === 200) {
-        toast.success("OTP verified successfully!");
-        setOtpValue('');
-        router.push(`/users/${response.data[0]._id}`);
-      }
-    } catch (error) {
-      toast.error("Invalid OTP. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const handleTabChange = (value) => {
+    setActiveTab(value);
   };
 
   return (
-    <div className="flex justify-center items-center bg-gray-100 px-4 md:px-6 w-full flex-col py-16">
-      <Card className="w-full md:w-3/4 lg:w-2/3 shadow-xl border-gray-200">
-        <CardHeader className="space-y-4 text-center px-6 md:px-8 pt-8">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <CardTitle className="text-2xl md:text-3xl lg:text-4xl text-green-600 font-bold tracking-tight">
-              Welcome Back to Cleanveda
-            </CardTitle>
-            <CardDescription className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed pt-3">
-              <span className="text-green-500">👋 Sign in</span> to access your personalized health dashboard, track your orders, and continue your wellness journey
-            </CardDescription>
-          </motion.div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-50 to-teal-50 p-4"
+    >
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold text-green-800">Welcome Back to Cleanveda 👋</CardTitle>
+          <CardDescription className="text-green-600">
+            Sign in to access your personalized health journey
+          </CardDescription>
         </CardHeader>
-        
-        <CardContent className="space-y-8 px-6 md:px-12 lg:px-16">
-          <Tabs defaultValue="password" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-2">
-              <TabsTrigger value="password" className="py-3">Sign In with Password</TabsTrigger>
-              <TabsTrigger value="otp" className="py-3">Sign In with OTP</TabsTrigger>
+        <CardContent>
+          <Tabs defaultValue="password" value={activeTab} onValueChange={handleTabChange}>
+            <TabsList className="grid grid-cols-3 mb-6">
+              <TabsTrigger value="password">Email & Password</TabsTrigger>
+              <TabsTrigger value="emailOTP">Email OTP</TabsTrigger>
+              <TabsTrigger value="phoneOTP">Phone OTP</TabsTrigger>
             </TabsList>
-            
-            <TabsContent value="password" className="mt-6">
-              <form onSubmit={handleLoginWithPassword} className="space-y-6">
-                <div className="space-y-3">
-                  <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="rounded-lg h-12 px-4 bg-gray-50 border-gray-300 focus:border-green-500"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
-                    <Link href="/auth/forgotPassword" className="text-sm text-green-600 hover:text-green-800 hover:underline">
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="rounded-lg h-12 px-4 pr-12 bg-gray-50 border-gray-300 focus:border-green-500"
-                      required
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-12 w-12 text-gray-500 hover:text-gray-700"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-2 pt-2">
-                  <Checkbox 
-                    id="remember" 
-                    checked={rememberMe}
-                    onCheckedChange={() => setRememberMe(!rememberMe)}
-                    className="text-green-600 border-gray-400 data-[state=checked]:bg-green-600"
-                  />
-                  <Label htmlFor="remember" className="text-sm text-gray-600">Remember me for 30 days</Label>
-                </div>
-                
-                <motion.div
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  className="pt-2"
-                >
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-green-700 hover:bg-green-600 text-white h-12 text-base font-medium rounded-lg" 
-                    disabled={loading}
-                  >
-                    {loading ? 'Logging in...' : 'Login'}
-                  </Button>
-                </motion.div>
-              </form>
+            <TabsContent value="password">
+              <EmailPasswordLogin setEmail={setEmail} />
             </TabsContent>
-            
-            <TabsContent value="otp" className="mt-6">
-              <form onSubmit={handleLoginWithOTP} className="space-y-6">
-                <div className="space-y-3">
-                  <Label htmlFor="email-otp" className="text-gray-700 font-medium">Email</Label>
-                  <div className="flex space-x-3">
-                    <Input
-                      id="email-otp"
-                      type="email"
-                      placeholder="Enter your email address"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="rounded-lg h-12 px-4 bg-gray-50 border-gray-300 focus:border-green-500 flex-1"
-                      required
-                    />
-                    <Button 
-                      type="button"
-                      onClick={handleSendOtp}
-                      variant="outline"
-                      className="text-green-700 border-green-700 hover:bg-green-50 h-12 px-5 font-medium whitespace-nowrap"
-                      disabled={countdown > 0}
-                    >
-                      {countdown > 0 ? `Resend in ${countdown}s` : otpSent ? 'Resend OTP' : 'Send OTP'}
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <Label htmlFor="otp" className="text-gray-700 font-medium">Enter 6-digit OTP Code</Label>
-                  <div className="flex justify-center">
-                    <InputOTP 
-                      maxLength={6} 
-                      value={otpValue} 
-                      onChange={setOtpValue}
-                    >
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-                        <InputOTPSlot index={1} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-                        <InputOTPSlot index={2} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-                        <InputOTPSlot index={3} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-                        <InputOTPSlot index={4} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-                        <InputOTPSlot index={5} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    We've sent a 6-digit code to your email address. Please enter it above.
-                  </p>
-                </div>
-                
-                <motion.div
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  className="pt-2"
-                >
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-green-700 hover:bg-green-600 text-white h-12 text-base font-medium rounded-lg" 
-                    disabled={loading || otpValue.length !== 6}
-                  >
-                    {loading ? 'Verifying...' : 'Verify & Login'}
-                  </Button>
-                </motion.div>
-              </form>
+            <TabsContent value="emailOTP">
+              <EmailOTPLogin setEmail={setEmail} />
+            </TabsContent>
+            <TabsContent value="phoneOTP">
+              <PhoneOTPLogin />
             </TabsContent>
           </Tabs>
-
-          <div className="flex justify-center pt-2">
-            <Link href="/auth/register" className="text-green-700 hover:underline text-sm md:text-base font-medium">
-              Don&apos;t have an account? Create one
-            </Link>
-          </div>
-
-          <div className="flex items-center justify-center">
-            <span className="mx-4 text-gray-500 text-sm font-medium px-2">OR</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            <Button 
-              variant="outline" 
-              onClick={() => handleProviderSignIn("google")}
-              className="flex items-center justify-center space-x-3 hover:shadow-md transition-all h-12 bg-white border-gray-300 text-gray-700"
-            >
-              <Image src="/IconHub/GoogleIcons.png" alt="Google" width={20} height={20} />
-              <span className="font-medium">Sign in with Google</span>
-            </Button>
+          
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300"></span>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
             
-            <Button 
-              variant="outline" 
-              onClick={() => handleProviderSignIn("facebook")}
-              className="flex items-center justify-center space-x-3 hover:shadow-md transition-all h-12 bg-white border-gray-300 text-gray-700"
-            >
-              <Image src="/IconHub/facebookIcon.png" alt="Facebook" width={20} height={20} />
-              <span className="font-medium">Sign in with Facebook</span>
-            </Button>
+            <SocialLogin />
           </div>
         </CardContent>
-        
-        <CardFooter className="flex justify-center text-sm text-gray-500 py-6">
-          <p>CleanVeda Nutrition © {new Date().getFullYear()}</p>
+        <CardFooter className="flex flex-col space-y-2 text-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{' '}
+            <Link href="/signup" className="font-medium text-green-600 hover:text-green-500">
+              Sign up
+            </Link>
+          </p>
+          <p className="text-xs text-gray-500">
+            By continuing, you agree to Cleanveda's{' '}
+            <Link href="/terms" className="underline hover:text-green-600">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link href="/privacy" className="underline hover:text-green-600">
+              Privacy Policy
+            </Link>
+          </p>
         </CardFooter>
       </Card>
-    </div>
+    </motion.div>
   );
 };
 

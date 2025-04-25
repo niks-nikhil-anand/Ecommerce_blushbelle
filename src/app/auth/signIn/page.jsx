@@ -1,6 +1,5 @@
 "use client"
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,8 +11,6 @@ import EmailPasswordLogin from '@/components/frontend/auth/EmailPasswordLogin';
 
 
 const LoginForm = () => {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
   const [activeTab, setActiveTab] = useState('password');
 
   const handleTabChange = (value) => {
@@ -42,13 +39,13 @@ const LoginForm = () => {
               <TabsTrigger value="phoneOTP">Phone OTP</TabsTrigger>
             </TabsList>
             <TabsContent value="password">
-              <EmailPasswordLogin setEmail={setEmail} />
+              <EmailPasswordLogin />
             </TabsContent>
             <TabsContent value="emailOTP">
-              <EmailOTPLogin setEmail={setEmail} />
+              <EmailOTPLogin  />
             </TabsContent>
             <TabsContent value="phoneOTP">
-              {/* <PhoneOTPLogin />  */}
+              <PhoneOTPLogin /> 
             </TabsContent>
           </Tabs>
           
@@ -68,7 +65,7 @@ const LoginForm = () => {
         <CardFooter className="flex flex-col space-y-2 text-center">
           <p className="text-sm text-gray-600">
             Don&apos;t have an account?{' '}
-            <Link href="/signup" className="font-medium text-green-600 hover:text-green-500">
+            <Link href="/auth/register" className="font-medium text-green-600 hover:text-green-500">
               Sign up
             </Link>
           </p>

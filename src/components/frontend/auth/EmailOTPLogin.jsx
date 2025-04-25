@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -10,25 +12,24 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { useRouter } from 'next/navigation';
 
-const EmailOTPLogin = ({ email, setEmail, router }) => {
+const EmailOTPLogin = () => {
+  const router = useRouter();
   const [otpValue, setOtpValue] = useState('');
+  const [email, setEmail] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [loading, setLoading] = useState(false);
 
   // Countdown timer effect
   useEffect(() => {
-    let timer;
-    if (countdown > 0) {
-      timer = setInterval(() => {
-        setCountdown(prev => prev - 1);
-      }, 1000);
-    }
-    
-    return () => {
-      if (timer) clearInterval(timer);
-    };
+    if (countdown <= 0) return;
+    const timer = setInterval(() => {
+      setCountdown(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, [countdown]);
 
   const handleSendEmailOtp = async () => {
@@ -36,10 +37,11 @@ const EmailOTPLogin = ({ email, setEmail, router }) => {
       toast.error("Please enter your email address");
       return;
     }
-    
+
     try {
       setLoading(true);
       const response = await axios.post('/api/auth/login/sendOTP', { email });
+
       if (response.status === 200) {
         toast.success("OTP sent successfully!");
         setOtpSent(true);
@@ -47,7 +49,9 @@ const EmailOTPLogin = ({ email, setEmail, router }) => {
       }
     } catch (error) {
       console.error("Error sending email OTP:", error);
-      toast.error("Failed to send OTP. Please try again.");
+      toast.error(
+        error?.response?.data?.message || "Failed to send OTP. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -55,24 +59,27 @@ const EmailOTPLogin = ({ email, setEmail, router }) => {
 
   const handleLoginWithEmailOTP = async (e) => {
     e.preventDefault();
-    
+
     if (otpValue.length !== 6) {
       toast.error("Please enter a valid 6-digit OTP");
       return;
     }
-    
-    setLoading(true);
+
     try {
+      setLoading(true);
       const response = await axios.post('/api/auth/login/loginWithOTP', { email, otp: otpValue });
 
       if (response.status === 200) {
         toast.success("OTP verified successfully!");
         setOtpValue('');
-        router.push(`/users/${response.data[0]._id}`);
+        console.log(response)
+        router.push(`/users/${response.data.userId}`);
       }
     } catch (error) {
       console.error("Error verifying email OTP:", error);
-      toast.error("Invalid OTP. Please try again.");
+      toast.error(
+        error?.response?.data?.message || "Invalid OTP. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -103,7 +110,7 @@ const EmailOTPLogin = ({ email, setEmail, router }) => {
           </Button>
         </div>
       </div>
-      
+
       <div className="space-y-3">
         <Label htmlFor="otp" className="text-gray-700 font-medium">Enter 6-digit OTP Code</Label>
         <div className="flex justify-center">
@@ -113,20 +120,21 @@ const EmailOTPLogin = ({ email, setEmail, router }) => {
             onChange={setOtpValue}
           >
             <InputOTPGroup>
-              <InputOTPSlot index={0} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-              <InputOTPSlot index={1} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-              <InputOTPSlot index={2} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-              <InputOTPSlot index={3} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-              <InputOTPSlot index={4} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
-              <InputOTPSlot index={5} className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md" />
+              {[...Array(6)].map((_, index) => (
+                <InputOTPSlot
+                  key={index}
+                  index={index}
+                  className="h-14 w-14 text-lg font-semibold border-gray-300 focus:border-green-500 rounded-md"
+                />
+              ))}
             </InputOTPGroup>
           </InputOTP>
         </div>
         <p className="text-xs text-gray-500 mt-2 text-center">
-          We&apos;ve sent a 6-digit code to your email address. Please enter it above.
+          We've sent a 6-digit code to your email address. Please enter it above.
         </p>
       </div>
-      
+
       <motion.div
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}

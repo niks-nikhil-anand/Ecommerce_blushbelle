@@ -15,7 +15,7 @@ import {
 import { firebaseApp } from '@/lib/firebaseConfig';
 
 
-const PhoneOTPLogin = ({ router }) => {
+const PhoneOTPLogin = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otpValue, setOtpValue] = useState('');
   const [otpSent, setOtpSent] = useState(false);

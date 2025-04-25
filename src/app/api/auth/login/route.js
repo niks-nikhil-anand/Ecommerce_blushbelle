@@ -11,8 +11,26 @@ export const POST = async (req) => {
         console.log('Database connection established.');
 
         // Parse the JSON body of the request
-        const { email, password, rememberMe } = await req.json();
-        console.log('Received request with:', { email, password, rememberMe });
+        const body = await req.json();
+        const { email, password, rememberMe } = body;
+        
+        // Log values but mask password
+        console.log('Received request with:', { 
+            email, 
+            password: password ? '********' : undefined, 
+            rememberMe 
+        });
+
+        // Validate required fields
+        if (!email) {
+            console.log('Email is missing in request');
+            return NextResponse.json({ msg: "Email is required" }, { status: 400 });
+        }
+
+        if (!password) {
+            console.log('Password is missing in request');
+            return NextResponse.json({ msg: "Password is required" }, { status: 400 });
+        }
 
         // Find the user by email
         console.log('Finding user by email:', email);
@@ -36,13 +54,11 @@ export const POST = async (req) => {
         console.log('Checking user status...');
         if (user.status !== 'Active') {
             console.log('User status is not Active:', user.status);
-            return NextResponse.json({ msg: "Not Authorised" }, { status: 403 });
+            return NextResponse.json({ msg: "Account is not active" }, { status: 403 });
         }
 
         // Check if the user's role matches the required role
         console.log('Checking user role...');
-
-
         if (user.role !== 'User') {
             console.log('User role is not authorised:', user.role);
             return NextResponse.json({ msg: "Not Authorised" }, { status: 403 });
@@ -52,7 +68,11 @@ export const POST = async (req) => {
         console.log('Generating token...');
         const token = generateToken({ id: user._id, email: user.email });
 
-        const response = NextResponse.json({ msg: "Login successful" }, { status: 200 });
+        // Create response with user ID
+        const response = NextResponse.json({ 
+            msg: "Login successful", 
+            userId: user._id.toString() // Send the user ID to the client
+        }, { status: 200 });
 
         // Set the cookie with the token
         console.log('Setting cookie with token...');
@@ -64,9 +84,7 @@ export const POST = async (req) => {
             path: '/'
         });
 
-        console.log('Response with cookie:', response);
-        console.log('Generated token:', token);
-
+        console.log('Login successful for user:', email);
         return response;
 
     } catch (error) {

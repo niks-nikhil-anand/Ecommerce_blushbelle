@@ -5,6 +5,9 @@ import userModels from "@/models/userModels";
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
+export const dynamic = 'force-dynamic'; // 🛠️ this is important!
+
+
 export const GET = async (req) => {
   try {
     console.log("Connecting to the database...");

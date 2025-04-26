@@ -5,6 +5,10 @@ import User from '@/models/userModels'; // Import the User model
 import Address from '@/models/addressModels'; 
 import connectDB from '@/lib/dbConnect';
 
+
+export const dynamic = 'force-dynamic'; // 🛠️ this is important!
+
+
 export async function GET(req) {
   try {
     // Attempt to connect to the database

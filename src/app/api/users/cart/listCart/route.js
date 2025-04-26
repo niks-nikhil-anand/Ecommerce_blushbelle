@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import jwt from 'jsonwebtoken';
 
+export const dynamic = 'force-dynamic'; // 🛠️ this is important!
+
+
 export const GET = async (request) => {
     try {
       await connectDB();

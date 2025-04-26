@@ -4,6 +4,9 @@ import jwt from 'jsonwebtoken';
 import orderModels from '@/models/orderModels';
 import connectDB from '@/lib/dbConnect';
 
+
+export const dynamic = 'force-dynamic'; // 🛠️ this is important!
+
 export async function GET(req) {
   try {
     // Connect to MongoDB

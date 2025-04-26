@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import connectDB from "@/lib/dbConnect";
 import userModels from '@/models/userModels';
 
-
+export const dynamic = 'force-dynamic'; // 🛠️ this is important!
 
 export const GET = async (req) => {
   try {
@@ -24,7 +24,6 @@ export const GET = async (req) => {
 
     const email = decodedToken.email;
 
-    // Fetch the partner application using the email
     const User = await userModels.find({ email });
     if (!User) {
       return NextResponse.json({ msg: "User not found" }, { status: 404 });

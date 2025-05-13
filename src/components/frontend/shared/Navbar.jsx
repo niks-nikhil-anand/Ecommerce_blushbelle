@@ -123,7 +123,7 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon" className="text-green-700 text-2xl">
+              <Button variant="ghost" size="icon" className="text-green-700 text-2xl hover:bg-green-100 hover:text-green-800">
                 <FiMenu />
               </Button>
             </SheetTrigger>
@@ -139,22 +139,22 @@ const Navbar = () => {
               <div className="flex flex-col gap-6 mt-6">
                 <ul className="flex flex-col space-y-4 text-gray-700 font-medium">
                   <Link href="/" onClick={() => setIsOpen(false)}>
-                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer px-2 py-2 rounded-md hover:bg-green-50">
+                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-700 hover:bg-green-100 transition cursor-pointer px-2 py-2 rounded-md">
                       Home
                     </motion.li>
                   </Link>
                   <Link href="/students" onClick={() => setIsOpen(false)}>
-                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer px-2 py-2 rounded-md hover:bg-green-50">
+                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-700 hover:bg-green-100 transition cursor-pointer px-2 py-2 rounded-md">
                       Students
                     </motion.li>
                   </Link>
                   <Link href="/immunity-booster" onClick={() => setIsOpen(false)}>
-                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer px-2 py-2 rounded-md hover:bg-green-50">
+                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-700 hover:bg-green-100 transition cursor-pointer px-2 py-2 rounded-md">
                       Immunity Booster
                     </motion.li>
                   </Link>
                   <Link href="/brain-booster" onClick={() => setIsOpen(false)}>
-                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer px-2 py-2 rounded-md hover:bg-green-50">
+                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-700 hover:bg-green-100 transition cursor-pointer px-2 py-2 rounded-md">
                       Brain Booster
                     </motion.li>
                   </Link>
@@ -174,7 +174,7 @@ const Navbar = () => {
                     <Button 
                       size="icon"
                       variant="ghost" 
-                      className="absolute right-0 top-0 h-full text-green-600"
+                      className="absolute right-0 top-0 h-full text-green-600 hover:text-green-800 hover:bg-green-100"
                       onClick={handleSearch}
                     >
                       <FiSearch />
@@ -184,7 +184,7 @@ const Navbar = () => {
                 
                 <SheetFooter className="mt-auto border-t pt-4">
                   <Link href="/auth/signIn" className="w-full" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full bg-green-600 hover:bg-green-700">
+                    <Button className="w-full bg-green-600 hover:bg-green-800 rounded-lg">
                       Sign In
                     </Button>
                   </Link>
@@ -204,7 +204,7 @@ const Navbar = () => {
           <div className="lg:hidden flex items-center space-x-4">
             <Link href="/product/cart">
               <div className="relative">
-                <FiShoppingCart className="text-green-700 text-2xl cursor-pointer" />
+                <FiShoppingCart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
                 {cartItemCount > 0 && (
                   <Badge className="absolute -top-2 -right-2 bg-orange-500 h-5 w-5 p-0 flex items-center justify-center text-xs">
                     {cartItemCount}
@@ -213,7 +213,7 @@ const Navbar = () => {
               </div>
             </Link>
             <Link href="/account">
-              <FiUser className="text-green-700 text-2xl cursor-pointer" />
+              <FiUser className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
             </Link>
           </div>
         </div>
@@ -230,7 +230,7 @@ const Navbar = () => {
               key={index}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="cursor-pointer text-gray-700 font-semibold transition-colors duration-300 hover:text-green-600"
+              className="cursor-pointer text-gray-700 font-semibold transition-colors duration-300 hover:text-green-700"
             >
               <Link href={item.link}>{item.name}</Link>
             </motion.li>
@@ -260,7 +260,7 @@ const Navbar = () => {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute right-0 top-0 h-full text-green-600"
+              className="absolute right-0 top-0 h-full text-green-600 hover:text-green-800 hover:bg-green-100"
               onClick={handleSearch}
             >
               <FiSearch />
@@ -268,18 +268,18 @@ const Navbar = () => {
           </motion.div>
 
           <Link href="/auth/signIn">
-            <Button className="bg-green-600 hover:bg-green-700">
+            <Button className="bg-green-600 hover:bg-green-800 rounded-xl">
               Sign In
             </Button>
           </Link>
           
           <div className="flex items-center space-x-5">
-            <Link href="/favorites">
+            <Link href="/auth/signIn">
               <motion.div
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <FiHeart className="text-green-700 text-2xl cursor-pointer" />
+                <FiHeart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
               </motion.div>
             </Link>
             
@@ -289,7 +289,7 @@ const Navbar = () => {
                 whileTap={{ scale: 0.95 }}
                 className="relative"
               >
-                <FiShoppingCart className="text-green-700 text-2xl cursor-pointer" />
+                <FiShoppingCart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
                 {cartItemCount > 0 && (
                   <Badge className="absolute -top-2 -right-2 bg-orange-500 h-5 w-5 p-0 flex items-center justify-center text-xs">
                     {cartItemCount}

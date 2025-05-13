@@ -1,10 +1,20 @@
 "use client";
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FaEye, FaEyeSlash, FaGoogle, FaFacebookF } from 'react-icons/fa';
-import { useRouter } from 'next/navigation'; 
-import axios from 'axios';
-import toast, { Toaster } from 'react-hot-toast';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { useRouter } from 'next/navigation';
+import axios from "axios";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
+import Image from "next/image";
+
+// shadcn UI components
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 const AdminLoginForm = () => {
   const [email, setEmail] = useState('');
@@ -12,7 +22,7 @@ const AdminLoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -48,135 +58,157 @@ const AdminLoginForm = () => {
     }
   };
 
+  const handleProviderSignIn = async (provider) => {
+    try {
+      console.log("Attempting to sign in with provider:", provider);
+      const result = await signIn(provider);
+      console.log("Sign-in result:", result);
+  
+      if (result?.error) {
+        console.error("Sign-in error:", result.error);
+        throw new Error(result.error);
+      } else {
+        console.log("User signed in successfully:", result);
+      }
+    } catch (error) {
+      console.error("Error during sign-in:", error.message);
+    }
+  };
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-100 via-green-50 to-green-200 px-6 md:px-12">      
-      <div className="w-full md:w-2/3 lg:w-1/2 bg-white shadow-2xl rounded-xl p-8 md:p-10 my-5">
-        {/* Animated Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-col items-center md:items-start"
-        >
-          <motion.h2
-            className="text-xl sm:text-sm md:text-2xl font-extrabold mb-6 text-center md:text-left text-green-800 tracking-wide"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            Welcome Back to <span className="text-green-700">CleanVeda Nutrition</span>
-          </motion.h2>
-    
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-base md:text-md text-center md:text-left text-gray-600 mb-8"
-          >
-            <span className="underline decoration-dotted text-green-600">
-              Access your admin dashboard
-            </span>{" "}
-            and manage with ease 🚀.
-          </motion.p>
-        </motion.div>
-    
-        {/* Form Section */}
-        <form onSubmit={handleLogin} className="space-y-6">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
-          >
-            <label className="block text-gray-700 font-medium mb-2">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-              placeholder="Enter your email"
-              required
-            />
-          </motion.div>
-    
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.7, duration: 0.4 }}
-            className="relative"
-          >
-            <label className="block text-gray-700 font-medium mb-2">Password</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-              placeholder="Enter your password"
-              required
-            />
-            <div
-              className="absolute inset-y-0 right-4 flex items-center cursor-pointer mt-7"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? (
-                <FaEye className="text-gray-500 " />
-              ) : (
-                <FaEyeSlash className="text-gray-500" />
-              )}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-50 to-teal-50 p-4"
+    >
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold text-green-800">Welcome Back 👋</CardTitle>
+          <CardDescription className="text-green-600">
+            Access your CleanVeda Nutrition admin dashboard and manage with ease
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-4">
+            {/* Email */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-700 font-medium">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                placeholder="Enter your email address"
+                onChange={(e) => setEmail(e.target.value)}
+                className="rounded-md h-10 px-3 bg-white border-gray-300 focus:border-green-500"
+                required
+              />
             </div>
-          </motion.div>
-    
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="flex items-center space-x-3"
-          >
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-              className="accent-green-600 w-5 h-5"
-            />
-            <label className="text-gray-700">Remember Me</label>
-          </motion.div>
-    
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            type="submit"
-            disabled={loading}
-            className={`w-full py-3 px-5 text-lg font-medium text-white rounded-lg shadow-md transition ${
-              loading
-                ? "bg-gray-500 cursor-not-allowed"
-                : "bg-green-600 hover:bg-green-500"
-            }`}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </motion.button>
-        </form>
-    
-        {/* Links Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="flex justify-between mt-6 text-sm text-gray-600 font-semibold"
-        >
-          <a
-            href="/auth/forgotPassword"
-            className="hover:text-green-700 hover:underline transition font-semibold"
-          >
-            Forgot your password?
-          </a>
-          <a
-            href="/auth/register"
-            className="hover:text-green-700 hover:underline transition"
-          >
-            Register here
-          </a>
-        </motion.div>
-      </div>
-    </div>
+            
+            {/* Password */}
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-gray-700 font-medium">
+                Password
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  placeholder="Enter your password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="rounded-md h-10 px-3 pr-10 bg-white border-gray-300 focus:border-green-500"
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-10 w-10 text-gray-500 hover:text-gray-700"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+            
+            {/* Remember Me */}
+            <div className="flex items-center space-x-2 pt-1">
+              <Checkbox 
+                id="rememberMe" 
+                checked={rememberMe}
+                onCheckedChange={() => setRememberMe(!rememberMe)}
+                className="text-green-600 border-gray-400 data-[state=checked]:bg-green-600"
+              />
+              <Label htmlFor="rememberMe" className="text-sm text-gray-600">
+                Remember Me
+              </Label>
+            </div>
+            
+            {/* Submit Button */}
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              className="pt-2"
+            >
+              <Button 
+                type="submit" 
+                className="w-full bg-green-600 hover:bg-green-700 text-white h-10 text-base font-medium rounded-md shadow-sm" 
+                disabled={loading}
+              >
+                {loading ? "Logging in..." : "Login"}
+              </Button>
+            </motion.div>
+          </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-300"></span>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => handleProviderSignIn("google")}
+              className="flex items-center justify-center space-x-2 h-10 bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              <Image src="/IconHub/GoogleIcons.png" alt="Google" width={18} height={18} />
+              <span className="font-medium text-sm">Google</span>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => handleProviderSignIn("facebook")}
+              className="flex items-center justify-center space-x-2 h-10 bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              <Image src="/IconHub/facebookIcon.png" alt="Facebook" width={18} height={18} />
+              <span className="font-medium text-sm">Facebook</span>
+            </Button>
+          </div>
+        </CardContent>
+        
+        <CardFooter className="flex flex-col space-y-2 text-center">
+          <div className="flex justify-between w-full text-sm">
+            <Link href="/auth/forgotPassword" className="font-medium text-green-600 hover:text-green-500">
+              Forgot your password?
+            </Link>
+            <Link href="/auth/register" className="font-medium text-green-600 hover:text-green-500">
+              Register here
+            </Link>
+          </div>
+          <p className="text-xs text-gray-500">
+            Secure login for CleanVeda Nutrition administrators
+          </p>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 };
 

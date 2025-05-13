@@ -75,20 +75,20 @@ export default function Contact() {
     { 
       icon: <Phone className="h-6 w-6 text-blue-500" />, 
       title: "Phone", 
-      details: "+1 (555) 000-0000", 
+      details: "+91 9876543210", 
       description: "Monday-Friday from 8am to 5pm"
     },
     { 
       icon: <Mail className="h-6 w-6 text-blue-500" />, 
       title: "Email", 
-      details: "support@example.com", 
+      details: "support@cleanveda.com", 
       description: "We'll respond within 24 hours"
     },
     { 
       icon: <MapPin className="h-6 w-6 text-blue-500" />, 
       title: "Office", 
-      details: "123 Main Street, Suite 101", 
-      description: "New York, NY 10001"
+      details: " F-13/17, Jogabai Extension, Okhla.", 
+      description: "New Delhi, 110025"
     }
   ];
 

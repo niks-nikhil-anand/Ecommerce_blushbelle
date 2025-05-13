@@ -2,10 +2,12 @@
 import React, { useState, Suspense } from 'react';
 import { toast } from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import Loader from '@/components/loader/loader';
 import { motion } from 'framer-motion';
-
-
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ChangePassword = () => {
   const searchParams = useSearchParams();
@@ -15,7 +17,7 @@ const ChangePassword = () => {
   const [loading, setLoading] = useState(false);
 
   const notifyLoading = () => {
-    toast.loading("Changing password...", {
+    return toast.loading("Changing password...", {
       position: "bottom-right",
       id: 'loadingToast'
     });
@@ -39,7 +41,9 @@ const ChangePassword = () => {
     e.preventDefault();
 
     if (newPassword !== reenterNewPassword) {
-      toast.error("Passwords do not match");
+      toast.error("Passwords do not match", {
+        position: "bottom-right"
+      });
       return;
     }
 
@@ -70,65 +74,91 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen mb-[6rem] md:mb-[0rem]">
-       <div className="md:w-1/2 bg-blue-500 text-white p-10 flex flex-col justify-center items-center md:items-start">
-       <motion.div
-          initial={{ opacity: 0, x: -100 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center md:text-left">
-            Forgot your password?
-          </h1>
-          <p className="mb-4 text-center md:text-left">
-            Don’t worry! Just fill out the fields below to reset your password and regain access to your account.
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex justify-center items-center min-h-screen bg-gradient-to-br from-green-50 to-teal-50 p-4"
+    >
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold text-green-800">Reset Password</CardTitle>
+          <CardDescription className="text-green-600">
+            Create a new password for your account
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="mb-4">
+              <Label htmlFor="newPassword" className="block mb-1">New Password</Label>
+              <Input
+                type="password"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full"
+                placeholder="Enter your new password"
+                required
+              />
+            </div>
+            
+            <div className="mb-4">
+              <Label htmlFor="reenterNewPassword" className="block mb-1">Confirm Password</Label>
+              <Input
+                type="password"
+                id="reenterNewPassword"
+                value={reenterNewPassword}
+                onChange={(e) => setReenterNewPassword(e.target.value)}
+                className="w-full"
+                placeholder="Confirm your new password"
+                required
+              />
+            </div>
+            
+            <motion.button 
+              type="submit" 
+              className={`w-full py-3 mt-4 text-white rounded-md ${loading ? 'bg-gray-400' : 'bg-green-700 hover:bg-green-600'} text-sm md:text-base`}
+              whileTap={{ scale: 0.95 }}
+              disabled={loading}
+            >
+              {loading ? 'Updating Password...' : 'Reset Password'}
+            </motion.button>
+          </form>
+          
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300"></span>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+        
+        <CardFooter className="flex flex-col space-y-2 text-center">
+          <p className="text-sm text-gray-600">
+            Remember your password?{' '}
+            <Link href="/auth/signIn" className="font-medium text-green-600 hover:text-green-500">
+              Sign In
+            </Link>
           </p>
-        </motion.div>
-      </div>
-      <div className='md:w-1/2 bg-white p-10 flex flex-col justify-center'>
-      <h2 className="text-2xl font-bold mb-4 text-center">Reset Your Password</h2>
-      <p className="text-center text-gray-600 mb-8">
-          Please enter and confirm your new password below to complete the password reset process.
-        </p>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">New Password</label>
-          <input
-            type="password"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Re-enter New Password</label>
-          <input
-            type="password"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            value={reenterNewPassword}
-            onChange={(e) => setReenterNewPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <button
-            type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            disabled={loading}
-          >
-            {loading ? 'Submitting...' : 'Submit'}
-          </button>
-        </div>
-      </form>
-      </div>
-      
-    </div>
+          <p className="text-xs text-gray-500">
+            Don&apos;t have an account?{' '}
+            <Link href="/auth/register" className="font-medium text-green-600 hover:text-green-500">
+              Sign up
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 };
 
 const ChangePasswordWrapper = () => (
-  <Suspense fallback={<div><Loader/></div>}>
+  <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><Loader/></div>}>
     <ChangePassword />
   </Suspense>
 );

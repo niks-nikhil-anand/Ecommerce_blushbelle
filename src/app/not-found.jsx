@@ -27,7 +27,7 @@ export default function Custom404() {
         
         <div className="px-6 py-8 md:px-12 md:py-10 flex flex-col items-center">
           <p className="text-lg text-gray-600 text-center mb-6">
-            Oops! The page you're looking for seems to have wandered off.
+            Oops! The page you&apos;re looking for seems to have wandered off.
           </p>
           
           <div className="space-y-4 w-full max-w-xs">

@@ -196,7 +196,7 @@ export default function AboutUs() {
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Sustainability Commitment</h3>
                 <p className="text-gray-700">
-                  At CleanVeda, we're dedicated to sustainable practices throughout our supply chain. 
+                  At CleanVeda, we&apos;re dedicated to sustainable practices throughout our supply chain. 
                   From responsibly sourced ingredients to eco-friendly packaging, we strive to minimize 
                   our environmental impact while maximizing the benefits of our products.
                 </p>

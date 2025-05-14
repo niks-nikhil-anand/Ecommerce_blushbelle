@@ -19,12 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 
 export default function Contact() {
@@ -73,19 +67,19 @@ export default function Contact() {
   // Contact information cards
   const contactInfo = [
     { 
-      icon: <Phone className="h-6 w-6 text-blue-500" />, 
+      icon: <Phone className="h-6 w-6 text-green-600" />, 
       title: "Phone", 
       details: "+91 9876543210", 
       description: "Monday-Friday from 8am to 5pm"
     },
     { 
-      icon: <Mail className="h-6 w-6 text-blue-500" />, 
+      icon: <Mail className="h-6 w-6 text-green-600" />, 
       title: "Email", 
       details: "support@cleanveda.com", 
       description: "We'll respond within 24 hours"
     },
     { 
-      icon: <MapPin className="h-6 w-6 text-blue-500" />, 
+      icon: <MapPin className="h-6 w-6 text-green-600" />, 
       title: "Office", 
       details: " F-13/17, Jogabai Extension, Okhla.", 
       description: "New Delhi, 110025"
@@ -93,7 +87,7 @@ export default function Contact() {
   ];
 
   return (
-    <div>
+    <div className="bg-gradient-to-br from-green-50 to-teal-50">
       {/* Hero Section with Parallax Effect */}
       <section className="relative h-80 w-full overflow-hidden">
         <div className="absolute inset-0">
@@ -133,7 +127,7 @@ export default function Contact() {
       </section>
 
       {/* Contact Info Cards */}
-      <div className="mx-auto max-w-7xl px-4 mt-8 md:mt-16">
+      <div className="mx-auto max-w-7xl px-4 mt-8 md:mt-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {contactInfo.map((info, index) => (
             <motion.div 
@@ -144,7 +138,7 @@ export default function Contact() {
             >
               <Card className="border-none shadow-md hover:shadow-lg transition-shadow duration-300">
                 <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                  <div className="bg-blue-50 p-3 rounded-full">
+                  <div className="bg-green-100 p-3 rounded-full">
                     {info.icon}
                   </div>
                   <div>
@@ -153,7 +147,7 @@ export default function Contact() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="font-medium text-blue-600">{info.details}</p>
+                  <p className="font-medium text-green-600">{info.details}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -173,88 +167,117 @@ export default function Contact() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.7 }}
               >
-                <Card className="border-none shadow-xl">
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-gray-900 md:text-3xl">Leave Us a Message</CardTitle>
-                    <CardDescription>Fill out the form below and we&apos;ll get back to you shortly.</CardDescription>
+                <Card className="border-none shadow-lg">
+                  <CardHeader className="text-center">
+                    <CardTitle className="text-2xl font-bold text-green-800">Leave Us a Message 👋</CardTitle>
+                    <CardDescription className="text-green-600">
+                      Fill out the form below and we&apos;ll get back to you shortly.
+                    </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <form className="space-y-5" onSubmit={handleSubmit}>
+                  <CardContent className="space-y-6">
+                    <form className="space-y-4" onSubmit={handleSubmit}>
                       <div className="grid w-full gap-5 md:gap-6 lg:grid-cols-2">
                         <div className="space-y-2">
-                          <Label htmlFor="firstName">First Name</Label>
+                          <Label htmlFor="firstName" className="text-gray-700 font-medium">First Name</Label>
                           <Input
                             id="firstName"
                             placeholder="Enter your first name"
                             value={formData.firstName}
                             onChange={handleChange}
                             required
-                            className="h-10"
+                            className="rounded-md h-10 px-3 bg-white border-gray-300 focus:border-green-500"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="lastName">Last Name</Label>
+                          <Label htmlFor="lastName" className="text-gray-700 font-medium">Last Name</Label>
                           <Input
                             id="lastName"
                             placeholder="Enter your last name"
                             value={formData.lastName}
                             onChange={handleChange}
                             required
-                            className="h-10"
+                            className="rounded-md h-10 px-3 bg-white border-gray-300 focus:border-green-500"
                           />
                         </div>
                       </div>
+                      
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
                         <Input
                           id="email"
                           type="email"
-                          placeholder="Enter your email"
+                          placeholder="Enter your email address"
                           value={formData.email}
                           onChange={handleChange}
                           required
-                          className="h-10"
+                          className="rounded-md h-10 px-3 bg-white border-gray-300 focus:border-green-500"
                         />
                       </div>
+                      
                       <div className="space-y-2">
-                        <Label htmlFor="mobileNumber">Phone Number</Label>
-                        <Input
-                          id="mobileNumber"
-                          type="tel"
-                          placeholder="Enter your phone number"
-                          value={formData.mobileNumber}
-                          onChange={handleChange}
-                          required
-                          className="h-10"
-                        />
+                        <Label htmlFor="mobileNumber" className="text-gray-700 font-medium">Mobile Number</Label>
+                        <div className="flex">
+                          <div className="flex items-center justify-center bg-green-100 text-green-800 font-medium border border-r-0 border-gray-300 rounded-l-md px-3 h-10">
+                            +91
+                          </div>
+                          <Input
+                            id="mobileNumber"
+                            type="tel"
+                            placeholder="Mobile number"
+                            value={formData.mobileNumber}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, "");
+                              if (value.length <= 10) {
+                                setFormData({...formData, mobileNumber: value});
+                              }
+                            }}
+                            className="rounded-l-none rounded-r-md h-10 px-3 bg-white border-gray-300 focus:border-green-500"
+                            maxLength={10}
+                            required
+                          />
+                        </div>
                       </div>
+                      
                       <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
+                        <Label htmlFor="message" className="text-gray-700 font-medium">Message</Label>
                         <Textarea
                           id="message"
                           placeholder="How can we help you today?"
                           value={formData.message}
                           onChange={handleChange}
                           required
-                          className="min-h-32 resize-none"
+                          className="min-h-32 resize-none rounded-md px-3 py-2 bg-white border-gray-300 focus:border-green-500"
                         />
                       </div>
+                      
                       <motion.div
                         whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileTap={{ scale: 0.99 }}
+                        className="pt-2"
                       >
                         <Button 
                           type="submit" 
                           disabled={loading}
-                          className="w-full bg-blue-600 hover:bg-blue-700"
-                          size="lg"
+                          className="w-full bg-green-600 hover:bg-green-700 text-white h-10 text-base font-medium rounded-md shadow-sm" 
                         >
-                          {loading ? 'Sending...' : 'Send Message'}
+                          {loading ? "Sending Message..." : "Send Message"}
                           {!loading && <Send className="ml-2 h-4 w-4" />}
                         </Button>
                       </motion.div>
                     </form>
                   </CardContent>
+                  <CardFooter className="flex flex-col space-y-2 text-center">
+                    <p className="text-xs text-gray-500">
+                      By submitting this form, you agree to Cleanveda&apos;s{" "}
+                      <a href="/terms" className="underline hover:text-green-600">
+                        Terms of Service
+                      </a>{" "}
+                      and{" "}
+                      <a href="/privacy" className="underline hover:text-green-600">
+                        Privacy Policy
+                      </a>
+                    </p>
+                  </CardFooter>
                 </Card>
               </motion.div>
             </div>

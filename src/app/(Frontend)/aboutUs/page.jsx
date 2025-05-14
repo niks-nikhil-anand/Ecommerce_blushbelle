@@ -258,7 +258,7 @@ export default function AboutUs() {
               <h3 className="text-xl font-bold text-green-800 mb-4">Need more assistance?</h3>
               <p className="text-gray-600 mb-6">
                 For detailed inquiries or product-specific questions, visit our contact page to send us a message.
-                We'll get back to you as soon as possible.
+                We&apos;ll get back to you as soon as possible.
               </p>
               <motion.a 
                 href="/contactUs"

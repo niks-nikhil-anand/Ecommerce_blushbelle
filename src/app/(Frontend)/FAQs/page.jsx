@@ -120,7 +120,7 @@ const FAQs = () => {
             <div className="bg-white p-8 rounded-xl shadow-lg max-w-3xl mx-auto">
               <h3 className="text-xl font-bold text-green-800 mb-4">Still have questions?</h3>
               <p className="text-gray-600 mb-6">
-                Can't find the answer you're looking for? Our friendly team is ready to help with any additional questions you may have.
+                Can&apos;t find the answer you&apos;re looking for? Our friendly team is ready to help with any additional questions you may have.
               </p>
               <motion.div 
                 whileHover={{ scale: 1.03 }}

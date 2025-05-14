@@ -2,6 +2,7 @@ import connectDB from "@/lib/dbConnect";
 import uploadImage from "@/lib/uploadImages";
 import productModels from "@/models/productModels";
 import { NextResponse } from "next/server";
+import categoryModels from "@/models/categoryModels";
 
 
 export const POST = async (req) => {

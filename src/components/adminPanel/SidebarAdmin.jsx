@@ -137,7 +137,7 @@ const SidebarAdmin = () => {
                   />
                 </Link>
                 
-                <Link href="/admin/dashboard/subcategory/allSubcategory" passHref>
+                <Link href="/admin/dashboard/subCategory/addSubCategory" passHref>
                   <SidebarItem
                     icon={<MdOutlineSubtitles />}
                     label="Subcategories"

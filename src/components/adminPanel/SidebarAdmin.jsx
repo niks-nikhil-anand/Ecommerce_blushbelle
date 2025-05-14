@@ -10,7 +10,7 @@ import {
   FaNewspaper,
   FaStar,
 } from "react-icons/fa";
-import { MdCategory, MdOutlineLocalOffer } from "react-icons/md";
+import { MdCategory, MdOutlineLocalOffer, MdOutlineSubtitles } from "react-icons/md";
 import { FaBox, FaBoxes } from "react-icons/fa";
 import { FaTable } from "react-icons/fa6";
 import { GiOpenBook } from "react-icons/gi";
@@ -136,6 +136,15 @@ const SidebarAdmin = () => {
                     onClick={() => setSelectedItem("Add Categories")}
                   />
                 </Link>
+                
+                <Link href="/admin/dashboard/subcategory/allSubcategory" passHref>
+                  <SidebarItem
+                    icon={<MdOutlineSubtitles />}
+                    label="Subcategories"
+                    selected={selectedItem === "Subcategories"}
+                    onClick={() => setSelectedItem("Subcategories")}
+                  />
+                </Link>
               </div>
             </div>
 
@@ -254,7 +263,7 @@ const SidebarAdmin = () => {
 
             <Button
               variant="destructive"
-              className="mt-6 flex items-center gap-2 w-full bg-red-600"
+              className="mt-6 flex items-center gap-2 w-full bg-red-600 hover:bg-red-800"
               onClick={handleLogout}
             >
               <MdOutlineLogout className="h-4 w-4" aria-hidden="true" />

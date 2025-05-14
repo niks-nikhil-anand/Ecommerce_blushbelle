@@ -40,22 +40,22 @@ export default function AboutUs() {
     },
   ];
 
-  // Contact information cards - reused from Contact page
+  // Contact information cards - updated to match Contact page style
   const contactInfo = [
     { 
-      icon: <Phone className="h-6 w-6 text-blue-500" />, 
+      icon: <Phone className="h-6 w-6 text-green-600" />, 
       title: "Phone", 
       details: "+91 9876543210", 
       description: "Monday-Friday from 8am to 5pm"
     },
     { 
-      icon: <Mail className="h-6 w-6 text-blue-500" />, 
+      icon: <Mail className="h-6 w-6 text-green-600" />, 
       title: "Email", 
       details: "support@cleanveda.com", 
       description: "We'll respond within 24 hours"
     },
     { 
-      icon: <MapPin className="h-6 w-6 text-blue-500" />, 
+      icon: <MapPin className="h-6 w-6 text-green-600" />, 
       title: "Office", 
       details: " F-13/17, Jogabai Extension, Okhla.", 
       description: "New Delhi, 110025"
@@ -205,52 +205,73 @@ export default function AboutUs() {
           </motion.div>
         </div>
       </div>
+      {/* Contact Info Section - Updated to match Contact page styling */}
+      <div className="bg-gradient-to-br from-green-50 to-teal-50 py-16">
+        <div className="mx-auto max-w-7xl px-4">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <h2 className="text-3xl font-bold text-gray-900">Get in Touch</h2>
+            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+              Have questions about our products or want to learn more about CleanVeda? 
+              Our friendly team is here to help.
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {contactInfo.map((info, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 * index + 0.3 }}
+              >
+                <Card className="border-none shadow-md hover:shadow-lg transition-shadow duration-300">
+                  <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                    <div className="bg-green-100 p-3 rounded-full">
+                      {info.icon}
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">{info.title}</CardTitle>
+                      <CardDescription>{info.description}</CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="font-medium text-green-600">{info.details}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
 
-      <Separator className="my-16 max-w-7xl mx-auto" />
-
-      {/* Contact Info Section */}
-      <div className="mx-auto max-w-7xl px-4 my-16">
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <h2 className="text-3xl font-bold text-gray-900">Get in Touch</h2>
-          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Have questions about our products or want to learn more about CleanVeda? 
-            Our friendly team is here to help.
-          </p>
-        </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {contactInfo.map((info, index) => (
-            <motion.div 
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 * index + 0.3 }}
-            >
-              <Card className="border-none shadow-md hover:shadow-lg transition-shadow duration-300">
-                <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                  <div className="bg-blue-50 p-3 rounded-full">
-                    {info.icon}
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">{info.title}</CardTitle>
-                    <CardDescription>{info.description}</CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="font-medium text-blue-600">{info.details}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+          {/* Added Contact CTA section */}
+          <motion.div 
+            className="mt-10 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            <div className="bg-white p-8 rounded-xl shadow-lg max-w-3xl mx-auto">
+              <h3 className="text-xl font-bold text-green-800 mb-4">Need more assistance?</h3>
+              <p className="text-gray-600 mb-6">
+                For detailed inquiries or product-specific questions, visit our contact page to send us a message.
+                We'll get back to you as soon as possible.
+              </p>
+              <motion.a 
+                href="/contactUs"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md shadow-sm transition-colors duration-200"
+              >
+                Contact Us
+              </motion.a>
+            </div>
+          </motion.div>
         </div>
       </div>
-
-      <Separator className="my-8" />
     </div>
   )
 }

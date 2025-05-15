@@ -13,6 +13,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { ArrowUpRight } from "lucide-react";
+import CategorySection from "./CategoryFooter";
 
 const Footer = () => {
   return (
@@ -96,32 +97,9 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Categories */}
+          {/* Categories - Dynamically loaded from API */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold mb-2 pb-2">Categories</h3>
-            <Separator className="bg-gray-600 mb-4" />
-            <ul className="text-sm space-y-2 text-gray-400">
-              <li className="flex items-center hover:text-gray-200 cursor-pointer">
-                <span>Students</span>
-                <ArrowUpRight className="ml-1 h-3 w-3" />
-              </li>
-              <li className="flex items-center hover:text-gray-200 cursor-pointer">
-                <span>Health-conscious individuals</span>
-                <ArrowUpRight className="ml-1 h-3 w-3" />
-              </li>
-              <li className="flex items-center hover:text-gray-200 cursor-pointer">
-                <span>Parents</span>
-                <ArrowUpRight className="ml-1 h-3 w-3" />
-              </li>
-              <li className="flex items-center hover:text-gray-200 cursor-pointer">
-                <span>Brain Booster</span>
-                <ArrowUpRight className="ml-1 h-3 w-3" />
-              </li>
-              <li className="flex items-center hover:text-gray-200 cursor-pointer">
-                <span>Immunity Booster</span>
-                <ArrowUpRight className="ml-1 h-3 w-3" />
-              </li>
-            </ul>
+            <CategorySection />
           </div>
 
           {/* Proxy */}

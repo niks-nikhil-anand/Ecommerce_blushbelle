@@ -1,10 +1,4 @@
 "use client"
-import React, { useState, useEffect } from "react";
-import { FiShoppingCart, FiSearch, FiMenu, FiX, FiUser, FiHeart } from "react-icons/fi";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import logo from "../../../../public/logo/cleanvedaLogo.png";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +11,11 @@ import {
   SheetTrigger,
   SheetFooter,
 } from "@/components/ui/sheet";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion"; // Added framer-motion import
+import Link from "next/link"; // Added Link import
+import Image from "next/image"; // Added Image import
+import { FiMenu, FiSearch, FiShoppingCart, FiUser, FiHeart } from "react-icons/fi";
 
 const Navbar = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -24,7 +23,33 @@ const Navbar = () => {
   const [cartItemCount, setCartItemCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/admin/dashboard/category');
+        
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        // Take only up to 4 categories
+        setCategories(data.slice(0, 4));
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // Update cart count whenever localStorage changes
   useEffect(() => {
@@ -108,6 +133,25 @@ const Navbar = () => {
     }
   };
 
+  // Fallback categories while loading
+  const fallbackCategories = [
+    { name: "Home", link: "/" }
+  ];
+
+  // Determine which categories to display
+  const displayCategories = loading ? fallbackCategories : 
+    categories.length > 0 ? 
+      [{ name: "Home", link: "/" }, ...categories.map(cat => ({ 
+        name: cat.name, 
+        link: `/category/${cat.slug || cat.id}` 
+      }))] : 
+      [
+        { name: "Home", link: "/" },
+        { name: "Students", link: "/students" },
+        { name: "Immunity Booster", link: "/immunity-booster" },
+        { name: "Brain Booster", link: "/brain-booster" },
+      ];
+
   return (
     <motion.nav
       initial={{ y: -50, opacity: 0 }}
@@ -117,7 +161,7 @@ const Navbar = () => {
         hasScrolled ? "bg-white" : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className=" mx-auto flex items-center justify-between">
         {/* Mobile Header Section */}
         <div className="flex items-center justify-between w-full lg:w-auto">
           {/* Mobile Menu Button */}
@@ -131,33 +175,21 @@ const Navbar = () => {
               <SheetHeader className="border-b border-green-100 pb-4">
                 <SheetTitle className="text-green-700 flex items-center justify-between">
                   <span>Cleanveda Menu</span>
-                  {/* <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-                    <FiX className="text-green-700" />
-                  </Button> */}
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-6 mt-6">
                 <ul className="flex flex-col space-y-4 text-gray-700 font-medium">
-                  <Link href="/" onClick={() => setIsOpen(false)}>
-                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-700 hover:bg-green-100 transition cursor-pointer px-2 py-2 rounded-md">
-                      Home
-                    </motion.li>
-                  </Link>
-                  <Link href="/students" onClick={() => setIsOpen(false)}>
-                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-700 hover:bg-green-100 transition cursor-pointer px-2 py-2 rounded-md">
-                      Students
-                    </motion.li>
-                  </Link>
-                  <Link href="/immunity-booster" onClick={() => setIsOpen(false)}>
-                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-700 hover:bg-green-100 transition cursor-pointer px-2 py-2 rounded-md">
-                      Immunity Booster
-                    </motion.li>
-                  </Link>
-                  <Link href="/brain-booster" onClick={() => setIsOpen(false)}>
-                    <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-700 hover:bg-green-100 transition cursor-pointer px-2 py-2 rounded-md">
-                      Brain Booster
-                    </motion.li>
-                  </Link>
+                  {/* Dynamic categories in mobile menu */}
+                  {displayCategories.map((item, index) => (
+                    <Link key={index} href={item.link} onClick={() => setIsOpen(false)}>
+                      <motion.li 
+                        whileHover={{ scale: 1.05 }} 
+                        className="hover:text-green-700 hover:bg-green-100 transition cursor-pointer px-2 py-2 rounded-md"
+                      >
+                        {item.name}
+                      </motion.li>
+                    </Link>
+                  ))}
                 </ul>
                 
                 {/* Mobile Search in Sheet */}
@@ -196,7 +228,7 @@ const Navbar = () => {
           {/* Logo - Centered on mobile */}
           <div className="flex items-center justify-center mx-auto lg:mx-0 lg:justify-start">
             <Link href="/">
-              <Image src={logo} alt="Cleanveda Logo" width={120} height={50} priority className="object-contain" />
+              <Image src={"/logo/cleanvedaLogo.png"} alt="Cleanveda Logo" width={120} height={50} priority className="object-contain" />
             </Link>
           </div>
 
@@ -218,23 +250,29 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation - Dynamic Categories */}
         <ul className="space-x-6 p-4 rounded-lg hidden lg:flex">
-          {[
-            { name: "Home", link: "/" },
-            { name: "Students", link: "/students" },
-            { name: "Immunity Booster", link: "/immunity-booster" },
-            { name: "Brain Booster", link: "/brain-booster" },
-          ].map((item, index) => (
-            <motion.li
-              key={index}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="cursor-pointer text-gray-700 font-semibold transition-colors duration-300 hover:text-green-700"
-            >
-              <Link href={item.link}>{item.name}</Link>
-            </motion.li>
-          ))}
+          {loading ? (
+            // Loading skeleton
+            <>
+              <motion.li className="w-12 h-6 bg-gray-200 rounded animate-pulse"></motion.li>
+              <motion.li className="w-20 h-6 bg-gray-200 rounded animate-pulse"></motion.li>
+              <motion.li className="w-24 h-6 bg-gray-200 rounded animate-pulse"></motion.li>
+              <motion.li className="w-16 h-6 bg-gray-200 rounded animate-pulse"></motion.li>
+            </>
+          ) : (
+            // Actual categories
+            displayCategories.map((item, index) => (
+              <motion.li
+                key={index}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="cursor-pointer text-gray-700 font-semibold transition-colors duration-300 hover:text-green-700"
+              >
+                <Link href={item.link}>{item.name}</Link>
+              </motion.li>
+            ))
+          )}
         </ul>
 
         {/* Desktop Icons Section */}

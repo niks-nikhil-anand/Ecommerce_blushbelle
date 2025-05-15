@@ -1,9 +1,9 @@
+
+
 import connectDB from "@/lib/dbConnect";
-import subCategoryModel from "@/models/subCategoryModel";
-import categoryModels from "@/models/categoryModels";
+import subCategoryModels from "@/models/subCategoryModels";
 import { NextResponse } from "next/server";
 
-// GET /api/admin/dashboard/subcategory/:id
 // Get subcategory by ID
 export const GET = async (req, { params }) => {
   try {
@@ -19,7 +19,7 @@ export const GET = async (req, { params }) => {
     }
 
     // Find the subcategory by ID and populate the category information
-    const subcategory = await subCategoryModel
+    const subcategory = await subCategoryModels
       .findById(subcategoryId)
       .populate('category')
       .lean();

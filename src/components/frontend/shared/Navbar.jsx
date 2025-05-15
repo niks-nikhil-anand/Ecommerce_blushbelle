@@ -12,9 +12,9 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion"; // Added framer-motion import
-import Link from "next/link"; // Added Link import
-import Image from "next/image"; // Added Image import
+import { motion } from "framer-motion";
+import Link from "next/link";
+import Image from "next/image";
 import { FiMenu, FiSearch, FiShoppingCart, FiUser, FiHeart } from "react-icons/fi";
 
 const Navbar = () => {
@@ -138,19 +138,12 @@ const Navbar = () => {
     { name: "Home", link: "/" }
   ];
 
-  // Determine which categories to display
   const displayCategories = loading ? fallbackCategories : 
     categories.length > 0 ? 
       [{ name: "Home", link: "/" }, ...categories.map(cat => ({ 
         name: cat.name, 
-        link: `/category/${cat.name }` 
-      }))] : 
-      [
-        { name: "Home", link: "/" },
-        { name: "Students", link: "/students" },
-        { name: "Immunity Booster", link: "/immunity-booster" },
-        { name: "Brain Booster", link: "/brain-booster" },
-      ];
+        link: `/category/${cat.name.replace(/\s+/g, '-')}` 
+      }))] : fallbackCategories;
 
   return (
     <motion.nav
@@ -161,7 +154,7 @@ const Navbar = () => {
         hasScrolled ? "bg-white" : "bg-transparent"
       }`}
     >
-      <div className=" mx-auto flex items-center justify-between">
+      <div className="mx-auto flex items-center justify-between">
         {/* Mobile Header Section */}
         <div className="flex items-center justify-between w-full lg:w-auto">
           {/* Mobile Menu Button */}
@@ -228,7 +221,7 @@ const Navbar = () => {
           {/* Logo - Centered on mobile */}
           <div className="flex items-center justify-center mx-auto lg:mx-0 lg:justify-start">
             <Link href="/">
-              <Image src={"/logo/cleanvedaLogo.png"} alt="Cleanveda Logo" width={120} height={50} priority className="object-contain" />
+              <Image src="/logo/cleanvedaLogo.png" alt="Cleanveda Logo" width={120} height={50} priority className="object-contain" />
             </Link>
           </div>
 

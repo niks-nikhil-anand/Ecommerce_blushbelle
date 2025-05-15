@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -13,12 +13,12 @@ const CategorySection = () => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/admin/dashboard/category');
-        
+        const response = await fetch("/api/admin/dashboard/category");
+
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
         }
-        
+
         const data = await response.json();
         // Take only up to 5 categories
         setCategories(data.slice(0, 5));
@@ -49,18 +49,24 @@ const CategorySection = () => {
     <div className="space-y-4">
       <h3 className="text-lg font-bold mb-2 pb-2">Categories</h3>
       <Separator className="bg-gray-600 mb-4" />
-      
+
       {error ? (
-        <p className="text-red-400 text-sm">Failed to load categories: {error}</p>
+        <p className="text-red-400 text-sm">
+          Failed to load categories: {error}
+        </p>
       ) : (
         <ul className="text-sm space-y-2 text-gray-400">
           {loading ? (
             <CategorySkeleton />
           ) : categories.length > 0 ? (
             categories.map((category, index) => (
-              <li key={index} className="flex items-center hover:text-gray-200 cursor-pointer">
-                <Link 
-                  href={`/category/${category.name }`}
+              <li
+                key={index}
+                className="flex items-center hover:text-gray-200 cursor-pointer"
+              >
+                
+                <Link
+                  href={`/category/${category.name.replace(/\s+/g, "-")}`}
                   className="flex items-center hover:text-gray-200 w-full"
                 >
                   <span>{category.name}</span>

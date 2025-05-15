@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter, useParams } from "next/navigation";
+import Image from "next/image";
 
 // This will be our dynamic category page component showing subcategories
 const CategoryPage = () => {
@@ -67,7 +68,7 @@ const CategoryPage = () => {
   const handleSubcategoryClick = (subcategory) => {
     // Create slug from subcategory name
     const subcategorySlug = subcategory.name.toLowerCase().replace(/\s+/g, "-");
-    router.push(`/category/${params.slug}/subcategory/${subcategorySlug}`);
+    router.push(`/category/${params.id}/subcategory/${subcategorySlug}`);
   };
 
   // Prepare skeleton or actual content cards
@@ -112,19 +113,21 @@ const CategoryPage = () => {
               className={`h-full ${!loading && 'cursor-pointer'}`}
               onClick={() => !loading && handleSubcategoryClick(subcategory)}
             >
-              <Card className={`flex flex-col items-center p-4 hover:shadow-lg transition-all duration-300 h-full ${!loading && 'cursor-pointer'}`}>
+              <Card className={`flex flex-col items-center p-4 hover:shadow-lg transition-all duration-300 ${!loading && 'cursor-pointer'}`}>
                 {loading ? (
                   <>
-                    <Skeleton className="w-full h-24 sm:h-32 md:h-36 rounded-md mb-4" />
-                    <Skeleton className="h-5 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="rounded-full w-20 h-20 sm:w-24 sm:h-24 mb-3" />
+                    <Skeleton className="h-5 w-20 mb-2" />
+                    <Skeleton className="h-4 w-16" />
                   </>
                 ) : (
                   <>
-                    <div className="relative w-full h-24 sm:h-32 md:h-36 mb-4 rounded-md overflow-hidden">
-                      <img
+                    <div className="relative w-20 h-20 sm:w-24 sm:h-24 mb-3 rounded-full overflow-hidden">
+                      <Image
                         src={subcategory.image || "/frontend/others/placeholder.png"}
                         alt={subcategory.name}
+                        width={96}
+                        height={96}
                         className="w-full h-full object-cover"
                       />
                     </div>

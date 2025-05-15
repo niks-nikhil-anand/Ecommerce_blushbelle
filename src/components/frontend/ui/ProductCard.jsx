@@ -3,16 +3,43 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, Eye, ShoppingCart, Star, Tag } from "lucide-react";
+import { Heart, Eye, ShoppingCart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 
-const ProductCard = ({ product }) => {
+// ProductCardSkeleton component for loading state
+const ProductCardSkeleton = () => {
+  return (
+    <Card className="w-full h-full overflow-hidden shadow-sm">
+      <div className="pt-4 px-6">
+        <Skeleton className="w-full h-60 rounded" />
+      </div>
+      <CardContent className="p-4">
+        <Skeleton className="h-4 w-1/4 mb-2" />
+        <Skeleton className="h-5 w-3/4 mb-3" />
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-5 w-16" />
+          <Skeleton className="h-4 w-12" />
+        </div>
+        <Skeleton className="h-4 w-1/3 mt-2" />
+      </CardContent>
+    </Card>
+  );
+};
+
+const ProductCard = ({ product, isLoading = false }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const router = useRouter();
+
+  // If in loading state, show skeleton
+  if (isLoading) {
+    return <ProductCardSkeleton />;
+  }
 
   const handleProductClick = () => {
     // Ensure product._id is a string before using it
@@ -96,17 +123,25 @@ const ProductCard = ({ product }) => {
         
         {/* Product Image */}
         <div className="relative overflow-hidden pt-4 px-6">
-          <div className="w-full h-48 flex items-center justify-center">
+          <div className="w-full h-60 flex items-center justify-center relative">
+            {!imageLoaded && featuredImage && (
+              <Skeleton className="absolute inset-0 w-full h-full rounded" />
+            )}
+            
             {featuredImage ? (
               <Image
                 src={featuredImage}
                 alt={String(name)}
-                width={150}
-                height={150}
-                className="object-contain transition-transform duration-500 group-hover:scale-110"
+                width={250}
+                height={250}
+                className={cn(
+                  "object-contain w-full h-full transition-transform duration-500 group-hover:scale-110",
+                  !imageLoaded && "opacity-0"
+                )}
+                onLoad={() => setImageLoaded(true)}
               />
             ) : (
-              <div className="h-40 w-40 bg-gray-100 flex items-center justify-center rounded">
+              <div className="h-full w-full bg-gray-100 flex items-center justify-center rounded">
                 <p className="text-gray-400 text-sm">No image</p>
               </div>
             )}
@@ -158,8 +193,6 @@ const ProductCard = ({ product }) => {
           {/* Product Name */}
           <h3 className="font-medium text-sm line-clamp-2 h-10">{String(name)}</h3>
           
-          
-          
           {/* Price */}
           <div className="flex items-center gap-2 mt-2">
             <span className="font-bold text-base text-green-700">₹{salePrice}</span>
@@ -183,4 +216,4 @@ const ProductCard = ({ product }) => {
   );
 };
 
-export default ProductCard;
+export default ProductCard

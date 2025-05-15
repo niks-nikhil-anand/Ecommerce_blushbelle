@@ -3,6 +3,7 @@ import categoryModels from "@/models/categoryModels";
 import subCategoryModels from "@/models/subCategoryModels";
 import { NextResponse } from "next/server";
 
+
 export const GET = async (req, { params }) => {
   try {
     console.info("[GET] /api/category/:id - Initiating request");

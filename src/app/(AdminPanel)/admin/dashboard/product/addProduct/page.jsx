@@ -33,11 +33,13 @@ import { Progress } from "@/components/ui/progress";
 
 const ProductForm = () => {
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [fetchingCategories, setFetchingCategories] = useState(false);
+  const [fetchingSubcategories, setFetchingSubcategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedCollection, setSelectedCollection] = useState(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [progress, setProgress] = useState(20);
   const [formData, setFormData] = useState({
     name: "",
@@ -93,6 +95,49 @@ const ProductForm = () => {
     fetchCategories();
   }, []);
 
+  // Handle category selection and fetch subcategories
+  const handleCategorySelect = async (categoryId) => {
+    setSelectedCategory(categoryId);
+    setSelectedSubcategory(null); // Reset subcategory selection
+    setFormData((prev) => ({
+      ...prev,
+      category: categoryId,
+      subCategory: "",
+    }));
+
+    // Fetch subcategories for the selected category
+    setFetchingSubcategories(true);
+    try {
+      const response = await axios.get(
+        `/api/admin/dashboard/category/AllSubCatgeory/${categoryId}`
+      );
+      console.log(response);
+      if (Array.isArray(response.data.subcategories)) {
+        setSubcategories(response.data.subcategories);
+      } else {
+        console.error(
+          "Unexpected subcategory response format:",
+          response.data.subcategories
+        );
+        setSubcategories([]);
+      }
+    } catch (error) {
+      console.error("Error fetching subcategories:", error);
+      setSubcategories([]);
+    } finally {
+      setFetchingSubcategories(false);
+    }
+  };
+
+  // Handle subcategory selection
+  const handleSubcategorySelect = (subcategoryId) => {
+    setSelectedSubcategory(subcategoryId);
+    setFormData((prev) => ({
+      ...prev,
+      subCategory: subcategoryId,
+    }));
+  };
+
   useEffect(() => {
     // Update progress based on current step
     setProgress(currentStep * 20);
@@ -122,9 +167,10 @@ const ProductForm = () => {
     completedSteps,
   ]);
 
-  // Check if category is selected
+  // Check if category and subcategory are selected
   useEffect(() => {
-    const isCategoryComplete = selectedCategory && selectedCollection;
+    // Changed this to require both category and subcategory selection
+    const isCategoryComplete = selectedCategory && selectedSubcategory;
 
     if (isCategoryComplete && !completedSteps.includes(2)) {
       setCompletedSteps((prev) => [...prev, 2]);
@@ -136,7 +182,7 @@ const ProductForm = () => {
       ...prev,
       category: !isCategoryComplete,
     }));
-  }, [selectedCategory, selectedCollection, completedSteps]);
+  }, [selectedCategory, selectedSubcategory, completedSteps]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -167,18 +213,6 @@ const ProductForm = () => {
     setDescriptionImage(e.target.files[0]);
   };
 
-  const handleCategorySelect = (categoryId) => {
-    setSelectedCategory(categoryId);
-    setFormData({
-      ...formData,
-      category: categoryId,
-    });
-  };
-
-  const handleCollectionSelect = (collection) => {
-    setSelectedCollection(collection);
-  };
-
   const handleQuillChange = (description) => {
     setFormData({ ...formData, description });
   };
@@ -202,9 +236,9 @@ const ProductForm = () => {
       data.append("isFeaturedSale", formData.isFeaturedSale);
       data.append("isOnSale", formData.isOnSale);
 
-      // Category & Collections
+      // Category & Subcategory - Fixed the field name to match backend expectation
       data.append("category", formData.category);
-      data.append("collections", selectedCollection);
+      data.append("subCategory", formData.subCategory); // Fixed field name from subCatgeory to subCategory
 
       // Images
       if (images.length > 0) {
@@ -246,6 +280,7 @@ const ProductForm = () => {
           isFeaturedSale: false,
           isOnSale: false,
           category: "",
+          subCategory: "", // Fixed field name
           tags: "",
           suggestedUse: "",
           description: "",
@@ -255,9 +290,10 @@ const ProductForm = () => {
         setImages([]);
         setFeaturedImage(null);
         setDescriptionImage(null);
-        setSelectedCollection("");
         setCompletedSteps([]);
         setCurrentStep(1);
+        setSelectedCategory(null);
+        setSelectedSubcategory(null);
       }
     } catch (error) {
       console.error("Error creating product:", error);
@@ -285,7 +321,7 @@ const ProductForm = () => {
 
     // For step 2, validate category selection
     if (currentStep === 2 && formErrors.category) {
-      toast.error("Please select both category and collection");
+      toast.error("Please select both category and subcategory");
       return;
     }
 
@@ -480,7 +516,7 @@ const ProductForm = () => {
                         Categories
                       </CardTitle>
                       <CardDescription>
-                        Select product category and collection
+                        Select product category and subcategory
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -520,33 +556,39 @@ const ProductForm = () => {
 
                         <div>
                           <Label className="text-base mb-3 block">
-                            Collection *
+                            Subcategory *
                           </Label>
-                          <div className="flex flex-wrap gap-3">
-                            {["Men", "Women", "Kids", "Student"].map(
-                              (collection) => (
+                          {fetchingSubcategories ? (
+                            <p>Loading subcategories...</p>
+                          ) : subcategories.length > 0 ? (
+                            <div className="flex flex-wrap gap-3">
+                              {subcategories.map((subcategory) => (
                                 <Button
-                                  key={collection}
+                                  key={subcategory._id}
                                   type="button"
                                   variant={
-                                    selectedCollection === collection
+                                    selectedSubcategory === subcategory._id
                                       ? "default"
                                       : "outline"
                                   }
                                   onClick={() =>
-                                    handleCollectionSelect(collection)
+                                    handleSubcategorySelect(subcategory._id)
                                   }
                                   className={`transition-all duration-300 ${
-                                    selectedCollection === collection
+                                    selectedSubcategory === subcategory._id
                                       ? "bg-blue-600 hover:bg-blue-700 text-white font-medium"
                                       : "bg-white border-gray-300 hover:bg-gray-100 text-gray-800 hover:text-gray-900"
                                   }`}
                                 >
-                                  {collection}
+                                  {subcategory.name}
                                 </Button>
-                              )
-                            )}
-                          </div>
+                              ))}
+                            </div>
+                          ) : selectedCategory ? (
+                            <p>No subcategories available for this category.</p>
+                          ) : (
+                            <p>Please select a category first.</p>
+                          )}
                         </div>
                       </div>
                     </CardContent>

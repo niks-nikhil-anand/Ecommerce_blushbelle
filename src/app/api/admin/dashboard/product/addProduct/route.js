@@ -21,7 +21,7 @@ export const POST = async (req) => {
     const originalPrice = parseFloat(getTrimmedValue("originalPrice")) || 0;
     const salePrice = parseFloat(getTrimmedValue("salePrice")) || 0;
     const category = getTrimmedValue("category");
-    const collection = getTrimmedValue("collections");
+    const subCategory = getTrimmedValue("subCategory");
     const tags = getTrimmedValue("tags");
     const description = getTrimmedValue("description");
     const additionalInfo = getTrimmedValue("additionalInfo");
@@ -80,7 +80,7 @@ export const POST = async (req) => {
       salePrice,
       originalPrice,
       category,
-      subCatgeory:collection,
+      subCatgeory:subCategory,
       isOnSale,
       isFeaturedSale,
       tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],

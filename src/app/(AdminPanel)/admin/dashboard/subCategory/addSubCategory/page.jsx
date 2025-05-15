@@ -19,6 +19,7 @@ const AddSubCategory = () => {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
+  const [imageKey, setImageKey] = useState(Date.now()); // Used to reset file input
 
   // Fetch categories
   useEffect(() => {
@@ -41,6 +42,14 @@ const AddSubCategory = () => {
     fetchCategories();
   }, []);
   
+  // Clear form fields
+  const resetForm = () => {
+    setName('');
+    setImage(null);
+    setSelectedCategory(null);
+    setImageKey(Date.now()); // This forces the file input to reset
+  };
+
   // Handle form submission for adding sub-category
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,8 +69,7 @@ const AddSubCategory = () => {
     try {
       await axios.post('/api/admin/dashboard/subCategory', formData);
       toast.success('Sub-category added successfully!');
-      setName('');
-      setImage(null);
+      resetForm(); // Clear the form after successful submission
     } catch (error) {
       console.error('Error adding sub-category:', error);
       toast.error('Failed to add sub-category');
@@ -70,10 +78,8 @@ const AddSubCategory = () => {
     }
   };
 
-  // Removed color generation function
-
   return (
-    <Card className="w-full mx-auto border-t-4 border-t-gray-500 shadow-lg">
+    <Card className="w-full mx-auto border-t-4 border-t-blue-500 shadow-lg">
       <CardHeader className="bg-gray-100 p-4">
         <CardTitle className="text-2xl font-bold text-gray-700">Add SubCategories</CardTitle>
       </CardHeader>
@@ -101,8 +107,8 @@ const AddSubCategory = () => {
                         variant={selectedCategory === category._id ? "default" : "outline"}
                         className={`w-full justify-start text-xs px-2 py-1.5 transition-all duration-200 ${
                           selectedCategory === category._id 
-                            ? "bg-gray-800 hover:bg-gray-900 text-white font-medium shadow-md" 
-                            : "bg-white border-gray-300 hover:bg-gray-100 text-gray-800 shadow-sm"
+                            ? "bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md ring-2 ring-blue-300" 
+                            : "bg-white border-gray-300 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 text-gray-800 shadow-sm"
                         }`}
                         size="sm"
                       >
@@ -126,7 +132,7 @@ const AddSubCategory = () => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter name"
                   required
-                  className="border-gray-300 focus:border-gray-400 focus:ring-gray-400 bg-gray-50"
+                  className="border-gray-300 focus:border-blue-400 focus:ring-blue-400 bg-gray-50"
                 />
               </div>
 
@@ -136,10 +142,11 @@ const AddSubCategory = () => {
                 </Label>
                 <Input
                   id="image"
+                  key={imageKey}
                   type="file"
                   onChange={(e) => setImage(e.target.files[0])}
                   required
-                  className="cursor-pointer border-gray-300 focus:border-gray-400 bg-gray-50 file:bg-gray-600 file:text-white file:border-0 file:rounded file:px-2 file:py-1 file:mr-2 hover:file:bg-gray-700"
+                  className="cursor-pointer border-gray-300 focus:border-blue-400 bg-gray-50 file:bg-blue-600 file:text-white file:border-0 file:rounded file:px-2 file:py-1 file:mr-2 hover:file:bg-blue-700"
                 />
               </div>
             </div>
@@ -148,7 +155,7 @@ const AddSubCategory = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="px-5 py-2 bg-gray-800 hover:bg-gray-900 text-white font-medium shadow-md transition-all duration-300 transform hover:scale-105"
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition-all duration-300 transform hover:scale-105"
               >
                 {loading ? (
                   <>

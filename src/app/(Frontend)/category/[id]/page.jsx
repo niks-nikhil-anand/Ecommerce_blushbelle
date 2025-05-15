@@ -75,7 +75,7 @@ const CategoryPage = () => {
   const displayedSubcategories = loading ? Array(8).fill({}) : subcategories;
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 min-h-[70vh]">
       {/* Back Button */}
       <Button
         variant="ghost"

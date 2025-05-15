@@ -102,33 +102,39 @@ const ProductForm = () => {
   useEffect(() => {
     const { name, originalPrice, salePrice, stock } = formData;
     const isBasicInfoComplete = name && originalPrice && salePrice && stock;
-    
+
     // Update completedSteps array accordingly
     if (isBasicInfoComplete && !completedSteps.includes(1)) {
-      setCompletedSteps(prev => [...prev, 1]);
+      setCompletedSteps((prev) => [...prev, 1]);
     } else if (!isBasicInfoComplete && completedSteps.includes(1)) {
-      setCompletedSteps(prev => prev.filter(step => step !== 1));
+      setCompletedSteps((prev) => prev.filter((step) => step !== 1));
     }
-    
-    setFormErrors(prev => ({
+
+    setFormErrors((prev) => ({
       ...prev,
-      basicInfo: !isBasicInfoComplete
+      basicInfo: !isBasicInfoComplete,
     }));
-  }, [formData.name, formData.originalPrice, formData.salePrice, formData.stock, completedSteps]);
+  }, [
+    formData.name,
+    formData.originalPrice,
+    formData.salePrice,
+    formData.stock,
+    completedSteps,
+  ]);
 
   // Check if category is selected
   useEffect(() => {
     const isCategoryComplete = selectedCategory && selectedCollection;
-    
+
     if (isCategoryComplete && !completedSteps.includes(2)) {
-      setCompletedSteps(prev => [...prev, 2]);
+      setCompletedSteps((prev) => [...prev, 2]);
     } else if (!isCategoryComplete && completedSteps.includes(2)) {
-      setCompletedSteps(prev => prev.filter(step => step !== 2));
+      setCompletedSteps((prev) => prev.filter((step) => step !== 2));
     }
-    
-    setFormErrors(prev => ({
+
+    setFormErrors((prev) => ({
       ...prev,
-      category: !isCategoryComplete
+      category: !isCategoryComplete,
     }));
   }, [selectedCategory, selectedCollection, completedSteps]);
 
@@ -276,13 +282,13 @@ const ProductForm = () => {
       toast.error("Please fill all required fields in Basic Information");
       return;
     }
-    
+
     // For step 2, validate category selection
     if (currentStep === 2 && formErrors.category) {
       toast.error("Please select both category and collection");
       return;
     }
-    
+
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
@@ -319,7 +325,7 @@ const ProductForm = () => {
             <div className="flex justify-between mb-2 relative">
               {/* Horizontal connecting line behind the circles */}
               <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200" />
-              
+
               {steps.map((step) => (
                 <div
                   key={step.number}
@@ -350,7 +356,7 @@ const ProductForm = () => {
                 </div>
               ))}
             </div>
-            
+
             {/* Using the shadcn Progress component instead of the custom one */}
             <Progress value={progress} className="h-2 mt-4" />
           </div>
@@ -499,10 +505,10 @@ const ProductForm = () => {
                                   onClick={() =>
                                     handleCategorySelect(category._id)
                                   }
-                                  className={`transition-all duration-200 ${
+                                  className={`transition-all duration-300 ${
                                     selectedCategory === category._id
-                                      ? "bg-primary text-white"
-                                      : "bg-gray-100 hover:bg-gray-200"
+                                      ? "bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                                      : "bg-white border-gray-300 hover:bg-gray-100 text-gray-800 hover:text-gray-900"
                                   }`}
                                 >
                                   {category.name}
@@ -530,10 +536,10 @@ const ProductForm = () => {
                                   onClick={() =>
                                     handleCollectionSelect(collection)
                                   }
-                                  className={`transition-all duration-200 ${
+                                  className={`transition-all duration-300 ${
                                     selectedCollection === collection
-                                      ? "bg-primary text-white"
-                                      : "bg-gray-100 hover:bg-gray-200"
+                                      ? "bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                                      : "bg-white border-gray-300 hover:bg-gray-100 text-gray-800 hover:text-gray-900"
                                   }`}
                                 >
                                   {collection}
@@ -545,10 +551,17 @@ const ProductForm = () => {
                       </div>
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                      <Button variant="outline" onClick={prevStep}>
+                      <Button
+                        variant="outline"
+                        onClick={prevStep}
+                        className="border-gray-300 hover:bg-gray-100 text-gray-800"
+                      >
                         <ChevronLeft className="mr-2 h-4 w-4" /> Previous
                       </Button>
-                      <Button onClick={nextStep}>
+                      <Button
+                        onClick={nextStep}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
                         Next <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
                     </CardFooter>

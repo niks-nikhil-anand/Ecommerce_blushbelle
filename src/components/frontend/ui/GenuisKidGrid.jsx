@@ -51,11 +51,9 @@ const GenuisKidGrid = () => {
         BrainBite™ Smart IQ is a 100% plant-based brain supplement, designed with a science-backed formula to elevate your mental performance. Whether you’re a student, professional, or anyone looking to enhance focus, cognitive energy, and mental clarity, BrainBite™ is your go-to solution.
       </p>
       <div className="flex flex-col sm:flex-row items-center sm:items-start mb-4">
-        <Link href={"/product/679c0c0be71b7de6da3e3d47"}>
         <button className="bg-purple-600 text-white px-5 sm:px-6 py-2 rounded-full font-semibold shadow-md hover:bg-purple-700 focus:outline-none">
           Order Now
         </button>
-        </Link>
         <div className="mt-2 sm:mt-0 sm:ml-6 text-lg sm:text-xl font-bold text-gray-800">
         ₹1499 <span className="line-through text-orange-500">₹2500</span>
         </div>

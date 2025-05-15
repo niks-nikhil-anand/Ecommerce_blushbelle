@@ -2,16 +2,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import Loader from '@/components/loader/loader';
 import { ArrowRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useRouter } from 'next/navigation';
 
 const CategoriesSection = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     axios
@@ -31,6 +32,13 @@ const CategoriesSection = () => {
       });
   }, []);
 
+  // Navigate to category page
+  const handleCategoryClick = (categoryName) => {
+    // Create slug from category name (convert to lowercase and replace spaces with hyphens)
+    const slug = categoryName.toLowerCase().replace(/\s+/g, '-');
+    router.push(`/category/${slug}`);
+  };
+
   if (!categories.length && !loading) {
     return <p className="text-center">No categories available.</p>;
   }
@@ -44,7 +52,11 @@ const CategoriesSection = () => {
         <h2 className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900">
           Popular Categories
         </h2>
-        <Button variant="ghost" className="flex items-center text-blue-500 hover:text-blue-700">
+        <Button 
+          variant="ghost" 
+          className="flex items-center text-blue-500 hover:text-blue-700"
+          onClick={() => router.push('/categories')}
+        >
           <span className="mr-2 text-sm font-medium">View All</span>
           <ArrowRight className="h-4 w-4" />
         </Button>
@@ -57,8 +69,9 @@ const CategoriesSection = () => {
             key={loading ? `skeleton-${index}` : category.id}
             whileHover={{ scale: loading ? 1 : 1.05 }}
             className="relative flex-shrink-0 snap-center"
+            onClick={() => !loading && handleCategoryClick(category.name)}
           >
-            <Card className="flex flex-col items-center p-4 w-32 sm:w-36 md:w-40 hover:shadow-lg transition-all duration-300">
+            <Card className={`flex flex-col items-center p-4 w-32 sm:w-36 md:w-40 hover:shadow-lg transition-all duration-300 ${!loading && 'cursor-pointer'}`}>
               {loading ? (
                 <>
                   <Skeleton className="rounded-full w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24" />

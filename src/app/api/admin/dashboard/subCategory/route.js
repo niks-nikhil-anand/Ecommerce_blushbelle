@@ -2,8 +2,7 @@ import connectDB from "@/lib/dbConnect";
 import uploadImage from "@/lib/uploadImages";
 import categoryModels from "@/models/categoryModels";
 import subCategoryModels from "@/models/subCategoryModels";
-
-
+import { NextResponse } from "next/server"; // Add this import
 
 // POST request to create new SubCategories
 export const POST = async (req) => {
@@ -57,6 +56,7 @@ export const POST = async (req) => {
       subCategoriesData.push({
         name,
         image: imageResult.secure_url,
+        category: category // Add reference to parent category
       });
     }
 
@@ -65,30 +65,12 @@ export const POST = async (req) => {
     // Create subcategories in the database
     const createdSubCategories = await subCategoryModels.insertMany(subCategoriesData);
     console.log("SubCategories added successfully:", createdSubCategories);
-
-    // Find the category by the category name or id
-    console.log("Fetching category with ID:", category);
-    const foundCategory = await categoryModels.findOne({ _id: category });
-    if (!foundCategory) {
-      console.error("Category not found.");
-      return NextResponse.json({ msg: "Category not found." }, { status: 404 });
-    }
-
-    console.log("Found Category:", foundCategory);
-
-    // Update the category to include the new subcategory IDs
-    foundCategory.subcategory.push(...createdSubCategories.map(subCat => subCat._id));
-    await foundCategory.save();
-    console.log("SubCategory IDs added to Category:", foundCategory);
-
     return NextResponse.json({ msg: "SubCategories added and linked to category successfully" }, { status: 200 });
   } catch (error) {
     console.error("Error adding subcategories:", error);
     return NextResponse.json({ msg: "Error adding subcategories", error: error.message }, { status: 500 });
   }
 };
-
-
 
 // GET request to fetch SubCategory by Name
 export const GET = async (req) => {
@@ -146,4 +128,3 @@ export const GET = async (req) => {
     );
   }
 };
-

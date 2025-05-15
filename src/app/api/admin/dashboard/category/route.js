@@ -31,14 +31,14 @@ export const POST = async (req) => {
     }
 
     const imageUrl = imageResult.secure_url;
-    console.log("Image URL:", imageUrl);
+    console.log("Image URL:");
 
     const categoryData = {
       name,
       image: imageUrl,
     };
 
-    console.log("Category data to be saved:", categoryData);
+    console.log("Category data to be saved:");
 
     await categoryModels.create(categoryData);
     console.log("Category added successfully.");
@@ -56,7 +56,7 @@ export const GET = async (req) => {
     console.log("Connected to the database.");
 
     const categories = await categoryModels.find();
-    console.log("Fetched categories:", categories);
+    console.log("Fetched categories:");
     return NextResponse.json(categories, { status: 200 });
   } catch (error) {
     console.error("Error fetching categories:", error);

@@ -58,7 +58,7 @@ const AddSubCategory = () => {
     formData.append('category', selectedCategory);
 
     try {
-      await axios.post('/api/admin/dashboard/subCatgeory', formData);
+      await axios.post('/api/admin/dashboard/subCategory', formData);
       toast.success('Sub-category added successfully!');
       setName('');
       setImage(null);

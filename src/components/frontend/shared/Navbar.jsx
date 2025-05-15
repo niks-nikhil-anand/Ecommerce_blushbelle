@@ -143,7 +143,7 @@ const Navbar = () => {
     categories.length > 0 ? 
       [{ name: "Home", link: "/" }, ...categories.map(cat => ({ 
         name: cat.name, 
-        link: `/category/${cat.slug || cat.id}` 
+        link: `/category/${cat.name }` 
       }))] : 
       [
         { name: "Home", link: "/" },

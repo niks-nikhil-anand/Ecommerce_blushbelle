@@ -60,7 +60,7 @@ const CategorySection = () => {
             categories.map((category, index) => (
               <li key={index} className="flex items-center hover:text-gray-200 cursor-pointer">
                 <Link 
-                  href={`/category/${category.slug || category.id}`}
+                  href={`/category/${category.name }`}
                   className="flex items-center hover:text-gray-200 w-full"
                 >
                   <span>{category.name}</span>

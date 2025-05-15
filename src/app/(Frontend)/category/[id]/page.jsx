@@ -66,10 +66,15 @@ const CategoryPage = () => {
 
   // Navigate to subcategory
   const handleSubcategoryClick = (subcategory) => {
-    // Create slug from subcategory name
-    const subcategorySlug = subcategory.name.toLowerCase().replace(/\s+/g, "-");
-    router.push(`/category/${params.id}/subcategory/${subcategorySlug}`);
-  };
+  // Create slug from subcategory name
+  const subcategorySlug = subcategory.name
+    .toLowerCase()
+    .replace(/\s+/g, "-")           
+    .replace(/[^\w&-]+/g, "");      
+
+  router.push(`/category/${params.id}/subcategory/${subcategorySlug}`);
+};
+
 
   // Prepare skeleton or actual content cards
   const displayedSubcategories = loading ? Array(8).fill({}) : subcategories;

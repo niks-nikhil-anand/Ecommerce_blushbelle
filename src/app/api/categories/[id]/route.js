@@ -11,8 +11,10 @@ export const GET = async (req, { params }) => {
     await connectDB();
     console.info("[DB] Successfully connected.");
 
-    const { id: categoryName } = params; // ✅ Use id from params
-    console.debug(`[PARAMS] Received categoryName: ${categoryName}`);
+    const encodedCategoryName = params.id;
+    const categoryName = decodeURIComponent(encodedCategoryName); // ✅ Decode URL
+
+    console.debug(`[PARAMS] Decoded categoryName: ${categoryName}`);
 
     if (!categoryName) {
       console.error("[ERROR] Missing 'categoryName' in request parameters.");

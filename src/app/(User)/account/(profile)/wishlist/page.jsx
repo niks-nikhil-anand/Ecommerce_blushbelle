@@ -16,8 +16,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import AccountSidebar from "./AccountSidebar";
 import { FiMenu, FiX, FiMoreVertical, FiShoppingCart, FiTrash2, FiEye, FiHeart } from "react-icons/fi";
+import AccountSidebar from "@/components/users/shared/AccountSidebar";
 
 const Wishlist = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

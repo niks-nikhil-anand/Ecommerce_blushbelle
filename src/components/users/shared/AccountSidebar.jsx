@@ -35,14 +35,14 @@ const AccountSidebar = ({ className }) => {
     {
       title: "Profile",
       icon: <FiUser className="mr-3 text-xl" />,
-      path: "/account",
-      active: pathname === "/account"
+      path: "/account/profile",
+      active: pathname === "/account/profile"
     },
     {
       title: "Order History",
       icon: <FiShoppingBag className="mr-3 text-xl" />,
-      path: "/account/orders",
-      active: pathname === "/account/orders"
+      path: "/account/order-history",
+      active: pathname === "/account/order-history"
     },
     {
       title: "Wishlist",
@@ -54,7 +54,7 @@ const AccountSidebar = ({ className }) => {
       title: "Notifications",
       icon: <FiBell className="mr-3 text-xl" />,
       path: "/account/notifications",
-      active: pathname === "/account/notifications"
+      active: pathname === "/account/notification"
     },
     {
       title: "Settings",

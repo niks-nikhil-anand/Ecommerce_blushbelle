@@ -17,8 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import AccountSidebar from "./AccountSidebar";
 import { FiUser, FiEdit2, FiMenu, FiX } from "react-icons/fi";
+import AccountSidebar from "@/components/users/shared/AccountSidebar";
 
 const Profile = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

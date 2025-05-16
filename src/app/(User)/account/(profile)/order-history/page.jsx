@@ -19,8 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import AccountSidebar from "./AccountSidebar";
 import { FiChevronDown, FiMenu, FiX, FiSearch } from "react-icons/fi";
+import AccountSidebar from "@/components/users/shared/AccountSidebar";
 
 const OrderHistory = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -108,7 +108,7 @@ const OrderHistory = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 min-h-[70vh]">
       <div className="flex items-center justify-between mb-6 md:hidden">
         <h1 className="text-2xl font-bold text-green-700">Order History</h1>
         <Button 

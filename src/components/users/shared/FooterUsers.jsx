@@ -8,7 +8,7 @@ import Visa from '../../../../public/icons/visa-logo.png';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const Footer = () => {
+const FooterUser = () => {
   const [userId, setUserId] = useState(null);
   const router = useRouter();
 
@@ -157,4 +157,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default FooterUser;

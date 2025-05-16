@@ -9,7 +9,7 @@ import Link from "next/link";
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
-const Navbar = () => {
+const NavbarUser = () => {
   const [userId, setUserId] = useState(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -257,4 +257,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavbarUser;

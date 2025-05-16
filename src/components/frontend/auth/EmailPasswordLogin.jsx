@@ -30,13 +30,13 @@ const EmailPasswordLogin = () => {
         rememberMe,
       });
 
-      if (response.status === 200 && response.data?.userId) {
+      if (response.status === 200 ) {
         toast.success("Login successful!");
         setEmail("");
         setPassword("");
         setRememberMe(false);
 
-        router.push(`/users/${response.data.userId}`);
+        router.push("/account");
       } else {
         toast.error("Unexpected response. Please try again.");
       }

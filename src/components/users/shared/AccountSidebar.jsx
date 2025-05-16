@@ -44,7 +44,7 @@ const AccountSidebar = ({ className }) => {
         }
         const data = await response.json();
         console.log(data);
-        setUser(data);        
+        setUser(data);
       } catch (error) {
         console.error("Failed to fetch user details:", error);
       }
@@ -142,7 +142,7 @@ const AccountSidebar = ({ className }) => {
           ))}
         </ul>
 
-        <div className="mt-8 pt-4 border-t border-green-100">
+        <div className="absolute bottom-2 left-0 right-0 px-4">
           <motion.div
             whileHover={{ x: 5 }}
             whileTap={{ scale: 0.95 }}

@@ -1,38 +1,46 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+} from "@/components/ui/sheet";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FiShoppingCart, FiSearch, FiMenu, FiX, FiUser, FiShoppingBag } from "react-icons/fi";
-import { AiOutlineUp, AiOutlineDown } from "react-icons/ai";
-import Image from 'next/image';
-import logo from "../../../../public/logo/cleanvedaLogo.png";
 import Link from "next/link";
+import Image from "next/image";
+import { 
+  FiMenu, 
+  FiSearch, 
+  FiShoppingCart, 
+  FiUser, 
+  FiHeart, 
+  FiX,
+  FiShoppingBag,
+  FiBell
+} from "react-icons/fi";
+import { AiOutlineUp, AiOutlineDown } from "react-icons/ai";
 import { toast } from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
 
 const NavbarUser = () => {
   const [userId, setUserId] = useState(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cartItemCount, setCartItemCount] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const router = useRouter();
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      router.push(`/product/search?q=${encodeURIComponent(searchQuery)}`);
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
-
-  const toggleAccountDropdown = () => {
-    setIsAccountOpen(!isAccountOpen);
-  };
-
+  // Fetch user details from cookies
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -50,6 +58,116 @@ const NavbarUser = () => {
 
     fetchUser();
   }, []);
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/admin/dashboard/category');
+        
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        // Take only up to 4 categories
+        setCategories(data.slice(0, 4));
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Update cart count whenever localStorage changes
+  useEffect(() => {
+    // Function to get cart count from localStorage
+    const updateCartCount = () => {
+      try {
+        const cart = localStorage.getItem("cart");
+        if (cart) {
+          const cartItems = JSON.parse(cart);
+          if (Array.isArray(cartItems)) {
+            // Calculate total count by summing quantities of all items
+            const totalCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+            setCartItemCount(totalCount);
+          } else {
+            setCartItemCount(0);
+          }
+        } else {
+          setCartItemCount(0);
+        }
+      } catch (error) {
+        console.error("Error parsing cart data:", error);
+        setCartItemCount(0);
+      }
+    };
+
+    // Initial count
+    updateCartCount();
+
+    // Listen for storage events to update cart count when localStorage changes
+    const handleStorageChange = (e) => {
+      if (e.key === "cart") {
+        updateCartCount();
+      }
+    };
+
+    // Add event listener for storage changes
+    window.addEventListener("storage", handleStorageChange);
+
+    // Check for changes every second (handles changes within the same window)
+    const interval = setInterval(updateCartCount, 1000);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Add scroll event listener to detect scrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      if (scrollPosition > 10) {
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
+      }
+    };
+
+    // Add scroll event listener
+    window.addEventListener("scroll", handleScroll);
+
+    // Initial check in case page loads scrolled
+    handleScroll();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/product/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  const toggleAccountDropdown = () => {
+    setIsAccountOpen(!isAccountOpen);
+  };
 
   const handleLogout = async () => {
     try {
@@ -70,70 +188,171 @@ const NavbarUser = () => {
     }
   };
 
+  // Fallback categories while loading
+  const fallbackCategories = [
+    { name: "Home", link: `/users/${userId}/` }
+  ];
+
+  const displayCategories = loading ? fallbackCategories : 
+    categories.length > 0 ? 
+      [{ name: "Home", link: `/users/${userId}/` }, ...categories.map(cat => ({ 
+        name: cat.name, 
+        link: `/category/${cat.name.replace(/\s+/g, '-')}` 
+      }))] : fallbackCategories;
+
   return (
     <motion.nav
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="bg-white shadow-md px-6 py-3"
+      className={`shadow-md px-4 md:px-6 py-3 sticky top-0 z-50 transition-colors duration-300 ${
+        hasScrolled ? "bg-white" : "bg-transparent"
+      }`}
     >
-      <div className="flex items-center justify-between">
+      <div className="mx-auto flex items-center justify-between">
         {/* Mobile Header Section */}
         <div className="flex items-center justify-between w-full lg:w-auto">
           {/* Mobile Menu Button */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="lg:hidden"
-          >
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 text-2xl focus:outline-none"
-            >
-              {isMenuOpen ? <FiX /> : <FiMenu />}
-            </button>
-          </motion.div>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild className="lg:hidden">
+              <Button variant="ghost" size="icon" className="text-green-700 text-2xl hover:bg-green-100 hover:text-green-800">
+                <FiMenu />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="bg-white border-r border-green-100 w-64">
+              <SheetHeader className="border-b border-green-100 pb-4">
+                <SheetTitle className="text-green-700 flex items-center justify-between">
+                  <span>Cleanveda Menu</span>
+                </SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-6 mt-6">
+                <ul className="flex flex-col space-y-4 text-gray-700 font-medium">
+                  {/* Dynamic categories in mobile menu */}
+                  {displayCategories.map((item, index) => (
+                    <Link key={index} href={item.link} onClick={() => setIsOpen(false)}>
+                      <motion.li 
+                        whileHover={{ scale: 1.05 }} 
+                        className="hover:text-green-700 hover:bg-green-100 transition cursor-pointer px-2 py-2 rounded-md"
+                      >
+                        {item.name}
+                      </motion.li>
+                    </Link>
+                  ))}
+                </ul>
+                
+                {/* Mobile Search in Sheet */}
+                <div className="mt-4 px-2">
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="Search products..."
+                      className="w-full bg-gray-50 border-green-200 focus:border-green-500"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={handleKeyPress}
+                    />
+                    <Button 
+                      size="icon"
+                      variant="ghost" 
+                      className="absolute right-0 top-0 h-full text-green-600 hover:text-green-800 hover:bg-green-100"
+                      onClick={handleSearch}
+                    >
+                      <FiSearch />
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* User Account Options */}
+                <div className="mt-4 space-y-3">
+                  <Link href={`/users/${userId}/accounts/ordersHistory`} onClick={() => setIsOpen(false)}>
+                    <div className="flex items-center space-x-3 px-2 py-2 hover:bg-green-100 rounded-md cursor-pointer">
+                      <FiShoppingBag className="text-green-700" />
+                      <span>My Orders</span>
+                    </div>
+                  </Link>
+                  <Link href={`/users/${userId}/accounts/wishlist`} onClick={() => setIsOpen(false)}>
+                    <div className="flex items-center space-x-3 px-2 py-2 hover:bg-green-100 rounded-md cursor-pointer">
+                      <FiHeart className="text-green-700" />
+                      <span>Wishlist</span>
+                    </div>
+                  </Link>
+                  <Link href={`/users/${userId}/accounts/savedAddress`} onClick={() => setIsOpen(false)}>
+                    <div className="flex items-center space-x-3 px-2 py-2 hover:bg-green-100 rounded-md cursor-pointer">
+                      <span>🏠</span>
+                      <span>Addresses</span>
+                    </div>
+                  </Link>
+                  <Link href="#" onClick={() => setIsOpen(false)}>
+                    <div className="flex items-center space-x-3 px-2 py-2 hover:bg-green-100 rounded-md cursor-pointer">
+                      <FiBell className="text-green-700" />
+                      <span>Notifications</span>
+                    </div>
+                  </Link>
+                </div>
+                
+                <SheetFooter className="mt-auto border-t pt-4">
+                  <Button 
+                    className="w-full bg-red-500 hover:bg-red-600 rounded-lg"
+                    onClick={() => {
+                      setIsOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </SheetFooter>
+              </div>
+            </SheetContent>
+          </Sheet>
 
           {/* Logo - Centered on mobile */}
-          <div className="lg:flex lg:items-center mx-4 lg:mx-0">
-            <Link href={"/"}>
-              <Image src={logo} alt="Cleanveda Logo" width={120} height={50} />
+          <div className="flex items-center justify-center mx-auto lg:mx-0 lg:justify-start">
+            <Link href={`/users/${userId}/`}>
+              <Image src="/logo/cleanvedaLogo.png" alt="Cleanveda Logo" width={120} height={50} priority className="object-contain" />
             </Link>
           </div>
 
           {/* Mobile Icons */}
           <div className="lg:hidden flex items-center space-x-4">
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative"
-            >
-              <Link href={`/users/${userId}/cart`}>
-                <FiShoppingCart className="text-gray-700 text-2xl cursor-pointer" />
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <FiUser className="text-gray-700 text-2xl cursor-pointer" />
-            </motion.div>
+            <Link href={`/users/${userId}/product/cart`}>
+              <div className="relative">
+                <FiShoppingCart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+                {cartItemCount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-orange-500 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                    {cartItemCount}
+                  </Badge>
+                )}
+              </div>
+            </Link>
+            <Link href="#" onClick={toggleAccountDropdown}>
+              <FiUser className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+            </Link>
           </div>
         </div>
 
-        <ul className="space-x-6 p-4 rounded-lg hidden md:flex">
-          {[
-            { name: "Home", link: `/users/${userId}/` },
-            { name: "Students", link: "/students" },
-            { name: "Immunity Booster", link: "/immunity-booster" },
-            { name: "Brain Booster", link: "/brain-booster" },
-          ].map((item, index) => (
-            <motion.li
-              key={index}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="cursor-pointer text-gray-700 font-semibold transition-colors duration-300 hover:text-green-600"
-            >
-              <Link href={item.link}>{item.name}</Link>
-            </motion.li>
-          ))}
+        {/* Desktop Navigation - Dynamic Categories */}
+        <ul className="space-x-6 p-4 rounded-lg hidden lg:flex">
+          {loading ? (
+            // Loading skeleton
+            <>
+              <motion.li className="w-12 h-6 bg-gray-200 rounded animate-pulse"></motion.li>
+              <motion.li className="w-20 h-6 bg-gray-200 rounded animate-pulse"></motion.li>
+              <motion.li className="w-24 h-6 bg-gray-200 rounded animate-pulse"></motion.li>
+              <motion.li className="w-16 h-6 bg-gray-200 rounded animate-pulse"></motion.li>
+            </>
+          ) : (
+            // Actual categories
+            displayCategories.map((item, index) => (
+              <motion.li
+                key={index}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="cursor-pointer text-gray-700 font-semibold transition-colors duration-300 hover:text-green-700"
+              >
+                <Link href={item.link}>{item.name}</Link>
+              </motion.li>
+            ))
+          )}
         </ul>
 
         {/* Desktop Icons Section */}
@@ -144,115 +363,132 @@ const NavbarUser = () => {
             transition={{ type: "spring", stiffness: 300 }}
             className="relative"
           >
-            <input
+            <Input
               type="text"
               placeholder="Search..."
-              className="w-full px-4 py-2 text-black bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+              className="w-full text-black bg-gray-100 border-green-200 focus:border-green-500"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyPress}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
-              aria-label="Search products"
-              autoComplete="on"
+              aria-label="Search"
+              autoComplete="off"
             />
-            <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute right-0 top-0 h-full text-green-600 hover:text-green-800 hover:bg-green-100"
+              onClick={handleSearch}
+            >
+              <FiSearch />
+            </Button>
           </motion.div>
-
-          <div className="flex items-center space-x-6 relative z-50">
-            {/* Account Starts from here */}
-            <div className="relative">
-              <button
-                onClick={toggleAccountDropdown}
-                className="text-lg font-medium hover:text-gray-700 focus:outline-none flex items-center"
+          
+          <div className="flex items-center space-x-5">
+            {/* Notification */}
+            <Link href="#">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <FiUser className="w-6 h-6 cursor-pointer" />
-                {isAccountOpen ? <AiOutlineUp className="ml-2" /> : <AiOutlineDown className="ml-2" />}
-              </button>
+                <FiBell className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+              </motion.div>
+            </Link>
+            
+            {/* Wishlist */}
+            <Link href={`/users/${userId}/accounts/wishlist`}>
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiHeart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+              </motion.div>
+            </Link>
+            
+            {/* Account Button */}
+            <div className="relative">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleAccountDropdown}
+                className="text-lg font-medium hover:text-green-700 focus:outline-none flex items-center"
+              >
+                <FiUser className="text-green-700 text-2xl cursor-pointer" />
+                {isAccountOpen ? <AiOutlineUp className="ml-1 text-green-700" /> : <AiOutlineDown className="ml-1 text-green-700" />}
+              </motion.button>
+              
               {isAccountOpen && (
                 <motion.div
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute left-[-3rem] mt-7 w-[10rem] bg-white shadow-xl rounded-b-3xl py-5 px-5 z-50"
-                  style={{ zIndex: 100 }}
+                  className="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-lg py-2 z-50"
                 >
-                  <ul className="space-y-4">
-                    <li className="flex items-center space-x-3">
-                      <span>📦</span>
-                      <Link href={`/users/${userId}/accounts/ordersHistory`} className="hover:text-blue-600">
-                        Orders
+                  <ul className="space-y-1">
+                    <li>
+                      <Link href={`/users/${userId}/accounts/ordersHistory`}>
+                        <div className="flex items-center space-x-3 px-4 py-2 hover:bg-green-100 text-gray-700">
+                          <span>📦</span>
+                          <span>Orders</span>
+                        </div>
                       </Link>
                     </li>
-                    <li className="flex items-center space-x-3">
-                      <span>❤️</span>
-                      <Link href={`/users/${userId}/accounts/wishlist`} className="hover:text-blue-600">Wishlist</Link>
+                    <li>
+                      <Link href={`/users/${userId}/accounts/wishlist`}>
+                        <div className="flex items-center space-x-3 px-4 py-2 hover:bg-green-100 text-gray-700">
+                          <span>❤️</span>
+                          <span>Wishlist</span>
+                        </div>
+                      </Link>
                     </li>
-                    <li className="flex items-center space-x-3">
-                      <span>🏠</span>
-                      <Link href={`/users/${userId}/accounts/savedAddress`} className="hover:text-blue-600">Addresses</Link>
+                    <li>
+                      <Link href={`/users/${userId}/accounts/savedAddress`}>
+                        <div className="flex items-center space-x-3 px-4 py-2 hover:bg-green-100 text-gray-700">
+                          <span>🏠</span>
+                          <span>Addresses</span>
+                        </div>
+                      </Link>
                     </li>
-                    <li className="flex items-center space-x-3">
-                      <span>🔔</span>
-                      <a href="#" className="hover:text-blue-600">Notification</a>
+                    <li>
+                      <Link href="#">
+                        <div className="flex items-center space-x-3 px-4 py-2 hover:bg-green-100 text-gray-700">
+                          <span>🔔</span>
+                          <span>Notifications</span>
+                        </div>
+                      </Link>
                     </li>
-                    <li className="flex items-center space-x-3">
-                      <span>▶️</span>
-                      <Link href="#" onClick={handleLogout} className="hover:text-blue-600">Logout</Link>
+                    <li className="border-t border-gray-100 mt-1 pt-1">
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center space-x-3 px-4 py-2 hover:bg-red-100 text-red-600 w-full text-left"
+                      >
+                        <span>▶️</span>
+                        <span>Logout</span>
+                      </button>
                     </li>
                   </ul>
                 </motion.div>
               )}
             </div>
+            
+            {/* Cart */}
             <Link href={`/users/${userId}/product/cart`}>
-              <FiShoppingCart className="w-6 h-6 cursor-pointer" />
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative"
+              >
+                <FiShoppingCart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+                {cartItemCount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-orange-500 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                    {cartItemCount}
+                  </Badge>
+                )}
+              </motion.div>
             </Link>
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu Dropdown */}
-      {isMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-          className="lg:hidden mt-4"
-        >
-          <ul className="flex flex-col space-y-4 text-gray-700 font-medium">
-            <Link href={"/"}>
-              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Home</motion.li>
-            </Link>
-            <Link href="/students">
-              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Students</motion.li>
-            </Link>
-            <Link href="/health-conscious-individuals">
-              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Health-Conscious Individuals</motion.li>
-            </Link>
-            <Link href="/parents">
-              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Parents</motion.li>
-            </Link>
-            <Link href="/brain-booster">
-              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Brain Booster</motion.li>
-            </Link>
-            <Link href="/immunity-booster">
-              <motion.li whileHover={{ scale: 1.05 }} className="hover:text-green-600 transition cursor-pointer">Immunity Booster</motion.li>
-            </Link>
-          </ul>
-
-          <div className="mt-6 border-t pt-4">
-            <Link href="/auth/signIn">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition w-full"
-              >
-                Sign In
-              </motion.button>
-            </Link>
-          </div>
-        </motion.div>
-      )}
     </motion.nav>
   );
 };

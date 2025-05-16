@@ -3,8 +3,9 @@ import "./globals.css";
 
 import 'react-toastify/dist/ReactToastify.css';
 import toast, { Toaster } from 'react-hot-toast';
-import EgoisticNavbar from "@/components/utils/EgosticNavbar";
 import EgoisticFooter from "@/components/utils/EgosticFooter";
+import Navbar from "@/components/adminPanel/NavbarAdmin";
+import EgoisticNavbar from "@/components/utils/EgosticNavbar";
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -36,7 +36,7 @@ const EmailPasswordLogin = () => {
         setPassword("");
         setRememberMe(false);
 
-        router.push("/account");
+        router.push("/");
       } else {
         toast.error("Unexpected response. Please try again.");
       }

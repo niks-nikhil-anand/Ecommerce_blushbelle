@@ -1,5 +1,5 @@
 "use client"
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,13 +11,23 @@ import {
   SheetTrigger,
   SheetFooter,
 } from "@/components/ui/sheet";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { FiMenu, FiSearch, FiShoppingCart, FiUser, FiHeart } from "react-icons/fi";
+import { 
+  FiMenu, 
+  FiSearch, 
+  FiShoppingCart, 
+  FiUser, 
+  FiHeart, 
+  FiBell
+} from "react-icons/fi";
+import { AiOutlineUp, AiOutlineDown } from "react-icons/ai";
+import { toast } from 'react-hot-toast';
 
 const Navbar = () => {
+  const [userData, setUserData] = useState(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItemCount, setCartItemCount] = useState(0);
@@ -25,56 +35,96 @@ const Navbar = () => {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
-  // Fetch categories from API
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/admin/dashboard/category');
-        
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        
+  // Define fallback categories - memoized to avoid recreating on every render
+  const fallbackCategories = useMemo(() => [
+    { name: "Home", link: "/" },
+    { name: "Products", link: "/products" },
+    { name: "About Us", link: "/about" },
+    { name: "Contact", link: "/contact" }
+  ], []);
+
+  // Memoize homeLink to avoid recreating on every render
+  const homeLink = useMemo(() => "/", []);
+
+  // Fetch user details from cookies - memoized to avoid unnecessary rerenders
+  const fetchUser = useCallback(async () => {
+    try {
+      const response = await fetch('/api/users/userDetails/cookies');
+      if (response.ok) {
         const data = await response.json();
-        // Take only up to 4 categories
-        setCategories(data.slice(0, 4));
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-        setLoading(false);
+        setUserData(data);
+        setIsAuthenticated(true);
+      } else {
+        // User is not authenticated
+        setIsAuthenticated(false);
+        setUserData(null);
       }
-    };
+    } catch (error) {
+      console.error('Failed to fetch user details:', error);
+      setIsAuthenticated(false);
+      setUserData(null);
+    }
+  }, []);
 
+  // Execute fetchUser when component mounts or route changes
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser, pathname]); // Re-fetch user data when pathname changes
+
+  // Fetch categories from API - memoized to avoid unnecessary rerenders
+  const fetchCategories = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/dashboard/category');
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      // Take only up to 4 categories
+      setCategories(data.slice(0, 4));
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setLoading(false);
+    }
+  }, []);
+
+  // Execute fetchCategories when component mounts
+  useEffect(() => {
     fetchCategories();
+  }, [fetchCategories]);
+
+  // Memoize the cart count update function
+  const updateCartCount = useCallback(() => {
+    try {
+      const cart = localStorage.getItem("cart");
+      if (cart) {
+        const cartItems = JSON.parse(cart);
+        if (Array.isArray(cartItems)) {
+          // Calculate total count by summing quantities of all items
+          const totalCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+          setCartItemCount(totalCount);
+        } else {
+          setCartItemCount(0);
+        }
+      } else {
+        setCartItemCount(0);
+      }
+    } catch (error) {
+      console.error("Error parsing cart data:", error);
+      setCartItemCount(0);
+    }
   }, []);
 
   // Update cart count whenever localStorage changes
   useEffect(() => {
-    // Function to get cart count from localStorage
-    const updateCartCount = () => {
-      try {
-        const cart = localStorage.getItem("cart");
-        if (cart) {
-          const cartItems = JSON.parse(cart);
-          if (Array.isArray(cartItems)) {
-            // Calculate total count by summing quantities of all items
-            const totalCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
-            setCartItemCount(totalCount);
-          } else {
-            setCartItemCount(0);
-          }
-        } else {
-          setCartItemCount(0);
-        }
-      } catch (error) {
-        console.error("Error parsing cart data:", error);
-        setCartItemCount(0);
-      }
-    };
-
     // Initial count
     updateCartCount();
 
@@ -96,19 +146,20 @@ const Navbar = () => {
       window.removeEventListener("storage", handleStorageChange);
       clearInterval(interval);
     };
+  }, [updateCartCount]);
+
+  // Memoize scroll handler
+  const handleScroll = useCallback(() => {
+    const scrollPosition = window.scrollY;
+    if (scrollPosition > 10) {
+      setHasScrolled(true);
+    } else {
+      setHasScrolled(false);
+    }
   }, []);
 
   // Add scroll event listener to detect scrolling
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      if (scrollPosition > 10) {
-        setHasScrolled(true);
-      } else {
-        setHasScrolled(false);
-      }
-    };
-
     // Add scroll event listener
     window.addEventListener("scroll", handleScroll);
 
@@ -119,46 +170,137 @@ const Navbar = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [handleScroll]);
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      router.push(`/product/search?q=${encodeURIComponent(searchQuery)}`);
+  // Memoize click outside handler
+  const handleClickOutside = useCallback((event) => {
+    if (isAccountOpen && !event.target.closest('.account-dropdown')) {
+      setIsAccountOpen(false);
     }
-  };
+  }, [isAccountOpen]);
 
-  const handleKeyPress = (e) => {
+  // Close account dropdown when clicking outside
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [handleClickOutside]);
+
+  // Memoize search function
+  const handleSearch = useCallback(() => {
+    if (searchQuery.trim()) {
+      const searchPath = `/product/search?q=${encodeURIComponent(searchQuery)}`;
+      router.push(searchPath);
+    }
+  }, [searchQuery, router]);
+
+  // Memoize key press handler
+  const handleKeyPress = useCallback((e) => {
     if (e.key === "Enter") {
       handleSearch();
     }
-  };
+  }, [handleSearch]);
 
-  // Fallback categories while loading
-  const fallbackCategories = [
-    { name: "Home", link: "/" }
-  ];
+  // Memoize account dropdown toggle
+  const toggleAccountDropdown = useCallback(() => {
+    setIsAccountOpen(prev => !prev);
+  }, []);
 
-  const displayCategories = loading ? fallbackCategories : 
-    categories.length > 0 ? 
-      [{ name: "Home", link: "/" }, ...categories.map(cat => ({ 
-        name: cat.name, 
-        link: `/category/${cat.name.replace(/\s+/g, '-')}` 
-      }))] : fallbackCategories;
+  // Memoize logout function
+  const handleLogout = useCallback(async () => {
+    try {
+      toast.loading('Logging out...');
+      await fetch('/api/users/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      toast.dismiss();
+      toast.success('Logged out successfully!');
+      setIsAuthenticated(false);
+      setUserData(null);
+      window.location.href = '/';
+    } catch (error) {
+      toast.dismiss();
+      toast.error('Logout failed. Please try again.');
+      console.error('Logout failed:', error);
+    }
+  }, []);
+
+  // Memoized display categories
+  const displayCategories = useMemo(() => {
+    if (loading) return fallbackCategories;
+    
+    if (categories.length > 0) {
+      return [
+        { name: "Home", link: homeLink }, 
+        ...categories.map(cat => ({ 
+          name: cat.name, 
+          link:`/category/${cat.name.replace(/\s+/g, '-')}` 
+        }))
+      ];
+    }
+    
+    return fallbackCategories;
+  }, [loading, categories, homeLink, fallbackCategories]);
+
+  // Memoize search query change handler
+  const handleSearchChange = useCallback((e) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
+  // Memoize search focus handlers
+  const handleSearchFocus = useCallback(() => setIsSearchFocused(true), []);
+  const handleSearchBlur = useCallback(() => setIsSearchFocused(false), []);
+
+  // Memoize sheet state handler
+  const handleSheetStateChange = useCallback((newState) => {
+    setIsOpen(newState);
+  }, []);
+
+  // Memoize combined sheet close and logout handler
+  const handleSheetCloseAndLogout = useCallback(() => {
+    setIsOpen(false);
+    handleLogout();
+  }, [handleLogout]);
+
+  // Memoize nav animation
+  const navAnimation = useMemo(() => ({
+    initial: { y: -50, opacity: 0 },
+    animate: { y: 0, opacity: 1 },
+    transition: { duration: 0.5 }
+  }), []);
+
+  // Memoize search input animation
+  const searchInputAnimation = useMemo(() => ({
+    initial: { width: "150px" },
+    animate: { width: isSearchFocused ? "250px" : "150px" },
+    transition: { type: "spring", stiffness: 300 }
+  }), [isSearchFocused]);
+
+  // Memoize account dropdown animation
+  const accountDropdownAnimation = useMemo(() => ({
+    initial: { opacity: 0, y: -20 },
+    animate: { opacity: 1, y: 0 }
+  }), []);
+
+  // Memoize nav classes
+  const navClasses = useMemo(() => `shadow-md px-4 md:px-6 py-3 sticky top-0 z-50 transition-colors duration-300 ${
+    hasScrolled ? "bg-white" : "bg-transparent"
+  }`, [hasScrolled]);
 
   return (
     <motion.nav
-      initial={{ y: -50, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className={`shadow-md px-4 md:px-6 py-3 sticky top-0 z-50 transition-colors duration-300 ${
-        hasScrolled ? "bg-white" : "bg-transparent"
-      }`}
+      {...navAnimation}
+      className={navClasses}
     >
       <div className="mx-auto flex items-center justify-between">
         {/* Mobile Header Section */}
         <div className="flex items-center justify-between w-full lg:w-auto">
           {/* Mobile Menu Button */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <Sheet open={isOpen} onOpenChange={handleSheetStateChange}>
             <SheetTrigger asChild className="lg:hidden">
               <Button variant="ghost" size="icon" className="text-green-700 text-2xl hover:bg-green-100 hover:text-green-800">
                 <FiMenu />
@@ -193,7 +335,7 @@ const Navbar = () => {
                       placeholder="Search products..."
                       className="w-full bg-gray-50 border-green-200 focus:border-green-500"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={handleSearchChange}
                       onKeyDown={handleKeyPress}
                     />
                     <Button 
@@ -207,27 +349,69 @@ const Navbar = () => {
                   </div>
                 </div>
                 
-                <SheetFooter className="mt-auto border-t pt-4">
-                  <Link href="/auth/signIn" className="w-full" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full bg-green-600 hover:bg-green-800 rounded-lg">
-                      Sign In
-                    </Button>
-                  </Link>
-                </SheetFooter>
+                {/* Conditional Mobile Menu Footer */}
+               {isAuthenticated ? (
+                  <>
+                    {/* User Account Options */}
+                    <div className="mt-4 space-y-3">
+                      <Link href={"/account/order-history"} onClick={() => setIsOpen(false)}>
+                        <div className="flex items-center space-x-3 px-2 py-2 hover:bg-green-100 rounded-md cursor-pointer">
+                          <span>📦</span>
+                          <span>My Orders</span>
+                        </div>
+                      </Link>
+                      <Link href={"/account/wishlist"} onClick={() => setIsOpen(false)}>
+                        <div className="flex items-center space-x-3 px-2 py-2 hover:bg-green-100 rounded-md cursor-pointer">
+                          <FiHeart className="text-green-700" />
+                          <span>Wishlist</span>
+                        </div>
+                      </Link>
+                      <Link href={"/account/savedAddress"} onClick={() => setIsOpen(false)}>
+                        <div className="flex items-center space-x-3 px-2 py-2 hover:bg-green-100 rounded-md cursor-pointer">
+                          <span>🏠</span>
+                          <span>Addresses</span>
+                        </div>
+                      </Link>
+                      <Link href={"/account/notifications"} onClick={() => setIsOpen(false)}>
+                        <div className="flex items-center space-x-3 px-2 py-2 hover:bg-green-100 rounded-md cursor-pointer">
+                          <FiBell className="text-green-700" />
+                          <span>Notifications</span>
+                        </div>
+                      </Link>
+                    </div>
+                    
+                    <SheetFooter className="mt-auto border-t pt-4">
+                      <Button 
+                        className="w-full bg-red-500 hover:bg-red-600 rounded-lg"
+                        onClick={handleSheetCloseAndLogout}
+                      >
+                        Logout
+                      </Button>
+                    </SheetFooter>
+                  </>
+                ) : (
+                  <SheetFooter className="mt-auto border-t pt-4">
+                    <Link href="/auth/signIn" className="w-full" onClick={() => setIsOpen(false)}>
+                      <Button className="w-full bg-green-600 hover:bg-green-800 rounded-lg">
+                        Sign In
+                      </Button>
+                    </Link>
+                  </SheetFooter>
+                )}
               </div>
             </SheetContent>
           </Sheet>
 
           {/* Logo - Centered on mobile */}
           <div className="flex items-center justify-center mx-auto lg:mx-0 lg:justify-start">
-            <Link href="/">
+            <Link href={"/"}>
               <Image src="/logo/cleanvedaLogo.png" alt="Cleanveda Logo" width={120} height={50} priority className="object-contain" />
             </Link>
           </div>
 
           {/* Mobile Icons */}
           <div className="lg:hidden flex items-center space-x-4">
-            <Link href="/product/cart">
+            <Link href={"/product/cart"}>
               <div className="relative">
                 <FiShoppingCart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
                 {cartItemCount > 0 && (
@@ -237,9 +421,15 @@ const Navbar = () => {
                 )}
               </div>
             </Link>
-            <Link href="/account">
-              <FiUser className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
-            </Link>
+            {isAuthenticated ? (
+              <Link href="#" onClick={toggleAccountDropdown}>
+                <FiUser className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+              </Link>
+            ) : (
+              <Link href="/auth/signIn">
+                <FiUser className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+              </Link>
+            )}
           </div>
         </div>
 
@@ -271,9 +461,7 @@ const Navbar = () => {
         {/* Desktop Icons Section */}
         <div className="hidden lg:flex items-center space-x-4">
           <motion.div
-            initial={{ width: "150px" }}
-            animate={{ width: isSearchFocused ? "250px" : "150px" }}
-            transition={{ type: "spring", stiffness: 300 }}
+            {...searchInputAnimation}
             className="relative"
           >
             <Input
@@ -281,10 +469,10 @@ const Navbar = () => {
               placeholder="Search..."
               className="w-full text-black bg-gray-100 border-green-200 focus:border-green-500"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               onKeyDown={handleKeyPress}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
               aria-label="Search"
               autoComplete="off"
             />
@@ -297,38 +485,135 @@ const Navbar = () => {
               <FiSearch />
             </Button>
           </motion.div>
-
-          <Link href="/auth/signIn">
-            <Button className="bg-green-600 hover:bg-green-800 rounded-xl">
-              Sign In
-            </Button>
-          </Link>
           
-          <div className="flex items-center space-x-5">
-            <Link href="/auth/signIn">
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FiHeart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
-              </motion.div>
-            </Link>
-            
-            <Link href="/product/cart">
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative"
-              >
-                <FiShoppingCart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
-                {cartItemCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-orange-500 h-5 w-5 p-0 flex items-center justify-center text-xs">
-                    {cartItemCount}
-                  </Badge>
+           {/* Conditional rendering based on authentication status */}
+          {isAuthenticated ? (
+            <div className="flex items-center space-x-5">
+              {/* Notification */}
+              <Link href={"/account/notifications"}>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <FiBell className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+                </motion.div>
+              </Link>
+              
+              {/* Wishlist */}
+              <Link href={"/account/wishlist"}>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <FiHeart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+                </motion.div>
+              </Link>
+              
+              {/* Account Button */}
+              <div className="relative account-dropdown">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={toggleAccountDropdown}
+                  className="text-lg font-medium hover:text-green-700 focus:outline-none flex items-center"
+                >
+                  <FiUser className="text-green-700 text-2xl cursor-pointer" />
+                  {isAccountOpen ? <AiOutlineUp className="ml-1 text-green-700" /> : <AiOutlineDown className="ml-1 text-green-700" />}
+                </motion.button>
+                
+                {isAccountOpen && (
+                  <motion.div
+                    {...accountDropdownAnimation}
+                    className="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-lg py-2 z-50 account-dropdown"
+                  >
+                    <ul className="space-y-1">
+                      <li>
+                        <Link href={"/account/order-history"}>
+                          <div className="flex items-center space-x-3 px-4 py-2 hover:bg-green-100 text-gray-700">
+                            <span>📦</span>
+                            <span>Orders</span>
+                          </div>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={"/account/wishlist"}>
+                          <div className="flex items-center space-x-3 px-4 py-2 hover:bg-green-100 text-gray-700">
+                            <span>❤️</span>
+                            <span>Wishlist</span>
+                          </div>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={"/account/savedAddress"}>
+                          <div className="flex items-center space-x-3 px-4 py-2 hover:bg-green-100 text-gray-700">
+                            <span>🏠</span>
+                            <span>Addresses</span>
+                          </div>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={"/account/notifications"}>
+                          <div className="flex items-center space-x-3 px-4 py-2 hover:bg-green-100 text-gray-700">
+                            <span>🔔</span>
+                            <span>Notifications</span>
+                          </div>
+                        </Link>
+                      </li>
+                      <li className="border-t border-gray-100 mt-1 pt-1">
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center space-x-3 px-4 py-2 hover:bg-red-100 text-red-600 w-full text-left"
+                        >
+                          <span>▶️</span>
+                          <span>Logout</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </motion.div>
                 )}
-              </motion.div>
-            </Link>
-          </div>
+              </div>
+              
+              {/* Cart */}
+              <Link href={"/product/cart"}>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative"
+                >
+                  <FiShoppingCart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+                  {cartItemCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-orange-500 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                      {cartItemCount}
+                    </Badge>
+                  )}
+                </motion.div>
+              </Link>
+            </div>
+          ) : (
+            // Show Sign In button for non-authenticated users
+            <div className="flex items-center space-x-5">
+              <Link href="/auth/signIn">
+                <Button className="bg-green-600 hover:bg-green-800 rounded-xl">
+                  Sign In
+                </Button>
+              </Link>
+              
+              <Link href={"/product/cart"}>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative"
+                >
+                  <FiShoppingCart className="text-green-700 text-2xl cursor-pointer hover:text-green-800" />
+                  {cartItemCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-orange-500 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                      {cartItemCount}
+                    </Badge>
+                  )}
+                </motion.div>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </motion.nav>

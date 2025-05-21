@@ -239,12 +239,12 @@ const SidebarAdmin = () => {
                   />
                 </Link>
 
-                <Link href="/admin/dashboard/ourStaff" passHref>
+                <Link href="/admin/dashboard/ourStaffs" passHref>
                   <SidebarItem
                     icon={<ImProfile />}
-                    label="Our Staff"
-                    selected={selectedItem === "ourStaff"}
-                    onClick={() => setSelectedItem("ourStaff")}
+                    label="Our Staffs"
+                    selected={selectedItem === "ourStaffs"}
+                    onClick={() => setSelectedItem("ourStaffs")}
                   />
                 </Link>
 

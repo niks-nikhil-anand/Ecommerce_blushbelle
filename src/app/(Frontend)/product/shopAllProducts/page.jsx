@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import { Star, ShoppingCart, Check } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Import shadcn components
@@ -12,13 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -37,7 +30,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import ProductCard from "@/components/frontend/shared/ProductCard";
 
 const ShopProducts = () => {
   const [products, setProducts] = useState([]);
@@ -46,7 +47,6 @@ const ShopProducts = () => {
   const [filters, setFilters] = useState({ availability: "", category: "", price: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage, setProductsPerPage] = useState(9);
-  const [addedToCartItems, setAddedToCartItems] = useState({});
   const router = useRouter();
 
   // Fetch products whenever sort option or filters change
@@ -79,72 +79,6 @@ const ShopProducts = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleCardClick = (id) => {
-    if (id) {
-      router.push(`/product/${id}`);
-    } else {
-      console.warn("Product ID is undefined");
-    }
-  };
-
-  // Handle adding product to cart
-  const handleAddToCart = (e, product) => {
-    e.stopPropagation(); // Prevent navigating to product detail page
-    
-    if (!product?._id) return;
-    
-    const productId = product._id;
-    
-    // Update the addedToCartItems state
-    setAddedToCartItems(prev => ({
-      ...prev,
-      [productId]: true
-    }));
-    
-    // Retrieve the existing cart from localStorage
-    let existingCart = localStorage.getItem("cart");
-
-    try {
-      // Parse the cart if it exists and is valid JSON, otherwise initialize an empty array
-      existingCart = existingCart ? JSON.parse(existingCart) : [];
-    } catch (e) {
-      // If parsing fails, initialize as an empty array
-      existingCart = [];
-    }
-
-    // Ensure existingCart is an array
-    if (!Array.isArray(existingCart)) {
-      existingCart = [];
-    }
-
-    // Check if the product is already in the cart
-    const existingProductIndex = existingCart.findIndex(
-      (item) => item.id === productId
-    );
-
-    if (existingProductIndex !== -1) {
-      // If the product is already in the cart, update its quantity
-      existingCart[existingProductIndex].quantity += 1;
-    } else {
-      // If the product is not in the cart, add it
-      existingCart.push({
-        id: productId,
-        quantity: 1
-      });
-    }
-
-    // Update the cart in localStorage
-    localStorage.setItem("cart", JSON.stringify(existingCart));
-    
-    // Reset the button after 3 seconds
-    setTimeout(() => {
-      setAddedToCartItems(prev => ({
-        ...prev,
-        [productId]: false
-      }));
-    }, 3000);
   };
 
   // Handle sort change
@@ -235,137 +169,10 @@ const ShopProducts = () => {
   const endIndex = Math.min(startIndex + productsPerPage, filteredProducts.length);
   const displayedProducts = filteredProducts.slice(startIndex, endIndex);
 
-  // Product card component
-  const ProductCard = ({ product }) => {
-    // Safeguard for product being undefined
-    if (!product || typeof product !== 'object') return null;
-    
-    // Safely extract values with fallbacks
-    const name = typeof product.name === 'string' ? product.name : "Unnamed Product";
-    const productId = product._id || "";
-    const featuredImage = typeof product.featuredImage === 'string' ? product.featuredImage : "";
-    const category = typeof product.category === 'string' ? product.category : "";
-    
-    // Safely handle numerical values
-    const originalPrice = typeof product.originalPrice === 'number' ? product.originalPrice : 
-                         typeof product.originalPrice === 'string' ? parseFloat(product.originalPrice) || 0 : 0;
-    const salePrice = typeof product.salePrice === 'number' ? product.salePrice : 
-                     typeof product.salePrice === 'string' ? parseFloat(product.salePrice) || 0 : 0;
-    
-    // Calculate discount safely
-    const discount = originalPrice > 0 && originalPrice > salePrice ? 
-      Math.round(((originalPrice - salePrice) / originalPrice) * 100) : 0;
-
-    // Safely handle review data
-    const reviewCount = typeof product.reviewCount === 'number' ? product.reviewCount : 0;
-    const rating = typeof product.rating === 'number' ? product.rating : 4;
-    
-    // Check if this product is currently in "added to cart" state
-    const isAddedToCart = addedToCartItems[productId] === true;
-
-    return (
-      <motion.div
-        whileHover={{ y: -5 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Card className="h-full overflow-hidden group cursor-pointer border-2 hover:border-indigo-500">
-          <div onClick={() => handleCardClick(productId)} className="h-full flex flex-col">
-            {/* Discount badge */}
-            {discount > 0 && (
-              <Badge className="absolute top-2 right-2 bg-red-500 hover:bg-red-600">
-                {discount}% OFF
-              </Badge>
-            )}
-
-            {/* Product Image */}
-            <div className="relative h-48 overflow-hidden bg-gray-50">
-              {featuredImage ? (
-                <img
-                  src={featuredImage}
-                  alt={name}
-                  className="object-contain w-full h-full transition-transform duration-500 group-hover:scale-110"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full bg-gray-100">
-                  <span className="text-gray-400">No image</span>
-                </div>
-              )}
-            </div>
-
-            <CardHeader className="p-4 pb-0">
-              <h3 className="font-semibold text-lg line-clamp-1">{name}</h3>
-            </CardHeader>
-
-            <CardContent className="p-4 flex-grow">
-              {/* Price Section */}
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-lg font-bold text-black">
-                  ₹{salePrice.toFixed(2)}
-                </span>
-                {originalPrice > salePrice && (
-                  <span className="text-sm font-medium text-gray-500 line-through">
-                    ₹{originalPrice.toFixed(2)}
-                  </span>
-                )}
-              </div>
-
-              {/* Rating */}
-              <div className="flex items-center mt-2">
-                <div className="flex text-yellow-500">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={14}
-                      className={i < rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}
-                    />
-                  ))}
-                </div>
-                <span className="text-xs text-gray-500 ml-2">
-                  ({reviewCount} {reviewCount !== 1 ? 'reviews' : 'review'})
-                </span>
-              </div>
-
-              {/* Category */}
-              {category && (
-                <Badge variant="outline" className="mt-2 text-xs">
-                  {category}
-                </Badge>
-              )}
-            </CardContent>
-
-            <CardFooter className="p-4 pt-0 mt-auto">
-              <Button
-                variant="outline"
-                size="sm"
-                className={`w-full transition-colors duration-300 ${
-                  isAddedToCart 
-                    ? "bg-green-600 hover:bg-green-700 text-white border-green-500" 
-                    : "bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white"
-                }`}
-                onClick={(e) => handleAddToCart(e, product)}
-                disabled={isAddedToCart}
-              >
-                {isAddedToCart ? (
-                  <>
-                    <Check className="mr-2 h-4 w-4" /> Added to Cart
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
-                  </>
-                )}
-              </Button>
-            </CardFooter>
-          </div>
-        </Card>
-      </motion.div>
-    );
-  };
-
   // Loading skeleton for product cards
   const ProductCardSkeleton = () => (
     <Card className="h-full">
-      <div className="h-48 relative">
+      <div className="h-56 relative">
         <Skeleton className="h-full w-full" />
       </div>
       <CardHeader className="p-4 pb-0">

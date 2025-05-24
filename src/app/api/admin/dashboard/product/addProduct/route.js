@@ -80,7 +80,7 @@ export const POST = async (req) => {
       salePrice,
       originalPrice,
       category,
-      subCatgeory:subCategory,
+      subCategory:subCategory,
       isOnSale,
       isFeaturedSale,
       tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],

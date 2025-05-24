@@ -5,8 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import toast from "react-hot-toast";
-import ProductCard from "./ProductCard";
+import ProductCard from "../shared/ProductCard";
 
 const FeaturedProductSection = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);

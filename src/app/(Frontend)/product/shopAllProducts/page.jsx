@@ -71,6 +71,9 @@ const ShopProducts = () => {
         }
         return {}; // Return empty object for invalid items
       }) : [];
+
+
+      console.log(formattedData)
       
       setProducts(formattedData);
     } catch (error) {
@@ -468,7 +471,6 @@ const ShopProducts = () => {
                 </PaginationItem>
 
                 {Array.from({ length: totalPages }).map((_, index) => {
-                  // Show first page, last page, and pages around current page
                   if (
                     index === 0 ||
                     index === totalPages - 1 ||

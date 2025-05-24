@@ -1,6 +1,8 @@
 import connectDB from "@/lib/dbConnect";
 import productModels from "@/models/productModels";
 import { NextResponse } from "next/server";
+import categoryModels from "@/models/categoryModels";
+import subCategoryModels from "@/models/subCategoryModels";
 
 export const GET = async (request, { params }) => {
   const { id } = params;
@@ -18,7 +20,7 @@ export const GET = async (request, { params }) => {
     await connectDB();
     console.log("Database connected");
 
-    const product = await productModels.findById(id).populate('category').populate('subCatgeory');
+    const product = await productModels.findById(id).populate('category').populate('subCategory');
     console.log("Fetched Product:", product);
 
     if (!product) {

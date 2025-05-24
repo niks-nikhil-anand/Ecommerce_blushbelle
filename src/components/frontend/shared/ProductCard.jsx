@@ -43,15 +43,17 @@ const ProductCard = ({ product, isLoading = false }) => {
 
   const handleProductClick = () => {
     // Ensure product._id is a string before using it
-    const productId = product._id?.toString() || "";
-    router.push(`/product/${productId}`);
+    const productId = product?._id?.toString() || "";
+    if (productId) {
+      router.push(`/product/${productId}`);
+    }
   };
 
   const handleActionClick = (e, action) => {
     e.stopPropagation();
     
     // Use product.name as a string, not an object
-    const productName = typeof product.name === 'string' ? product.name : 'Product';
+    const productName = typeof product?.name === 'string' ? product.name : 'Product';
     
     switch (action) {
       case "wishlist":
@@ -62,6 +64,10 @@ const ProductCard = ({ product, isLoading = false }) => {
         break;
       case "quickview":
         // Implement quick view functionality
+        toast.success(`Quick view for ${productName}`, {
+          icon: '👁️',
+          duration: 2000,
+        });
         break;
       case "cart":
         toast.success(`${productName} added to your cart`, {
@@ -75,7 +81,7 @@ const ProductCard = ({ product, isLoading = false }) => {
   };
 
   const calculateDiscount = () => {
-    if (product.originalPrice && product.salePrice) {
+    if (product?.originalPrice && product?.salePrice) {
       const discount = ((product.originalPrice - product.salePrice) / product.originalPrice) * 100;
       return Math.round(discount);
     }
@@ -85,7 +91,8 @@ const ProductCard = ({ product, isLoading = false }) => {
   // Safely access product properties with fallbacks
   const {
     name = "",
-    category = "",
+    category = null,
+    subCategory = null,
     featuredImage = "",
     rating = 0,
     reviewCount = 0,
@@ -94,6 +101,10 @@ const ProductCard = ({ product, isLoading = false }) => {
     stockStatus = "",
     tags = []
   } = product || {};
+
+  // Safe access to category and subcategory names
+  const categoryName = category?.name || "";
+  const subCategoryName = subCategory?.name || "";
 
   return (
     <motion.div
@@ -139,6 +150,7 @@ const ProductCard = ({ product, isLoading = false }) => {
                   !imageLoaded && "opacity-0"
                 )}
                 onLoad={() => setImageLoaded(true)}
+                onError={() => setImageLoaded(true)}
               />
             ) : (
               <div className="h-full w-full bg-gray-100 flex items-center justify-center rounded">
@@ -147,51 +159,73 @@ const ProductCard = ({ product, isLoading = false }) => {
             )}
           </div>
           
-          {/* Action buttons */}
+          {/* 3D Action buttons with enhanced styling */}
           <motion.div 
-            className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 py-2 bg-white bg-opacity-90"
-            initial={{ y: 60 }}
-            animate={{ y: isHovered ? 0 : 60 }}
-            transition={{ duration: 0.3 }}
+            className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 py-2 bg-gradient-to-t from-white via-white/95 to-transparent"
+            initial={{ y: 60, opacity: 0 }}
+            animate={{ 
+              y: isHovered ? 0 : 60,
+              opacity: isHovered ? 1 : 0 
+            }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
             <Button
               size="icon"
               variant="outline"
-              className="h-8 w-8 rounded-full bg-white hover:bg-green-50 hover:text-green-600 hover:border-green-200"
+              className="h-10 w-10 rounded-full bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-200 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-200 border-2"
+              style={{
+                background: 'linear-gradient(145deg, #ffffff, #f0f0f0)',
+                boxShadow: '5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff'
+              }}
               onClick={(e) => handleActionClick(e, "wishlist")}
             >
-              <Heart className="h-4 w-4" />
+              <Heart className="h-4 w-4 drop-shadow-sm" />
             </Button>
             <Button
               size="icon"
               variant="outline"
-              className="h-8 w-8 rounded-full bg-white hover:bg-green-50 hover:text-green-600 hover:border-green-200"
+              className="h-10 w-10 rounded-full bg-white   hover:border-blue-200 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-200 border-2"
+              style={{
+                background: 'linear-gradient(145deg, #ffffff, #f0f0f0)',
+                boxShadow: '5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff'
+              }}
               onClick={(e) => handleActionClick(e, "quickview")}
             >
-              <Eye className="h-4 w-4" />
+              <Eye className="h-4 w-4 drop-shadow-sm" />
             </Button>
             <Button
               size="icon"
               variant="outline"
-              className="h-8 w-8 rounded-full bg-white hover:bg-green-50 hover:text-green-600 hover:border-green-200"
+              className="h-10 w-10 rounded-full bg-white hover:bg-green-50 hover:text-green-600 hover:border-green-200 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-200 border-2"
+              style={{
+                background: 'linear-gradient(145deg, #ffffff, #f0f0f0)',
+                boxShadow: '5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff'
+              }}
               onClick={(e) => handleActionClick(e, "cart")}
             >
-              <ShoppingCart className="h-4 w-4" />
+              <ShoppingCart className="h-4 w-4 drop-shadow-sm" />
             </Button>
           </motion.div>
         </div>
         
         {/* Product Info */}
         <CardContent className="p-4">
-          {/* Category */}
-          {category && (
-            <p className="text-xs text-gray-500 mb-1">
-              {String(category.name)}
-            </p>
-          )}
+          {/* Category and Subcategory */}
+          <div className="space-y-1 mb-2">
+            {categoryName && (
+              <p className="text-xs text-gray-500">
+                {String(categoryName)}
+              </p>
+            )}
+            {subCategoryName && (
+              <p className="text-xs text-gray-400 font-medium">
+                {String(subCategoryName)}
+              </p>
+            )}
+          </div>
           
           {/* Product Name */}
-          <h3 className="font-medium text-sm line-clamp-2 h-10">{String(name)}</h3>
+          <h3 className="font-medium text-sm line-clamp-2 h-10 mb-2">{String(name)}</h3>
           
           {/* Price */}
           <div className="flex items-center gap-2 mt-2">
@@ -200,6 +234,19 @@ const ProductCard = ({ product, isLoading = false }) => {
               <span className="text-xs text-gray-400 line-through">₹{originalPrice}</span>
             )}
           </div>
+          
+          {/* Rating (if available) */}
+          {rating > 0 && (
+            <div className="flex items-center gap-1 mt-1">
+              <div className="flex text-yellow-400">
+                {'★'.repeat(Math.floor(rating))}
+                {'☆'.repeat(5 - Math.floor(rating))}
+              </div>
+              <span className="text-xs text-gray-500">
+                ({reviewCount || 0})
+              </span>
+            </div>
+          )}
           
           {/* Stock Status */}
           {stockStatus && (
@@ -216,4 +263,4 @@ const ProductCard = ({ product, isLoading = false }) => {
   );
 };
 
-export default ProductCard
+export default ProductCard;

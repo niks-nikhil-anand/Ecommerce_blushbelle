@@ -10,9 +10,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { ChevronRight, ChevronLeft, Upload, Check } from 'lucide-react';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
@@ -25,10 +23,7 @@ const BlogFormComponent = () => {
     title: '',
     content: '',
     featuredImage: '',
-    subtitle: '',
-    product: '',
-    author: '',
-    category: '',
+    product: [], // Changed to array for multiple products
   });
   const [loading, setLoading] = useState(false);
 
@@ -74,7 +69,24 @@ const BlogFormComponent = () => {
   }, []);
 
   const handleProductSelect = (productId) => {
-    setFormData({ ...formData, product: productId });
+    setFormData(prev => {
+      const currentProducts = prev.product || [];
+      const isSelected = currentProducts.includes(productId);
+      
+      if (isSelected) {
+        // Remove product if already selected
+        return {
+          ...prev,
+          product: currentProducts.filter(id => id !== productId)
+        };
+      } else {
+        // Add product if not selected
+        return {
+          ...prev,
+          product: [...currentProducts, productId]
+        };
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -82,9 +94,14 @@ const BlogFormComponent = () => {
     setLoading(true);
 
     const formDataToSend = new FormData();
-    for (const key in formData) {
-      formDataToSend.append(key, formData[key]);
-    }
+    formDataToSend.append('title', formData.title);
+    formDataToSend.append('content', formData.content);
+    formDataToSend.append('featuredImage', formData.featuredImage);
+    
+    // Handle multiple products
+    formData.product.forEach((productId, index) => {
+      formDataToSend.append(`product[${index}]`, productId);
+    });
 
     try {
       const response = await axios.post('/api/admin/dashboard/blog', formDataToSend, {
@@ -97,10 +114,7 @@ const BlogFormComponent = () => {
         title: '',
         content: '',
         featuredImage: '',
-        subtitle: '',
-        product: '',
-        author: '',
-        category: '',
+        product: [],
       });
       setStep(1);
     } catch (error) {
@@ -118,13 +132,13 @@ const BlogFormComponent = () => {
       description: "Write your blog post content" 
     },
     { 
-      title: "Details & Metadata", 
-      description: "Add supporting information" 
+      title: "Image & Products", 
+      description: "Add featured image and related products" 
     }
   ];
 
   return (
-    <div className="w-full h-[90vh] overflow-y-auto max-h-[80vh] p-6 bg-gray-50 custom-scrollbar">
+    <div className="w-full h-[90vh] overflow-y-auto max-h-[95vh] p-6 bg-gray-50 custom-scrollbar">
       <Card className="w-full shadow-md">
         <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
           <div className="flex justify-between items-center">
@@ -175,6 +189,7 @@ const BlogFormComponent = () => {
                       onChange={handleChange}
                       placeholder="Enter an engaging title for your blog"
                       className="mt-1 h-12"
+                      required
                     />
                   </div>
                   
@@ -199,43 +214,7 @@ const BlogFormComponent = () => {
                 exit={{ opacity: 0, x: -20 }}
                 className="space-y-6"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="subtitle" className="text-base font-medium text-gray-700">Subtitle</Label>
-                    <Input
-                      id="subtitle"
-                      name="subtitle"
-                      value={formData.subtitle}
-                      onChange={handleChange}
-                      placeholder="Add a descriptive subtitle"
-                      className="mt-1"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="author" className="text-base font-medium text-gray-700">Author</Label>
-                    <Input
-                      id="author"
-                      name="author"
-                      value={formData.author}
-                      onChange={handleChange}
-                      placeholder="Who wrote this blog?"
-                      className="mt-1"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="category" className="text-base font-medium text-gray-700">Category</Label>
-                    <Input
-                      id="category"
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      placeholder="Select or create a category"
-                      className="mt-1"
-                    />
-                  </div>
-                  
+                <div className="space-y-6">
                   <div>
                     <Label htmlFor="featuredImage" className="text-base font-medium text-gray-700">Featured Image</Label>
                     <div className="mt-1 flex items-center">
@@ -247,6 +226,8 @@ const BlogFormComponent = () => {
                           type="file"
                           className="hidden"
                           onChange={handleFileChange}
+                          accept="image/*"
+                          required
                         />
                       </label>
                     </div>
@@ -256,32 +237,47 @@ const BlogFormComponent = () => {
                       </p>
                     )}
                   </div>
-                </div>
-                
-                <div>
-                  <Label className="text-base font-medium text-gray-700">Related Product</Label>
-                  {fetchingProducts ? (
-                    <div className="flex justify-center py-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                    </div>
-                  ) : (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {products.map((product) => (
-                        <Badge
-                          key={product._id}
-                          variant={formData.product === product._id ? "default" : "outline"}
-                          className={`px-3 py-1 cursor-pointer text-sm ${
-                            formData.product === product._id 
-                              ? "bg-blue-600 hover:bg-blue-700" 
-                              : "hover:bg-blue-50"
-                          }`}
-                          onClick={() => handleProductSelect(product._id)}
-                        >
-                          {product.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
+                  
+                  <div>
+                    <Label className="text-base font-medium text-gray-700">
+                      Related Products 
+                      {formData.product.length > 0 && (
+                        <span className="text-sm text-blue-600 ml-2">
+                          ({formData.product.length} selected)
+                        </span>
+                      )}
+                    </Label>
+                    <p className="text-sm text-gray-500 mt-1 mb-3">Select one or more products related to this blog post</p>
+                    {fetchingProducts ? (
+                      <div className="flex justify-center py-4">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                      </div>
+                    ) : (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {products.map((product) => {
+                          const isSelected = formData.product.includes(product._id);
+                          return (
+                            <Badge
+                              key={product._id}
+                              variant={isSelected ? "default" : "outline"}
+                              className={`px-3 py-2 cursor-pointer text-sm transition-colors ${
+                                isSelected 
+                                  ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                                  : "hover:bg-blue-50 hover:border-blue-300"
+                              }`}
+                              onClick={() => handleProductSelect(product._id)}
+                            >
+                              {product.name}
+                              {isSelected && <Check size={14} className="ml-1" />}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {products.length === 0 && !fetchingProducts && (
+                      <p className="text-sm text-gray-500 mt-2">No products available</p>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -308,6 +304,7 @@ const BlogFormComponent = () => {
               type="button"
               onClick={handleNextStep}
               className="flex items-center gap-1"
+              disabled={!formData.title || !formData.content}
             >
               Next
               <ChevronRight size={16} />
@@ -316,7 +313,7 @@ const BlogFormComponent = () => {
             <Button 
               type="submit"
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || !formData.featuredImage}
               className="bg-green-600 hover:bg-green-700"
             >
               {loading ? 'Publishing...' : 'Publish Blog'}

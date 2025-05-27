@@ -3,7 +3,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import Loader from '@/components/loader/loader';
 
-const BlogInProductPage = () => {
+const BlogProductPage = () => {
   const [idFromURL, setIdFromURL] = useState('');
 
   const [articles, setArticles] = useState([]);
@@ -81,4 +81,4 @@ const BlogInProductPage = () => {
   );
 };
 
-export default BlogInProductPage;
+export default BlogProductPage;

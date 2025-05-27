@@ -9,34 +9,16 @@ const blogSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  subtitle: {
-    type: String,
-    required: true
-  },
-  category: {
-    type: String,
-    required: true
-  },
-  author: {
-    type: String,
-    required: true
-  },
   content: {
     type: mongoose.Schema.Types.Mixed,
     required: true
   },
-  product: {
+  product: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
-},
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
+}],
+},{
+  timestamps: true
 });
 
 

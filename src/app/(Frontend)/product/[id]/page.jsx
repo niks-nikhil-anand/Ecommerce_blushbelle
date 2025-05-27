@@ -5,11 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  FaRegArrowAltCircleLeft,
-  FaRegArrowAltCircleRight,
   FaCheckCircle,
-  FaPinterest,
-  FaInstagram,
   FaFacebook,
   FaTwitter,
   FaWhatsapp,
@@ -53,6 +49,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import BlogProductPage from "@/components/frontend/shared/ProductPage/BlogProductPage";
 
 const ProductDetail = () => {
   const router = useRouter();
@@ -717,7 +714,7 @@ const ProductDetail = () => {
         </Tabs>
       </div>
       <div className="mt-16">
-        <RelatedBlogs />
+        <BlogProductPage />
       </div>
 
       {/* Related Sections */}

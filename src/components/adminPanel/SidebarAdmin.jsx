@@ -10,15 +10,19 @@ import {
   FaNewspaper,
   FaStar,
 } from "react-icons/fa";
-import { MdCategory, MdOutlineLocalOffer, MdOutlineSubtitles } from "react-icons/md";
-import { FaBox, FaBoxes } from "react-icons/fa";
+import {
+  MdCategory,
+  MdOutlineLocalOffer,
+  MdOutlineSubtitles,
+} from "react-icons/md";
+import { FaBox } from "react-icons/fa";
 import { FaTable } from "react-icons/fa6";
 import { GiOpenBook } from "react-icons/gi";
 import {
   MdOutlineLogout,
   MdPendingActions,
-  MdOutlineRateReview,
 } from "react-icons/md";
+import { GiHerbsBundle } from "react-icons/gi";
 import { ImProfile } from "react-icons/im";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -118,6 +122,14 @@ const SidebarAdmin = () => {
                     onClick={() => setSelectedItem("Products")}
                   />
                 </Link>
+                <Link href="/admin/dashboard/Ingredient/AddIngredient" passHref>
+                  <SidebarItem
+                    icon={<GiHerbsBundle />}
+                    label="Ingredient"
+                    selected={selectedItem === "Ingredient"}
+                    onClick={() => setSelectedItem("Ingredient")}
+                  />
+                </Link>
 
                 <Link href="/admin/dashboard/coupon" passHref>
                   <SidebarItem
@@ -136,8 +148,11 @@ const SidebarAdmin = () => {
                     onClick={() => setSelectedItem("Add Categories")}
                   />
                 </Link>
-                
-                <Link href="/admin/dashboard/subCategory/addSubCategory" passHref>
+
+                <Link
+                  href="/admin/dashboard/subCategory/addSubCategory"
+                  passHref
+                >
                   <SidebarItem
                     icon={<MdOutlineSubtitles />}
                     label="Subcategories"
@@ -192,33 +207,33 @@ const SidebarAdmin = () => {
               <Separator className="my-2" />
               <div className="space-y-3">
                 <Link href="/admin/dashboard/review/addReview" passHref>
-                  <SidebarItem 
-                    icon={<FaPlus />} 
-                    label="Add Review" 
+                  <SidebarItem
+                    icon={<FaPlus />}
+                    label="Add Review"
                     selected={selectedItem === "Add Review"}
                     onClick={() => setSelectedItem("Add Review")}
                   />
                 </Link>
                 <Link href="/admin/dashboard/review/allReview" passHref>
-                  <SidebarItem 
-                    icon={<FaStar />} 
-                    label="Reviews" 
+                  <SidebarItem
+                    icon={<FaStar />}
+                    label="Reviews"
                     selected={selectedItem === "Reviews"}
                     onClick={() => setSelectedItem("Reviews")}
                   />
                 </Link>
                 <Link href="/admin/dashboard/messages/Queries" passHref>
-                  <SidebarItem 
-                    icon={<FaEnvelopeOpenText />} 
-                    label="Queries" 
+                  <SidebarItem
+                    icon={<FaEnvelopeOpenText />}
+                    label="Queries"
                     selected={selectedItem === "Queries"}
                     onClick={() => setSelectedItem("Queries")}
                   />
                 </Link>
                 <Link href="/admin/dashboard/messages/Newsletter" passHref>
-                  <SidebarItem 
-                    icon={<FaNewspaper />} 
-                    label="Newsletter" 
+                  <SidebarItem
+                    icon={<FaNewspaper />}
+                    label="Newsletter"
                     selected={selectedItem === "Newsletter"}
                     onClick={() => setSelectedItem("Newsletter")}
                   />
@@ -257,9 +272,7 @@ const SidebarAdmin = () => {
                   />
                 </Link>
               </div>
-              
             </div>
-            
 
             <Button
               variant="destructive"

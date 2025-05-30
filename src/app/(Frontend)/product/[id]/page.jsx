@@ -51,6 +51,7 @@ import {
 } from "@/components/ui/sheet";
 import BlogProductPage from "@/components/frontend/shared/ProductPage/BlogProductPage";
 import IngredientProductPage from "@/components/frontend/shared/ProductPage/IngredientProductPage";
+import BenefitsProductPage from "@/components/frontend/shared/ProductPage/BenefitsProductPage";
 
 const ProductDetail = () => {
   const router = useRouter();
@@ -764,6 +765,9 @@ const ProductDetail = () => {
     </div>
 
     <div>
+       <div className="mt-16">
+        <BenefitsProductPage />
+      </div>
        <div className="mt-16">
         <IngredientProductPage />
       </div>

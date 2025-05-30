@@ -15,13 +15,11 @@ import {
   MdOutlineLocalOffer,
   MdOutlineSubtitles,
 } from "react-icons/md";
+import { RiMedicineBottleLine } from "react-icons/ri";
 import { FaBox } from "react-icons/fa";
 import { FaTable } from "react-icons/fa6";
 import { GiOpenBook } from "react-icons/gi";
-import {
-  MdOutlineLogout,
-  MdPendingActions,
-} from "react-icons/md";
+import { MdOutlineLogout, MdPendingActions } from "react-icons/md";
 import { GiHerbsBundle } from "react-icons/gi";
 import { ImProfile } from "react-icons/im";
 import Link from "next/link";
@@ -64,7 +62,7 @@ const SidebarAdmin = () => {
       >
         <ScrollArea className="h-full pr-3">
           <div className="flex flex-col space-y-6">
-            <h2 className="text-lg font-semibold mb-4 bg-gradient-to-r from-green-600 to-purple-600 text-transparent bg-clip-text">
+            <h2 className="text-lg font-semibold mb-4 bg-clip-text  ">
               CleanVeda Dashboard
             </h2>
 
@@ -128,6 +126,21 @@ const SidebarAdmin = () => {
                     label="Ingredient"
                     selected={selectedItem === "Ingredient"}
                     onClick={() => setSelectedItem("Ingredient")}
+                  />
+                </Link>
+                <Link
+                  href="/admin/dashboard/benefitsOfProduct/AddBenefitsOfProduct"
+                  passHref
+                >
+                  <SidebarItem
+                    icon={
+                      <div className="flex items-center gap-1">
+                        <RiMedicineBottleLine className="text-yellow-500 text-2xl" />
+                      </div>
+                    }
+                    label="Benefits"
+                    selected={selectedItem === "Benefits"}
+                    onClick={() => setSelectedItem("Benefits")}
                   />
                 </Link>
 
@@ -294,16 +307,18 @@ const SidebarItem = ({ icon, label, selected, onClick }) => {
     <motion.div
       onClick={onClick}
       whileHover={{ scale: 1.05 }}
-      className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-300 shadow-sm cursor-pointer my-3  ${
-        selected
-          ? "bg-gradient-to-r from-green-600 to-purple-600 text-white"
-          : "hover:bg-purple-600 hover:text-white"
-      }`}
+      className={`flex items-center space-x-4 p-3 transition-all duration-300 shadow-sm cursor-pointer my-3
+        ${
+          selected
+            ? "bg-gradient-to-r from-green-600 to-purple-600 text-white "
+            : "hover:bg-purple-600 hover:text-white "
+        }`}
     >
       <div className="w-4 h-4">{icon}</div>
       <span className="font-semibold text-sm">{label}</span>
     </motion.div>
   );
 };
+
 
 export default SidebarAdmin;

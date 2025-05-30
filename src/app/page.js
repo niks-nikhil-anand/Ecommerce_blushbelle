@@ -1,4 +1,3 @@
-
 import CTA from "@/components/frontend/ui/CTA";
 import HeroSection from "@/components/frontend/ui/HeroSection";
 import ProductIngredients from "@/components/frontend/ui/ProductIngredients";

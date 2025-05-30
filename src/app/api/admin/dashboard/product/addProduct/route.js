@@ -108,7 +108,7 @@ export const GET = async (req) => {
 
     const products = await productModels.find().populate("category"); // Populate category field
 
-    console.log("Fetched products with categories:", products);
+    console.log("Fetched products with categories:");
     return NextResponse.json(products, { status: 200 });
   } catch (error) {
     console.error("Error fetching products:", error);

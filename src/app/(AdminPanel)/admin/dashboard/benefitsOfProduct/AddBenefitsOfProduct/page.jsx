@@ -1,18 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+// Using available shadcn/ui components
 import {
   Star,
   Plus,
@@ -26,9 +14,17 @@ import {
   Camera,
   Award,
   X,
+  Image,
 } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";
-// import toast from "react-hot-toast"; // Assuming react-hot-toast is configured in your layout
+import axios from "axios";
 
 const AdminBenefitForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -45,12 +41,16 @@ const AdminBenefitForm = () => {
     items: [
       {
         icon: "",
+        iconFile: null,
         title: "",
         description: "",
       },
     ],
     product: "",
   });
+
+  // Create refs for icon file inputs
+  const iconInputRefs = useRef([]);
 
   // Fetch products on component mount
   useEffect(() => {
@@ -63,7 +63,6 @@ const AdminBenefitForm = () => {
       } catch (error) {
         console.error("Error fetching products:", error);
         setProducts([]);
-        // toast.error("Failed to fetch products. Please try again.");
         alert("Failed to fetch products. Please try again.");
       } finally {
         setFetchingProducts(false);
@@ -72,10 +71,52 @@ const AdminBenefitForm = () => {
     fetchProducts();
   }, []);
 
+  // Update refs array when items change
+  useEffect(() => {
+    iconInputRefs.current = iconInputRefs.current.slice(0, formData.items.length);
+  }, [formData.items.length]);
+
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
-      handleImageUpload(file);
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        return;
+      }
+      
+      // Validate file size (e.g., max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB.');
+        return;
+      }
+
+      setImageFile(file);
+      setFormData((prev) => ({ ...prev, image: file.name }));
+    }
+  };
+
+  const handleIconFileSelect = (event, index) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        return;
+      }
+      
+      // Validate file size (e.g., max 2MB for icons)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Icon file size must be less than 2MB.');
+        return;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        items: prev.items.map((item, i) =>
+          i === index ? { ...item, iconFile: file, icon: file.name } : item
+        ),
+      }));
     }
   };
 
@@ -86,6 +127,7 @@ const AdminBenefitForm = () => {
         ...prev.items,
         {
           icon: "",
+          iconFile: null,
           title: "",
           description: "",
         },
@@ -99,6 +141,10 @@ const AdminBenefitForm = () => {
         ...prev,
         items: prev.items.filter((_, i) => i !== index),
       }));
+      // Clear the corresponding file input ref
+      if (iconInputRefs.current[index]) {
+        iconInputRefs.current[index].value = "";
+      }
     }
   };
 
@@ -109,6 +155,19 @@ const AdminBenefitForm = () => {
         i === index ? { ...item, [field]: value } : item
       ),
     }));
+  };
+
+  const removeIconFile = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      items: prev.items.map((item, i) =>
+        i === index ? { ...item, iconFile: null, icon: "" } : item
+      ),
+    }));
+    // Clear the file input
+    if (iconInputRefs.current[index]) {
+      iconInputRefs.current[index].value = "";
+    }
   };
 
   const handleProductSelect = (productId) => {
@@ -148,6 +207,7 @@ const AdminBenefitForm = () => {
       items: [
         {
           icon: "",
+          iconFile: null,
           title: "",
           description: "",
         },
@@ -160,6 +220,10 @@ const AdminBenefitForm = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    // Clear all icon input refs
+    iconInputRefs.current.forEach(ref => {
+      if (ref) ref.value = "";
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -169,7 +233,8 @@ const AdminBenefitForm = () => {
     try {
       // Validate required fields
       if (!imageFile) {
-        toast.error("Featured image is required");
+        alert("Featured image is required");
+        setIsSubmitting(false);
         return;
       }
 
@@ -179,20 +244,33 @@ const AdminBenefitForm = () => {
       );
 
       if (validItems.length === 0) {
-        toast.error("At least one benefit item with title and description is required");
+        alert("At least one benefit item with title and description is required");
+        setIsSubmitting(false);
         return;
       }
 
       // Create FormData object for multipart form submission
       const submitData = new FormData();
 
-      // Add the image file
+      // Add the featured image file
       if (imageFile) {
         submitData.append("image", imageFile);
       }
 
+      // Add icon files and prepare items data
+      const itemsData = validItems.map((item, index) => {
+        if (item.iconFile) {
+          submitData.append(`iconFile_${index}`, item.iconFile);
+        }
+        return {
+          icon: item.iconFile ? `iconFile_${index}` : item.icon,
+          title: item.title,
+          description: item.description,
+        };
+      });
+
       // Add benefit items as JSON string
-      submitData.append("items", JSON.stringify(validItems));
+      submitData.append("items", JSON.stringify(itemsData));
 
       // Add selected product if any
       if (selectedProduct) {
@@ -201,15 +279,13 @@ const AdminBenefitForm = () => {
 
       console.log("Submitting benefit data...");
 
-      // Make API call to create benefit
       const response = await axios.post("/api/admin/dashboard/benefits", submitData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      console.log("Benefit created successfully:", response.data);
-      toast.success("Benefit created successfully!");
+      toast.success("Benefit created successfully! ")
       resetForm();
     } catch (error) {
       console.error("Submission error:", error);
@@ -220,7 +296,7 @@ const AdminBenefitForm = () => {
         error.response?.data?.message ||
         error.message ||
         "Failed to create benefit. Please try again.";
-      toast.error(errorMessage);
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -247,7 +323,7 @@ const AdminBenefitForm = () => {
   );
 
   return (
-    <div className="w-full bg-gradient-to-br from-slate-50 to-gray-100 p-6">
+    <div className="w-full bg-white p-6 min-h-[90vh]">
       <div className="w-full">
         <div className="w-full">
           {/* Step 1: Featured Image & Benefit Items */}
@@ -279,6 +355,7 @@ const AdminBenefitForm = () => {
                         accept="image/*"
                         onChange={handleFileSelect}
                         className="hidden"
+                        id="featured-image-input"
                       />
                       <Button
                         type="button"
@@ -349,7 +426,7 @@ const AdminBenefitForm = () => {
                     </Button>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="max-h-96 overflow-y-auto pr-2 space-y-4">
                     {formData.items.map((item, index) => (
                       <Card key={index} className="border border-gray-200">
                         <CardContent className="p-6">
@@ -369,21 +446,60 @@ const AdminBenefitForm = () => {
                             )}
                           </div>
 
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* Icon Field */}
+                          <div className="grid grid-cols-1 gap-4">
+                            {/* Icon Upload Field */}
                             <div className="space-y-2">
-                              <Label className="text-sm font-medium text-gray-700">
-                                Icon URL
+                              <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                <Image className="text-purple-500 w-4 h-4" />
+                                Icon Image
                               </Label>
-                              <Input
-                                placeholder="Enter icon URL or identifier"
-                                value={item.icon}
-                                onChange={(e) =>
-                                  updateBenefitItem(index, "icon", e.target.value)
-                                }
-                                className="h-10"
-                              />
+                              
+                              <div className="space-y-3">
+                                <div className="relative">
+                                  <input
+                                    ref={(el) => (iconInputRefs.current[index] = el)}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleIconFileSelect(e, index)}
+                                    className="hidden"
+                                    id={`icon-input-${index}`}
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => iconInputRefs.current[index]?.click()}
+                                    className="w-full h-10 border-2 border-dashed border-gray-300 hover:border-gray-400 flex items-center gap-2"
+                                  >
+                                    <Upload className="w-4 h-4" />
+                                    {item.iconFile ? "Change Icon" : "Choose Icon"}
+                                  </Button>
+                                </div>
+
+                                {/* Display selected icon name */}
+                                {item.iconFile && (
+                                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2">
+                                        <Check className="w-3 h-3 text-blue-600" />
+                                        <span className="text-xs font-medium text-blue-800">
+                                          {item.iconFile.name}
+                                        </span>
+                                      </div>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removeIconFile(index)}
+                                      >
+                                        <X className="w-3 h-3" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                             </div>
+
+                          
 
                             {/* Title Field */}
                             <div className="space-y-2">
@@ -402,7 +518,7 @@ const AdminBenefitForm = () => {
                             </div>
 
                             {/* Description Field */}
-                            <div className="space-y-2 lg:col-span-2">
+                            <div className="space-y-2">
                               <Label className="text-sm font-medium text-gray-700">
                                 Description *
                               </Label>

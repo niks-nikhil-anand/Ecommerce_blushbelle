@@ -20,7 +20,7 @@ import {
 import Loader from "@/components/loader/loader";
 import ReviewProductPage from "@/components/frontend/ui/ReviewProductPage";
 import RelatedBlogs from "@/components/frontend/ui/RelatedBlogs";
-import RelatedProducts from "@/components/frontend/ui/RelatedProducts";
+import RelatedProducts from "@/components/frontend/shared/ProductPage/RelatedProducts";
 import {
   FacebookShareButton,
   TwitterShareButton,

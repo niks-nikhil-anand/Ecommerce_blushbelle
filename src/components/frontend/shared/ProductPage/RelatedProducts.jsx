@@ -3,7 +3,7 @@ import { useRouter, useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import ProductCard from '../shared/ProductCard';
+import ProductCard from '../ProductCard';
 
 const RelatedProducts = () => {
   const router = useRouter();

@@ -31,7 +31,7 @@ const RelatedProducts = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="container mx-auto px-3 py-8">
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
       <motion.h1 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

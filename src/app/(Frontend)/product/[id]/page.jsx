@@ -50,6 +50,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import BlogProductPage from "@/components/frontend/shared/ProductPage/BlogProductPage";
+import IngredientProductPage from "@/components/frontend/shared/ProductPage/IngredientProductPage";
 
 const ProductDetail = () => {
   const router = useRouter();
@@ -219,9 +220,8 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-     
-
+    <div>
+    <div className="container mx-auto px-4 py-8 max-w-7xl">  
       <Card className="overflow-hidden border-none shadow-md">
         <CardContent className="p-0">
           <div className="flex flex-col lg:flex-row">
@@ -713,14 +713,6 @@ const ProductDetail = () => {
           </TabsContent>
         </Tabs>
       </div>
-      <div className="mt-16">
-        <BlogProductPage />
-      </div>
-
-      {/* Related Sections */}
-      <div className="mt-16">
-        <RelatedProducts />
-      </div>
 
       {/* Fullscreen Image Modal */}
       {isFullScreen && (
@@ -769,6 +761,22 @@ const ProductDetail = () => {
           </SheetContent>
         </Sheet>
       )}
+    </div>
+
+    <div>
+       <div className="mt-16">
+        <IngredientProductPage />
+      </div>
+      <div className="mt-16">
+        <BlogProductPage />
+      </div>
+
+      {/* Related Sections */}
+      <div className="mt-16">
+        <RelatedProducts />
+      </div>
+    </div>
+
     </div>
   );
 };

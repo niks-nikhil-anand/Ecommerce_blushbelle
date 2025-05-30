@@ -1,7 +1,11 @@
 import mongoose from "mongoose";
 
-const videoSchema = new mongoose.Schema({
-  video: {
+const benefitSchema = new mongoose.Schema({
+  image: {
+    type: String,
+    required: true
+  },
+  icon: {
     type: String,
     required: true
   },
@@ -10,22 +14,9 @@ const videoSchema = new mongoose.Schema({
     required: true
   },
   description: {
-    type: mongoose.Schema.Types.Mixed,
+    type: String,
     required: true
   },
-   views: {
-    type: Number,
-    default: 0,
-  },
-  likes: {
-    type: Number,
-    default: 0,
-  },
-   isPublished: {
-    type: Boolean,
-    default: false,
-  },
-
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
@@ -35,7 +26,7 @@ const videoSchema = new mongoose.Schema({
 });
 
 
-export const Video = mongoose.models.Video || mongoose.model("Video" , videoSchema)
+export const Benefit = mongoose.models.Benefit || mongoose.model("Benefit" , benefitSchema)
 
 
 

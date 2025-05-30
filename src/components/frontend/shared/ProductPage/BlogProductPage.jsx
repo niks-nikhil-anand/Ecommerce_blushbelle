@@ -144,7 +144,7 @@ const BlogProductPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-3 py-8">
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="mx-auto">
         {/* Header Section */}
         <div className="text-center mb-16">

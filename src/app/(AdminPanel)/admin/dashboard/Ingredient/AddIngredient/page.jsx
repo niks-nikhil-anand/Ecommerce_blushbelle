@@ -28,6 +28,7 @@ import {
   Camera,
   CheckCircle,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 const AdminIngredientForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -143,15 +144,6 @@ const AdminIngredientForm = () => {
     }
   };
 
-  const removeImage = () => {
-    setImagePreview("");
-    setImageFile(null);
-    setFormData((prev) => ({ ...prev, image: "" }));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
   const handleProductSelect = (productId) => {
     setSelectedProducts((prev) => {
       const isSelected = prev.includes(productId);
@@ -254,16 +246,8 @@ const AdminIngredientForm = () => {
 
       // Parse the successful response
       const result = await response.json();
-      console.log("Ingredient created successfully:", result);
-
-      // Show success message
-      setShowSuccess(true);
-
-      // Reset form after successful submission
-      setTimeout(() => {
-        resetForm();
-        setShowSuccess(false);
-      }, 3000);
+      resetForm()
+      toast.success("Ingredient created successfully")
     } catch (error) {
       console.error("Submission error:", error);
 
@@ -294,24 +278,7 @@ const AdminIngredientForm = () => {
   const isStep1Valid =
     formData.name.trim() && formData.benefits.trim() && imageFile;
 
-  // Success Message Component
-  if (showSuccess) {
-    return (
-      <div className="w-full bg-gradient-to-br from-slate-50 to-gray-100 p-6">
-        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm max-w-md mx-auto">
-          <CardContent className="p-8 text-center">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              Ingredient Added Successfully!
-            </h3>
-            <p className="text-gray-600">
-              "{formData.name}" has been created and added to the system.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+
 
   return (
     <div className="w-full bg-gradient-to-br from-slate-50 to-gray-100 p-6">
@@ -586,11 +553,6 @@ const AdminIngredientForm = () => {
                               >
                                 {product?.name || "Unnamed Product"}
                               </Label>
-                              {product.description && (
-                                <p className="text-sm text-gray-500 truncate">
-                                  {product.description}
-                                </p>
-                              )}
                             </div>
                             {(product?.category || product?.subCategory) && (
                               <Badge variant="outline" className="text-xs">

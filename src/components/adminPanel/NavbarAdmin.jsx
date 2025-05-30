@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Menu, LogOut } from "lucide-react";
-import { toast, Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 // Import shadcn components
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,6 @@ import {
 
 const Navbar = () => {
   const router = useRouter();
-  const [darkMode, setDarkMode] = useState(false);
-  
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle("dark", !darkMode);
-  };
 
   const handleLogout = async () => {
     try {
@@ -60,15 +54,13 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white text-black transition-colors duration-300 shadow-lg border-b-2">
-      {/* Add Toaster component from react-hot-toast */}
-      <Toaster />
-      
+      {/* Add Toaster component from react-hot-toast */}      
       <div className="flex justify-between items-center px-4 py-5">
         {/* Hamburger Menu for Mobile View */}
         <div className="block lg:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:text-yellow-400">
+              <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
@@ -76,8 +68,8 @@ const Navbar = () => {
               <div className="flex flex-col gap-4 mt-8">
                 {/* Mobile navigation links can go here */}
                 <Button 
-                  variant="destructive" 
-                  className="flex items-center gap-2"
+                  variant="outline" 
+                  className="flex items-center gap-2 bg-white text-black border-gray-300"
                   onClick={handleLogout}
                 >
                   <span>Logout</span>
@@ -95,14 +87,16 @@ const Navbar = () => {
 
         {/* Title Section */}
         <div className="flex items-center justify-center">
-          <h1 className="text-2xl font-bold text-black">Cleanveda Super Admin Panel</h1>
+          <h1 className="text-2xl font-bold text-black font-cursive" style={{ fontFamily: "Dancing Script, cursive" }}>
+            Cleanveda Super Admin Panel
+          </h1>
         </div>
 
         {/* Right Section: Logout Button */}
         <div className="hidden lg:flex items-center">
           <Button 
-            variant="destructive"
-            className="flex items-center gap-2 bg-red-600 py-4"
+            variant="outline"
+            className="flex items-center gap-2 bg-white text-black border-gray-300 py-4"
             onClick={handleLogout}
           >
             <span>Logout</span>

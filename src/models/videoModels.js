@@ -21,11 +21,10 @@ const videoSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-   isPublished: {
+   isPublishedOnHomepage: {
     type: Boolean,
     default: false,
   },
-
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',

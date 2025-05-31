@@ -93,7 +93,7 @@ const RelatedProducts = () => {
               No Related Products
             </h3>
             <p className="text-gray-500">
-              We couldn't find any related products at this time.
+              We couldn&apos;t find any related products at this time.
             </p>
           </div>
         </motion.div>

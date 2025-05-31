@@ -53,6 +53,7 @@ import BlogProductPage from "@/components/frontend/shared/ProductPage/BlogProduc
 import IngredientProductPage from "@/components/frontend/shared/ProductPage/IngredientProductPage";
 import BenefitsProductPage from "@/components/frontend/shared/ProductPage/BenefitsProductPage";
 import VideoProductPage from "@/components/frontend/shared/ProductPage/VideoProductPage";
+import FeaturesStrip from "@/components/frontend/shared/ProductPage/FeaturesStripProductPage";
 
 const ProductDetail = () => {
   const router = useRouter();
@@ -540,33 +541,6 @@ const ProductDetail = () => {
                 <div className="prose max-w-none">
                   <div dangerouslySetInnerHTML={{ __html: description }} />
                 </div>
-
-                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="bg-green-100 p-2 rounded-full">
-                        <FaCheckCircle className="text-green-500" size={18} />
-                      </div>
-                      <h3 className="font-medium">Quality Guarantee</h3>
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      Made with 100% natural ingredients and rigorously tested
-                      for purity
-                    </p>
-                  </div>
-
-                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="bg-blue-100 p-2 rounded-full">
-                        <FaCheckCircle className="text-blue-500" size={18} />
-                      </div>
-                      <h3 className="font-medium">Clinically Tested</h3>
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      Proven to improve cognitive function and memory retention
-                    </p>
-                  </div>
-                </div>
               </div>
 
               <div className="lg:w-1/2">
@@ -766,7 +740,10 @@ const ProductDetail = () => {
     </div>
 
     <div>
-       <div className="mt-16">
+       <div className="">
+        <FeaturesStrip />
+      </div>
+       <div className="">
         <VideoProductPage />
       </div>
        <div className="mt-16">

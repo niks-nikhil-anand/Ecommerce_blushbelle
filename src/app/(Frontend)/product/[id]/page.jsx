@@ -54,6 +54,7 @@ import IngredientProductPage from "@/components/frontend/shared/ProductPage/Ingr
 import BenefitsProductPage from "@/components/frontend/shared/ProductPage/BenefitsProductPage";
 import VideoProductPage from "@/components/frontend/shared/ProductPage/VideoProductPage";
 import FeaturesStrip from "@/components/frontend/shared/ProductPage/FeaturesStripProductPage";
+import FaqsProductPage from "@/components/frontend/shared/ProductPage/FaqsProductPage";
 
 const ProductDetail = () => {
   const router = useRouter();
@@ -751,6 +752,9 @@ const ProductDetail = () => {
       </div>
        <div className="mt-16">
         <IngredientProductPage />
+      </div>
+       <div className="mt-16">
+        <FaqsProductPage />
       </div>
       <div className="mt-16">
         <BlogProductPage />

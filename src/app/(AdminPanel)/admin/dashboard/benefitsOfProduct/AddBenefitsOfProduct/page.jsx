@@ -323,7 +323,7 @@ const AdminBenefitForm = () => {
   );
 
   return (
-    <div className="w-full bg-white p-6 min-h-[90vh]">
+    <div className="w-full bg-white p-6 max-h-[90vh]">
       <div className="w-full">
         <div className="w-full">
           {/* Step 1: Featured Image & Benefit Items */}

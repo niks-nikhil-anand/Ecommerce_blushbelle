@@ -11,7 +11,8 @@ import {
   FaVideo,
   FaBox,
   FaTable,
-  FaPlus
+  FaPlus,
+  FaQuora
 } from "react-icons/fa";
 import {
   MdCategory,
@@ -110,6 +111,11 @@ const SidebarAdmin = () => {
           icon: <RiMedicineBottleLine />,
           label: "Benefits",
           href: "/admin/dashboard/benefitsOfProduct/AddBenefitsOfProduct"
+        },
+        {
+          icon: <FaQuora />,
+          label: "FAQs",
+          href: "/admin/dashboard/faqs/AddFaqs"
         },
         {
           icon: <MdOutlineLocalOffer />,

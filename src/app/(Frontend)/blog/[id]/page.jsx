@@ -14,6 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { AlertCircle, Calendar, Clock, User, ArrowRight } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
+import BlogCard from '@/components/frontend/shared/BlogCard';
 
 export default function BlogPostPage() {
   const [idFromURL, setIdFromURL] = useState('');
@@ -54,6 +55,17 @@ export default function BlogPostPage() {
     fetchData();
   }, []);
 
+  // Handler for blog card clicks
+  const handleCardClick = (blogId) => {
+    window.location.href = `/blog/${blogId}`;
+  };
+
+  // Handler for read more clicks
+  const handleReadMoreClick = (e, blogId) => {
+    e.stopPropagation(); // Prevent card click event
+    window.location.href = `/blog/${blogId}`;
+  };
+
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-gray-200 p-6 md:p-8 lg:p-12">
@@ -72,9 +84,9 @@ export default function BlogPostPage() {
 
   if (error) {
     return (
-      <div className="w-full min-h-screen bg-emerald-800 text-white p-6 md:p-8 lg:p-12">
+      <div className="w-full min-h-screen bg-gray-200 text-black p-6 md:p-8 lg:p-12">
         <div className="max-w-full mx-auto">
-          <Alert variant="destructive" className="border-red-400 bg-emerald-900/90 backdrop-blur text-white">
+          <Alert variant="destructive" className="border-red-400 bg-gray-200 backdrop-blur text-black">
             <AlertCircle className="h-5 w-5" />
             <AlertTitle className="text-red-200">Error</AlertTitle>
             <AlertDescription>
@@ -93,11 +105,6 @@ export default function BlogPostPage() {
   }) : 'Unknown date';
 
   const readingTime = '5 min read';
-
-  const truncateText = (text, maxLength) => {
-    if (!text) return '';
-    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-  };
 
   return (
    <div className="min-h-screen bg-white text-black px-4 md:px-8 lg:px-12 py-8">
@@ -159,57 +166,31 @@ export default function BlogPostPage() {
           </CardContent>
         </Card>
 
-        {/* RELATED BLOGS */}
+        {/* RELATED BLOGS USING BLOGCARD COMPONENT */}
         <div className="mt-12 mb-8">
-          <h2 className="text-2xl font-bold text-white mb-6">Related Articles</h2>
+          <h2 className="text-2xl font-bold text-black mb-6">Related Articles</h2>
           <Separator className="bg-emerald-600 mb-8" />
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedBlogs.length > 0 ? (
-              relatedBlogs.slice(0, 3).map((blog) => (
-                <Card key={blog.id} className="overflow-hidden border shadow-md hover:shadow-lg transition-shadow duration-300  backdrop-blur text-white">
-                  {blog.featuredImage && (
-                    <div className="relative h-48 w-full overflow-hidden">
-                      <img 
-                        src={blog.featuredImage} 
-                        alt={blog.title} 
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-2 right-2">
-                        {blog.categories?.[0] && (
-                          <Badge className="bg-emerald-500/80 text-white">{blog.categories[0]}</Badge>
-                        )}
-                      </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/70 to-transparent"></div>
-                    </div>
-                  )}
-                  
-                  <CardContent className="pt-6">
-                    <CardTitle className="text-lg font-medium text-black mb-2 line-clamp-2">
-                      {blog.title}
-                    </CardTitle>
-                    
-                    {blog.subtitle && (
-                      <CardDescription className="text-gray-700 line-clamp-2 mb-4">
-                        {truncateText(blog.subtitle.replace(/<[^>]*>/g, ''), 100)}
-                      </CardDescription>
-                    )}
-                  </CardContent>
-                  
-                  <CardFooter className="pt-0">
-                    <div className="flex justify-between items-center w-full text-sm">
-                      <span className="text-black">
-                        {blog.publishedAt ? new Date(blog.publishedAt).toLocaleDateString() : 'Unknown date'}
-                      </span>
-                      <a href={`/blog/${blog.id}`} className="flex items-center text-black hover:text-white transition-colors">
-                        Read More <ArrowRight size={16} className="ml-1" />
-                      </a>
-                    </div>
-                  </CardFooter>
-                </Card>
+              relatedBlogs.slice(0, 3).map((blog, index) => (
+                <BlogCard
+                  key={blog.id || blog._id}
+                  article={{
+                    _id: blog.id || blog._id,
+                    title: blog.title,
+                    content: blog.content || blog.subtitle,
+                    featuredImage: blog.featuredImage,
+                    createdAt: blog.createdAt || blog.publishedAt,
+                    categories: blog.categories
+                  }}
+                  index={index}
+                  onCardClick={handleCardClick}
+                  onReadMoreClick={handleReadMoreClick}
+                />
               ))
             ) : (
-              <div className="col-span-full text-center text-emerald-200 py-12">
+              <div className="col-span-full text-center text-gray-500 py-12">
                 No related articles found
               </div>
             )}

@@ -56,14 +56,14 @@ export default function BlogPostPage() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-emerald-800 p-6 md:p-8 lg:p-12">
+      <div className="w-full min-h-screen bg-gray-200 p-6 md:p-8 lg:p-12">
         <div className="max-w-full mx-auto space-y-6">
-          <Skeleton className="h-12 w-3/4 bg-emerald-700" />
-          <Skeleton className="h-64 w-full bg-emerald-700" />
+          <Skeleton className="h-12 w-3/4 bg-gray-100" />
+          <Skeleton className="h-64 w-full bg-gray-100" />
           <div className="space-y-4">
-            <Skeleton className="h-4 w-full bg-emerald-700" />
-            <Skeleton className="h-4 w-5/6 bg-emerald-700" />
-            <Skeleton className="h-4 w-4/6 bg-emerald-700" />
+            <Skeleton className="h-4 w-full bg-gray-100" />
+            <Skeleton className="h-4 w-5/6 bg-gray-100" />
+            <Skeleton className="h-4 w-4/6 bg-gray-100" />
           </div>
         </div>
       </div>
@@ -100,20 +100,20 @@ export default function BlogPostPage() {
   };
 
   return (
-    <div className="w-full min-h-screen text-white p-4 md:p-8 lg:p-12">
-      <div className="max-w-full mx-auto">
+   <div className="min-h-screen bg-white text-black px-4 md:px-8 lg:px-12 py-8">
+  <div className="max-w-5xl mx-auto">
         {/* LIGHT MODE CARD ONLY */}
-        <Card className="border bg-white dark:bg-white text-black overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300"></div>
-          
+        <Card className="border bg-white dark:bg-white text-black overflow-hidden">          
           <CardHeader className="px-4 md:px-8 pt-8 pb-2">
             <div className="flex flex-wrap gap-2 mb-4">
               {data?.categories?.map((category, index) => (
-                <Badge key={index} className="bg-emerald-600 hover:bg-emerald-500 text-white">{category}</Badge>
+                <Badge key={index} className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
+                  {category}
+                  </Badge>
               )) || <Badge className="bg-emerald-600 text-white">Blog</Badge>}
             </div>
             
-            <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-bold text-black">
+            <CardTitle className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
               {data?.title}
             </CardTitle>
             
@@ -138,36 +138,24 @@ export default function BlogPostPage() {
               <img 
                 src={data.featuredImage} 
                 alt={data.title} 
-                className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/70 to-transparent"></div>
             </div>
           )}
           
           <CardContent className="px-4 md:px-8 pb-8">
             {data?.subtitle && (
               <div 
-                className="text-lg md:text-xl text-emerald-900 mb-6 italic border-l-4 border-emerald-300 pl-4"
+                className="text-xl md:text-2xl text-gray-700 mb-8 font-light leading-relaxed pl-6 border-l-4 border-emerald-500 bg-emerald-50/50 py-4 rounded-r-lg"
                 dangerouslySetInnerHTML={{ __html: data.subtitle }}
               />
             )}
             
             <ScrollArea className="pr-4">
-              <div 
-                className="prose prose-sm md:prose-lg max-w-none prose-headings:text-emerald-900 prose-a:text-emerald-700 hover:prose-a:text-emerald-900"
-                dangerouslySetInnerHTML={{ __html: data.content }}
-              />
-            </ScrollArea>
-            
-            <div className="mt-8 pt-6 border-t border-emerald-200">
-              <div className="flex justify-between items-center">
-                <div className="flex gap-2">
-                  {data?.tags?.map((tag, index) => (
-                    <Badge key={index} variant="outline" className="border-emerald-400 text-emerald-600">#{tag}</Badge>
-                  ))}
-                </div>
-              </div>
+              <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-emerald-600 hover:prose-a:text-emerald-800 prose-a:no-underline hover:prose-a:underline prose-h2:text-2xl prose-h3:text-xl prose-h2:mt-12 prose-h2:mb-6 prose-h3:mt-8 prose-h3:mb-4">
+              <div dangerouslySetInnerHTML={{ __html: data.content }} />
             </div>
+            </ScrollArea>
           </CardContent>
         </Card>
 

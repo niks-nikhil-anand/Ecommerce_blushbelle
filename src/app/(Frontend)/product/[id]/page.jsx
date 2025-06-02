@@ -18,8 +18,6 @@ import {
   AiOutlineClose,
 } from "react-icons/ai";
 import Loader from "@/components/loader/loader";
-import ReviewProductPage from "@/components/frontend/ui/ReviewProductPage";
-import RelatedBlogs from "@/components/frontend/ui/RelatedBlogs";
 import RelatedProducts from "@/components/frontend/shared/ProductPage/RelatedProducts";
 import {
   FacebookShareButton,
@@ -55,6 +53,7 @@ import BenefitsProductPage from "@/components/frontend/shared/ProductPage/Benefi
 import VideoProductPage from "@/components/frontend/shared/ProductPage/VideoProductPage";
 import FeaturesStrip from "@/components/frontend/shared/ProductPage/FeaturesStripProductPage";
 import FaqsProductPage from "@/components/frontend/shared/ProductPage/FaqsProductPage";
+import ReviewProductPage from "@/components/frontend/shared/ProductPage/ReviewProductPage";
 
 const ProductDetail = () => {
   const router = useRouter();
@@ -681,10 +680,6 @@ const ProductDetail = () => {
                     ))}
                   </div>
                 </div>
-
-                <div className="md:w-2/3 flex-1">
-                  <ReviewProductPage />
-                </div>
               </div>
             </div>
           </TabsContent>
@@ -758,6 +753,9 @@ const ProductDetail = () => {
       </div>
       <div className="mt-16">
         <BlogProductPage />
+      </div>
+      <div className="mt-16">
+        <ReviewProductPage />
       </div>
 
       {/* Related Sections */}

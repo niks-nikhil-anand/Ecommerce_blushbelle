@@ -181,18 +181,7 @@ const ProductCard = ({ product, isLoading = false }) => {
             >
               <Heart className="h-4 w-4 drop-shadow-sm" />
             </Button>
-            <Button
-              size="icon"
-              variant="outline"
-              className="h-10 w-10 rounded-full bg-white   hover:border-blue-200 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-200 border-2"
-              style={{
-                background: 'linear-gradient(145deg, #ffffff, #f0f0f0)',
-                boxShadow: '5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff'
-              }}
-              onClick={(e) => handleActionClick(e, "quickview")}
-            >
-              <Eye className="h-4 w-4 drop-shadow-sm" />
-            </Button>
+            
             <Button
               size="icon"
               variant="outline"

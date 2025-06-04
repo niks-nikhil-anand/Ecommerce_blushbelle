@@ -8,7 +8,6 @@ import { toast } from "react-hot-toast";
 import {
   PlusCircle,
   MinusCircle,
-  Upload,
   ChevronRight,
   ChevronLeft,
   CheckCircle,
@@ -51,10 +50,10 @@ const ProductForm = () => {
     stock: 0,
     suggestedUse: "",
     servingPerBottle: "",
-    isFanFavourites: false,
-    isOnSale: false,
-    isFeaturedSale: false,
+    isShowOnHomePage: false,
+    isFeatured: false,
     tags: "",
+    purpose: "",
     additionalInfo: "",
   });
   const [images, setImages] = useState([]);
@@ -184,6 +183,34 @@ const ProductForm = () => {
     }));
   }, [selectedCategory, selectedSubcategory, completedSteps]);
 
+  useEffect(() => {
+  // Consider step 3 complete if all 3 images are uploaded (product images, featured image, and description image)
+  const hasProductImages = images.some(img => img !== null && img !== undefined);
+  const hasFeaturedImage = featuredImage !== null;
+  const hasDescriptionImage = descriptionImage !== null;
+  
+  const isStep3Complete = hasProductImages && hasFeaturedImage && hasDescriptionImage;
+  
+  if (isStep3Complete && !completedSteps.includes(3)) {
+    setCompletedSteps((prev) => [...prev, 3]);
+  } else if (!isStep3Complete && completedSteps.includes(3)) {
+    setCompletedSteps((prev) => prev.filter((step) => step !== 3));
+  }
+}, [images, featuredImage, descriptionImage, completedSteps]);
+
+  // Check if tags and suggested use are filled (step 4)
+  useEffect(() => {
+    const { tags, purpose, suggestedUse } = formData;
+    // Consider step 4 complete if at least one of these fields is filled
+    const isStep4Complete = tags || purpose || suggestedUse;
+
+    if (isStep4Complete && !completedSteps.includes(4)) {
+      setCompletedSteps((prev) => [...prev, 4]);
+    } else if (!isStep4Complete && completedSteps.includes(4)) {
+      setCompletedSteps((prev) => prev.filter((step) => step !== 4));
+    }
+  }, [formData.tags, formData.purpose, formData.suggestedUse, completedSteps]);
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -233,8 +260,8 @@ const ProductForm = () => {
       data.append("originalPrice", formData.originalPrice);
       data.append("salePrice", formData.salePrice);
       data.append("stock", formData.stock);
-      data.append("isFeaturedSale", formData.isFeaturedSale);
-      data.append("isOnSale", formData.isOnSale);
+      data.append("isFeatured", formData.isFeatured);
+      data.append("isShowOnHomePage", formData.isShowOnHomePage);
 
       // Category & Subcategory - Fixed the field name to match backend expectation
       data.append("category", formData.category);
@@ -253,6 +280,7 @@ const ProductForm = () => {
       // Additional Fields
       data.append("tags", formData.tags);
       data.append("suggestedUse", formData.suggestedUse);
+      data.append("purpose", formData.purpose);
 
       // Description & Additional Info
       data.append("description", formData.description);
@@ -278,13 +306,14 @@ const ProductForm = () => {
           salePrice: "",
           stock: "",
           isFeaturedSale: false,
-          isOnSale: false,
+          isShowOnHomePage: false,
           category: "",
           subCategory: "", // Fixed field name
           tags: "",
           suggestedUse: "",
           description: "",
           additionalInfo: "",
+          purpose: "",
         });
 
         setImages([]);
@@ -345,7 +374,7 @@ const ProductForm = () => {
   const inputStyles = "px-4 py-3"; // Added padding
 
   return (
-    <div className="max-w-full mx-auto p-6 bg-gray-50 rounded-lg w-full h-[90vh] overflow-y-auto max-h-[80vh] custom-scrollbar">
+    <div className="max-w-full mx-auto p-6 bg-gray-50 rounded-lg w-full h-[90vh] overflow-y-auto max-h-[90vh] custom-scrollbar">
       <Card className="mb-6">
         <CardHeader className="pb-2">
           <CardTitle className="text-3xl font-bold text-primary">
@@ -478,24 +507,26 @@ const ProductForm = () => {
 
                         <div className="flex items-center space-x-2">
                           <Checkbox
-                            id="isFeaturedSale"
-                            checked={formData.isFeaturedSale}
+                            id="isFeatured"
+                            checked={formData.isFeatured}
                             onCheckedChange={(checked) =>
-                              handleCheckboxChange("isFeaturedSale", checked)
+                              handleCheckboxChange("isFeatured", checked)
                             }
                           />
-                          <Label htmlFor="isFeaturedSale">Featured Sale</Label>
+                          <Label htmlFor="isFeatured">Featured</Label>
                         </div>
 
                         <div className="flex items-center space-x-2">
                           <Checkbox
-                            id="isOnSale"
-                            checked={formData.isOnSale}
+                            id="isShowOnHomePage"
+                            checked={formData.isShowOnHomePage}
                             onCheckedChange={(checked) =>
-                              handleCheckboxChange("isOnSale", checked)
+                              handleCheckboxChange("isShowOnHomePage", checked)
                             }
                           />
-                          <Label htmlFor="isOnSale">On Sale</Label>
+                          <Label htmlFor="isShowOnHomePage">
+                            Show on Homepage
+                          </Label>
                         </div>
                       </div>
                     </CardContent>
@@ -613,47 +644,53 @@ const ProductForm = () => {
 
               {currentStep === 3 && (
                 <>
-                  <Card>
-                    <CardHeader>
+                  <Card className="mx-auto ">
+                    <CardHeader className="pb-6">
                       <CardTitle className="text-xl text-primary">
                         Upload Images
                       </CardTitle>
-                      <CardDescription>Add product images</CardDescription>
+                      <CardDescription className="text-base">
+                        Add product images
+                      </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                          <Label className="text-base">Product Images</Label>
-                          {imageInputs.map((input, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-2"
-                            >
-                              <div className="relative flex-1">
-                                <Input
-                                  type="file"
-                                  onChange={(e) => handleFileChange(e, index)}
-                                  className={`cursor-pointer ${inputStyles}`}
-                                />
+                    <CardContent className="px-6 pb-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-6">
+                          <Label className="text-base font-medium">
+                            Product Images
+                          </Label>
+                          <div className="space-y-4">
+                            {imageInputs.map((input, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center gap-3"
+                              >
+                                <div className="relative flex-1">
+                                  <Input
+                                    type="file"
+                                    onChange={(e) => handleFileChange(e, index)}
+                                    className={`cursor-pointer ${inputStyles} py-2`}
+                                  />
+                                </div>
+                                {index > 0 && (
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => removeImage(index)}
+                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2"
+                                  >
+                                    <MinusCircle className="h-5 w-5" />
+                                  </Button>
+                                )}
                               </div>
-                              {index > 0 && (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => removeImage(index)}
-                                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                >
-                                  <MinusCircle className="h-5 w-5" />
-                                </Button>
-                              )}
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                           <Button
                             type="button"
                             variant="outline"
                             onClick={addMoreImages}
-                            className="w-full"
+                            className="w-full py-3"
                             size="sm"
                           >
                             <PlusCircle className="mr-2 h-4 w-4" /> Add More
@@ -662,34 +699,36 @@ const ProductForm = () => {
                         </div>
 
                         <div className="space-y-6">
-                          <div className="space-y-2">
-                            <Label className="text-base">Featured Image</Label>
-                            <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center">
+                          <div className="space-y-3">
+                            <Label className="text-base font-medium">
+                              Featured Image
+                            </Label>
+                            <div className="border border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50/50">
                               <Input
                                 type="file"
                                 onChange={handleFeaturedImageChange}
-                                className={`cursor-pointer ${inputStyles}`}
+                                className={`cursor-pointer ${inputStyles} py-2`}
                               />
                               {!featuredImage && (
-                                <p className="text-sm text-gray-500 mt-2">
+                                <p className="text-sm text-gray-500 mt-3">
                                   Upload the main product image
                                 </p>
                               )}
                             </div>
                           </div>
 
-                          <div className="space-y-2">
-                            <Label className="text-base">
+                          <div className="space-y-3">
+                            <Label className="text-base font-medium">
                               Description Image
                             </Label>
-                            <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center">
+                            <div className="border border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50/50">
                               <Input
                                 type="file"
                                 onChange={handleDescriptionImageChange}
-                                className={`cursor-pointer ${inputStyles}`}
+                                className={`cursor-pointer ${inputStyles} py-2`}
                               />
                               {!descriptionImage && (
-                                <p className="text-sm text-gray-500 mt-2">
+                                <p className="text-sm text-gray-500 mt-3">
                                   Optional image for description
                                 </p>
                               )}
@@ -698,11 +737,15 @@ const ProductForm = () => {
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline" onClick={prevStep}>
+                    <CardFooter className="flex justify-between px-6 pt-4 pb-6 border-t border-gray-100">
+                      <Button
+                        variant="outline"
+                        onClick={prevStep}
+                        className="px-6 py-3"
+                      >
                         <ChevronLeft className="mr-2 h-4 w-4" /> Previous
                       </Button>
-                      <Button onClick={nextStep}>
+                      <Button onClick={nextStep} className="px-6 py-3">
                         Next <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
                     </CardFooter>
@@ -712,19 +755,22 @@ const ProductForm = () => {
 
               {currentStep === 4 && (
                 <>
-                  <Card>
-                    <CardHeader>
+                  <Card className="mx-auto ">
+                    <CardHeader className="pb-6">
                       <CardTitle className="text-xl text-primary">
                         Tags & Suggested Use
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-base">
                         Add product tags and usage information
                       </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="tags" className="text-base">
+                    <CardContent className="px-6 pb-6">
+                      <div className="space-y-8">
+                        <div className="space-y-3">
+                          <Label
+                            htmlFor="tags"
+                            className="text-base font-medium"
+                          >
                             Tags (comma separated)
                           </Label>
                           <Input
@@ -733,15 +779,39 @@ const ProductForm = () => {
                             value={formData.tags}
                             onChange={handleInputChange}
                             placeholder="e.g. organic, vegan, natural"
-                            className={inputStyles}
+                            className={`${inputStyles} py-3`}
                           />
                           <p className="text-sm text-gray-500">
                             Add relevant tags to improve product discoverability
                           </p>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="suggestedUse" className="text-base">
+                        <div className="space-y-3">
+                          <Label
+                            htmlFor="purpose"
+                            className="text-base font-medium"
+                          >
+                            Purpose
+                          </Label>
+                          <Textarea
+                            id="purpose"
+                            name="purpose"
+                            value={formData.purpose}
+                            onChange={handleInputChange}
+                            placeholder="What is the main purpose or benefit of this product?"
+                            className={`min-h-32 ${inputStyles} py-3`}
+                          />
+                          <p className="text-sm text-gray-500">
+                            Describe the primary purpose or intended benefit of
+                            your product
+                          </p>
+                        </div>
+
+                        <div className="space-y-3">
+                          <Label
+                            htmlFor="suggestedUse"
+                            className="text-base font-medium"
+                          >
                             Suggested Use
                           </Label>
                           <Textarea
@@ -749,17 +819,28 @@ const ProductForm = () => {
                             name="suggestedUse"
                             value={formData.suggestedUse}
                             onChange={handleInputChange}
-                            placeholder="How should customers use this product?"
-                            className={`min-h-32 ${inputStyles}`}
+                            placeholder={`Serving Size – 1 capsule daily
+Bottle Contains – 60 capsules (2 month supply)
+ Suggested Use – Take 1 capsule daily with food
+Storage  – Store in a cool, dry place`}
+                            className={`min-h-40 ${inputStyles} py-3`}
                           />
+                          <p className="text-sm text-gray-500">
+                            Include serving size, bottle contents, usage
+                            instructions, and storage information
+                          </p>
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline" onClick={prevStep}>
+                    <CardFooter className="flex justify-between px-6 pt-4 pb-6 border-t border-gray-100">
+                      <Button
+                        variant="outline"
+                        onClick={prevStep}
+                        className="px-6 py-3"
+                      >
                         <ChevronLeft className="mr-2 h-4 w-4" /> Previous
                       </Button>
-                      <Button onClick={nextStep}>
+                      <Button onClick={nextStep} className="px-6 py-3">
                         Next <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
                     </CardFooter>

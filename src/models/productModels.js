@@ -11,15 +11,22 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Product sku is required"],
       trim: true,
+      unique: true,
     },
     stock: {
       type: Number,
-      required: function () {
-        return !this.colors || this.colors.length === 0;
-      },
       min: [0, "Stock cannot be negative"],
       default: 0,
     },
+    purpose: {
+      type: String,
+      required: true,
+    },
+    suggestedUse: {
+      type: String,
+      required: true,
+    },
+
     description: {
       type: mongoose.Schema.Types.Mixed,
       required: [true, "Product description is required"],
@@ -53,18 +60,18 @@ const productSchema = new mongoose.Schema(
     },
     descriptionImage: {
       type: String,
-      required: [true, "Featured image URL is required"],
+      required: [true, "Description image URL is required"],
     },
     images: [
       {
         type: String,
       },
     ],
-    isFeaturedSale: {
+    isFeatured: {
       type: Boolean,
       default: false,
     },
-    isOnSale: {
+    isShowOnHomePage: {
       type: Boolean,
       default: false,
     },
@@ -83,6 +90,24 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Auto-increment SKU based on max value in collection
+productSchema.pre("save", async function (next) {
+  if (!this.isNew || this.sku) return next();
+
+  try {
+    const lastProduct = await mongoose.models.Product
+      .findOne({})
+      .sort({ sku: -1 })
+      .collation({ locale: "en_US", numericOrdering: true });
+
+    const lastSku = lastProduct?.sku ? parseInt(lastProduct.sku) : 1000;
+    this.sku = (lastSku + 1).toString();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default mongoose.models.Product ||
   mongoose.model("Product", productSchema);

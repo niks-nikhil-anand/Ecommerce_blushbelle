@@ -24,9 +24,11 @@ export const POST = async (req) => {
     const subCategory = getTrimmedValue("subCategory");
     const tags = getTrimmedValue("tags");
     const description = getTrimmedValue("description");
+    const suggestedUse = getTrimmedValue("suggestedUse");
+    const purpose = getTrimmedValue("purpose");
     const additionalInfo = getTrimmedValue("additionalInfo");
-    const isOnSale = formData.get("isOnSale") === "true";
-    const isFeaturedSale = formData.get("isFeaturedSale") === "true";
+    const isShowOnHomePage = formData.get("isShowOnHomePage") === "true";
+    const isFeatured = formData.get("isFeatured") === "true";
 
     if (!name || !category || !originalPrice || !salePrice) {
       return NextResponse.json({ msg: "Please provide all required fields." }, { status: 400 });
@@ -81,8 +83,10 @@ export const POST = async (req) => {
       originalPrice,
       category,
       subCategory:subCategory,
-      isOnSale,
-      isFeaturedSale,
+      isShowOnHomePage,
+      isFeatured,
+      purpose,
+      suggestedUse,
       tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],
       images: imageUploads,
       featuredImage: featuredImageUrl,

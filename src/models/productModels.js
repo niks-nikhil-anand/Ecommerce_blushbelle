@@ -17,6 +17,7 @@ const productSchema = new mongoose.Schema(
       type: Number,
       min: [0, "Stock cannot be negative"],
       default: 0,
+      required: true 
     },
     purpose: {
       type: String,
@@ -26,7 +27,6 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
     description: {
       type: mongoose.Schema.Types.Mixed,
       required: [true, "Product description is required"],
@@ -90,8 +90,6 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-// Auto-increment SKU based on max value in collection
 productSchema.pre("save", async function (next) {
   if (!this.isNew || this.sku) return next();
 

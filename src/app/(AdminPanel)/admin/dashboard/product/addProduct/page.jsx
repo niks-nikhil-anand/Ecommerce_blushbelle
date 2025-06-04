@@ -4,7 +4,6 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
-import { toast } from "react-hot-toast";
 import {
   PlusCircle,
   MinusCircle,
@@ -29,6 +28,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 
 const ProductForm = () => {
   const [categories, setCategories] = useState([]);
@@ -184,19 +184,22 @@ const ProductForm = () => {
   }, [selectedCategory, selectedSubcategory, completedSteps]);
 
   useEffect(() => {
-  // Consider step 3 complete if all 3 images are uploaded (product images, featured image, and description image)
-  const hasProductImages = images.some(img => img !== null && img !== undefined);
-  const hasFeaturedImage = featuredImage !== null;
-  const hasDescriptionImage = descriptionImage !== null;
-  
-  const isStep3Complete = hasProductImages && hasFeaturedImage && hasDescriptionImage;
-  
-  if (isStep3Complete && !completedSteps.includes(3)) {
-    setCompletedSteps((prev) => [...prev, 3]);
-  } else if (!isStep3Complete && completedSteps.includes(3)) {
-    setCompletedSteps((prev) => prev.filter((step) => step !== 3));
-  }
-}, [images, featuredImage, descriptionImage, completedSteps]);
+    // Consider step 3 complete if all 3 images are uploaded (product images, featured image, and description image)
+    const hasProductImages = images.some(
+      (img) => img !== null && img !== undefined
+    );
+    const hasFeaturedImage = featuredImage !== null;
+    const hasDescriptionImage = descriptionImage !== null;
+
+    const isStep3Complete =
+      hasProductImages && hasFeaturedImage && hasDescriptionImage;
+
+    if (isStep3Complete && !completedSteps.includes(3)) {
+      setCompletedSteps((prev) => [...prev, 3]);
+    } else if (!isStep3Complete && completedSteps.includes(3)) {
+      setCompletedSteps((prev) => prev.filter((step) => step !== 3));
+    }
+  }, [images, featuredImage, descriptionImage, completedSteps]);
 
   // Check if tags and suggested use are filled (step 4)
   useEffect(() => {
@@ -296,7 +299,9 @@ const ProductForm = () => {
 
       if (response.status === 200) {
         // Success Notification
-        toast.success("Product created successfully!");
+        toast("Success", {
+          description: "Product created successfully!",
+        });
         console.log("Product created successfully:", data);
 
         // Clear the form
@@ -326,7 +331,7 @@ const ProductForm = () => {
       }
     } catch (error) {
       console.error("Error creating product:", error);
-      toast.error("Failed to create product. Please try again!");
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -530,8 +535,8 @@ const ProductForm = () => {
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-end">
-                      <Button onClick={nextStep}>
+                    <CardFooter className="flex justify-end ">
+                      <Button onClick={nextStep} className="bg-green-600 hover:bg-green-700">
                         Next <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
                     </CardFooter>
@@ -633,7 +638,7 @@ const ProductForm = () => {
                       </Button>
                       <Button
                         onClick={nextStep}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        className="bg-green-600 hover:bg-green-700 text-black"
                       >
                         Next <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
@@ -745,7 +750,7 @@ const ProductForm = () => {
                       >
                         <ChevronLeft className="mr-2 h-4 w-4" /> Previous
                       </Button>
-                      <Button onClick={nextStep} className="px-6 py-3">
+                      <Button onClick={nextStep} className="px-6 py-3 bg-green-600 hover:bg-green-700 text-black">
                         Next <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
                     </CardFooter>
@@ -840,7 +845,7 @@ Storage  – Store in a cool, dry place`}
                       >
                         <ChevronLeft className="mr-2 h-4 w-4" /> Previous
                       </Button>
-                      <Button onClick={nextStep} className="px-6 py-3">
+                      <Button onClick={nextStep} className="px-6 py-3 bg-green-600 hover:bg-green-700 text-black">
                         Next <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
                     </CardFooter>
@@ -904,7 +909,7 @@ Storage  – Store in a cool, dry place`}
                       <Button
                         type="submit"
                         disabled={loading}
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-green-600 hover:bg-green-700 text-black"
                       >
                         {loading ? "Submitting..." : "Create Product"}
                       </Button>

@@ -11,6 +11,7 @@ import {
   ArrowRight,
   ArrowLeft,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const AdminFaqForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -43,7 +44,7 @@ const AdminFaqForm = () => {
       } catch (error) {
         console.error("Error fetching products:", error);
         setProducts([]);
-        alert("Failed to fetch products. Please try again.");
+        toast.error("Failed to fetch products. Please try again.");
       } finally {
         setFetchingProducts(false);
       }
@@ -62,6 +63,7 @@ const AdminFaqForm = () => {
         },
       ],
     }));
+    toast.success("New FAQ item added!");
   };
 
   const removeFaqItem = (index) => {
@@ -70,6 +72,7 @@ const AdminFaqForm = () => {
         ...prev,
         faq: prev.faq.filter((_, i) => i !== index),
       }));
+      toast.success("FAQ item removed!");
     }
   };
 
@@ -130,7 +133,7 @@ const AdminFaqForm = () => {
 
     try {
       if (!selectedProduct) {
-        alert("Please select a product");
+        toast.error("Please select a product");
         return;
       }
 
@@ -139,7 +142,7 @@ const AdminFaqForm = () => {
       );
 
       if (validFaqs.length === 0) {
-        alert("At least one FAQ with question and answer is required");
+        toast.error("At least one FAQ with question and answer is required");
         return;
       }
 
@@ -165,11 +168,13 @@ const AdminFaqForm = () => {
 
       const result = await response.json();
       console.log("FAQ created successfully:", result);
-      alert("FAQ created successfully!");
+      toast.success("FAQ created successfully!", {
+        description: "Your FAQ items have been saved and are now live.",
+      });
       resetForm();
     } catch (error) {
       console.error("Submission error:", error);
-      alert(`Failed to create FAQ: ${error.message}`);
+      toast.error(`Failed to create FAQ: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -194,7 +199,7 @@ const AdminFaqForm = () => {
   );
 
   return (
-    <div className="w-full bg-white p-6 max-h-[90vh]">
+    <div className="w-full bg-white p-6 min-h-[90vh]">
       <div className="w-full">
         <div className="w-full space-y-8">
           {/* Step 1: FAQ Items */}
@@ -219,16 +224,20 @@ const AdminFaqForm = () => {
                     <button
                       type="button"
                       onClick={addFaqItem}
-                      className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-2 transition-colors"
+                      className="group relative px-4 py-2 border border-gray-300 rounded-md hover:bg-blue-50 hover:border-blue-300 flex items-center gap-2 transition-all duration-300 transform hover:scale-105 hover:shadow-md active:scale-95"
                     >
-                      <Plus className="w-4 h-4" />
-                      Add FAQ
+                      <Plus className="w-4 h-4 transition-transform duration-300 group-hover:rotate-90 group-hover:text-blue-600" />
+                      <span className="transition-colors duration-300 group-hover:text-blue-600 font-medium">
+                        Add FAQ
+                      </span>
+                      {/* Animated background effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-400 opacity-0 group-hover:opacity-10 rounded-md transition-opacity duration-300" />
                     </button>
                   </div>
 
                   <div className="max-h-96 overflow-y-auto pr-2 space-y-4">
                     {formData.faq.map((item, index) => (
-                      <div key={index} className="border border-gray-200 rounded-lg">
+                      <div key={index} className="border border-gray-200 rounded-lg animate-in slide-in-from-top-2 duration-300">
                         <div className="p-6">
                           <div className="flex items-center justify-between mb-4">
                             <h4 className="font-medium text-gray-900">
@@ -238,9 +247,9 @@ const AdminFaqForm = () => {
                               <button
                                 type="button"
                                 onClick={() => removeFaqItem(index)}
-                                className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors flex items-center gap-1"
+                                className="group px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-all duration-200 flex items-center gap-1 transform hover:scale-105 active:scale-95"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
                               </button>
                             )}
                           </div>
@@ -257,7 +266,7 @@ const AdminFaqForm = () => {
                                 onChange={(e) =>
                                   updateFaqItem(index, "question", e.target.value)
                                 }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                                 required
                               />
                             </div>
@@ -272,7 +281,7 @@ const AdminFaqForm = () => {
                                 onChange={(e) =>
                                   updateFaqItem(index, "answer", e.target.value)
                                 }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px] resize-none"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px] resize-none transition-all duration-200"
                                 required
                               />
                             </div>
@@ -290,7 +299,7 @@ const AdminFaqForm = () => {
                     type="button"
                     onClick={nextStep}
                     disabled={!hasValidFaqItems}
-                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-10 py-3 rounded-md font-medium flex items-center gap-2 transition-colors"
+                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-10 py-3 rounded-md font-medium flex items-center gap-2 transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:hover:scale-100"
                   >
                     Next Step
                     <ArrowRight className="w-4 h-4" />
@@ -320,7 +329,7 @@ const AdminFaqForm = () => {
                   </label>
 
                   {selectedProduct && (
-                    <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+                    <div className="bg-green-50 rounded-xl p-4 border border-green-200 animate-in slide-in-from-top-2 duration-300">
                       <div className="flex items-center justify-between">
                         <div>
                           <h4 className="font-semibold text-green-800 flex items-center gap-2">
@@ -337,7 +346,7 @@ const AdminFaqForm = () => {
                             setSelectedProduct("");
                             setFormData(prev => ({ ...prev, product: "" }));
                           }}
-                          className="p-1 hover:bg-green-100 rounded"
+                          className="p-1 hover:bg-green-100 rounded transition-colors duration-200"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -361,7 +370,7 @@ const AdminFaqForm = () => {
                         {products.map((product) => (
                           <div
                             key={product._id}
-                            className={`flex items-center space-x-4 p-4 rounded-lg border transition-all duration-200 cursor-pointer ${
+                            className={`flex items-center space-x-4 p-4 rounded-lg border transition-all duration-200 cursor-pointer transform hover:scale-[1.02] ${
                               selectedProduct === product._id
                                 ? "bg-blue-50 border-blue-300 shadow-sm"
                                 : "border-gray-200 hover:bg-gray-50 hover:shadow-sm"
@@ -369,7 +378,7 @@ const AdminFaqForm = () => {
                             onClick={() => handleProductSelect(product._id)}
                           >
                             <div
-                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                                 selectedProduct === product._id
                                   ? "border-blue-500 bg-blue-500"
                                   : "border-gray-300"
@@ -401,7 +410,7 @@ const AdminFaqForm = () => {
                   <button
                     type="button"
                     onClick={prevStep}
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-10 py-3 rounded-md font-medium flex items-center gap-2 transition-colors"
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-10 py-3 rounded-md font-medium flex items-center gap-2 transition-all duration-200 transform hover:scale-105 active:scale-95"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     Previous Step
@@ -410,7 +419,7 @@ const AdminFaqForm = () => {
                     type="button"
                     onClick={handleSubmit}
                     disabled={isSubmitting || !selectedProduct || !hasValidFaqItems}
-                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-10 py-3 rounded-md font-medium flex items-center gap-2 transition-colors"
+                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-10 py-3 rounded-md font-medium flex items-center gap-2 transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:hover:scale-100"
                   >
                     {isSubmitting ? (
                       <>

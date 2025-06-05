@@ -1,95 +1,539 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
-import { Loader2 } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { motion } from "framer-motion";
 
-// Import shadcn components
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Eye, Check, Upload, Loader2, Tag, Plus, Search, Filter, ImageIcon, Package, Calendar, Camera } from "lucide-react";
+import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
+import Loader from "@/components/loader/loader";
+import { FaTrash } from "react-icons/fa";
 
-const AddSubCategory = () => {
-  const [fetchingCategories, setFetchingCategories] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+const SubCategories = () => {
+  const [subCategories, setSubCategories] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchingCategories, setFetchingCategories] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [subCategoryToDelete, setSubCategoryToDelete] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [sortField, setSortField] = useState("name");
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
-  const [loading, setLoading] = useState(false);
-  const [name, setName] = useState("");
-  const [image, setImage] = useState(null);
-  const [imageKey, setImageKey] = useState(Date.now()); // Used to reset file input
+  // New subcategory form states
+  const [newSubCategoryName, setNewSubCategoryName] = useState("");
+  const [newSubCategoryImage, setNewSubCategoryImage] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
+  const [formLoading, setFormLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
-  // Fetch categories
+  // Fetch subcategories from API
   useEffect(() => {
-    const fetchCategories = async () => {
-      setFetchingCategories(true);
-      try {
-        const response = await axios.get('/api/admin/dashboard/category');
+    fetchSubCategories();
+    fetchCategories();
+  }, []);
+
+  const fetchSubCategories = () => {
+    setLoading(true);
+    axios
+      .get("/api/admin/dashboard/subCategory")
+      .then((response) => {
+        console.log(response)
+        if (Array.isArray(response.data.data)) {
+          setSubCategories(response.data.data);
+        } else {
+          console.error("Unexpected response format:", response);
+          toast.error("Failed to load subcategories");
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching subcategories:", error);
+        toast.error("Error loading subcategories");
+        setLoading(false);
+      });
+  };
+
+  const fetchCategories = () => {
+    setFetchingCategories(true);
+    axios
+      .get("/api/admin/dashboard/category")
+      .then((response) => {
         if (Array.isArray(response.data)) {
           setCategories(response.data);
         } else {
-          console.error('Unexpected response format:', response.data);
+          console.error("Unexpected response format:", response);
+          toast.error("Failed to load categories");
         }
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-        toast.error('Failed to fetch categories');
-      } finally {
         setFetchingCategories(false);
-      }
-    };
-    fetchCategories();
-  }, []);
-  
-  // Clear form fields
-  const resetForm = () => {
-    setName('');
-    setImage(null);
-    setSelectedCategory(null);
-    setImageKey(Date.now()); // This forces the file input to reset
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+        toast.error("Error loading categories");
+        setFetchingCategories(false);
+      });
   };
 
-  // Handle form submission for adding sub-category
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  // Handle image selection and preview
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      const validTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+      ];
+      if (!validTypes.includes(file.type)) {
+        toast.error("Please upload a valid image file (JPEG, PNG, WebP, or GIF)");
+        return;
+      }
 
-    if (!name || !image || !selectedCategory) {
-      toast.error('Please fill in all required fields');
-      setLoading(false);
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        toast.error("Image file size must be less than 5MB");
+        return;
+      }
+
+      setUploadingImage(true);
+      setNewSubCategoryImage(file);
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+        setUploadingImage(false);
+        toast.success("Image selected successfully");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Add new subcategory
+  const handleAddSubCategory = async (e) => {
+    e.preventDefault();
+    
+    if (!newSubCategoryName.trim()) {
+      toast.error("SubCategory name is required");
+      return;
+    }
+    
+    if (!newSubCategoryImage) {
+      toast.error("SubCategory image is required");
       return;
     }
 
+    if (!selectedCategory) {
+      toast.error("Please select a category");
+      return;
+    }
+
+    setFormLoading(true);
+
     const formData = new FormData();
-    formData.append('name', name);
-    formData.append('image', image);
-    formData.append('category', selectedCategory);
+    formData.append("name", newSubCategoryName);
+    formData.append("image", newSubCategoryImage);
+    formData.append("category", selectedCategory);
 
     try {
-      await axios.post('/api/admin/dashboard/subCategory', formData);
-      toast.success('Sub-category added successfully!');
-      resetForm(); // Clear the form after successful submission
+      await axios.post("/api/admin/dashboard/subCategory", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      toast.success("SubCategory added successfully!");
+      setShowAddModal(false);
+      resetForm();
+      fetchSubCategories();
     } catch (error) {
-      console.error('Error adding sub-category:', error);
-      toast.error('Failed to add sub-category');
+      toast.error("Failed to add subcategory");
+      console.error("Error adding subcategory:", error);
     } finally {
-      setLoading(false);
+      setFormLoading(false);
     }
   };
 
+  // Delete subcategory
+  const deleteSubCategory = async () => {
+    setDeleteLoading(true);
+
+    try {
+      await axios.delete(`/api/admin/dashboard/subCategory/${subCategoryToDelete}`);
+      toast.success("SubCategory deleted successfully");
+      setShowDeleteModal(false);
+      fetchSubCategories();
+    } catch (error) {
+      toast.error("Failed to delete subcategory");
+      console.error("Error deleting subcategory:", error);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  // Reset form fields
+  const resetForm = () => {
+    setNewSubCategoryName("");
+    setNewSubCategoryImage(null);
+    setSelectedCategory("");
+    setPreviewImage(null);
+    setUploadingImage(false);
+  };
+
+  // Filter subcategories based on search term and category
+  const filteredSubCategories = subCategories.filter((subCategory) => {
+    const matchesSearch = subCategory.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || subCategory.category._id === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  // Sort subcategories
+  const sortedSubCategories = [...filteredSubCategories].sort((a, b) => {
+    let comparison = 0;
+    if (sortField === "name") {
+      comparison = a.name.localeCompare(b.name);
+    } else if (sortField === "category") {
+      comparison = a.category.name.localeCompare(b.category.name);
+    } else if (sortField === "createdAt") {
+      comparison = new Date(a.createdAt) - new Date(b.createdAt);
+    }
+    return sortDirection === "asc" ? comparison : -comparison;
+  });
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentSubCategories = sortedSubCategories.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(sortedSubCategories.length / itemsPerPage);
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
-    <Card className="w-full mx-auto border-t-4 border-t-blue-500 shadow-lg">
-      <CardHeader className="bg-gray-100 p-4">
-        <CardTitle className="text-2xl font-bold text-gray-700">Add SubCategories</CardTitle>
-      </CardHeader>
-      <CardContent className="bg-white p-4">
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-3">
+    <div className="w-full bg-gradient-to-br from-slate-50 to-gray-100 p-6 min-h-screen">
+      {/* Header Card */}
+      <Card className=" bg-white/95 ">
+        <CardHeader className="pb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="text-2xl flex items-center gap-3 text-gray-900">
+                <Tag className="text-blue-600 w-6 h-6" />
+                SubCategory Management 
+              </CardTitle>
+              <CardDescription className="text-gray-600 text-base">
+                Manage your product subcategories with ease. Edit fundamental details about subcategories including name, category assignment and visual representation.
+              </CardDescription>
+            </div>
+            <Button
+              onClick={() => setShowAddModal(true)}
+              className="bg-green-600 hover:bg-green-700 text-white px-10 py-3 text-base flex items-center gap-2 shadow-lg"
+            >
+              <Plus className="w-4 h-4" />
+              Add SubCategory
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Combined Filters and Table Card */}
+      <Card className=" bg-white/95 rounded-b-lg ">
+        {/* Filters and Search Section */}
+        <CardContent className="p-6 border-b border-gray-200">
+          <div className="flex flex-wrap gap-4 items-center">
+            {/* Search Input */}
+            <div className="flex-1 min-w-[300px]">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search subcategories..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-12 text-base bg-white"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              {/* Category Filter */}
+              <div className="flex items-center gap-2">
+                <Filter className="text-gray-500 w-4 h-4" />
+                <span className="text-sm text-gray-600 font-medium">Category:</span>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-[150px] h-12 bg-white">
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">All Categories</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category._id} value={category._id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Sort Field */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 font-medium">Sort by:</span>
+                <Select value={sortField} onValueChange={setSortField}>
+                  <SelectTrigger className="w-[150px] h-12 bg-white">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="name">Name</SelectItem>
+                    <SelectItem value="category">Category</SelectItem>
+                    <SelectItem value="createdAt">Created Date</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Sort Direction */}
+              <Select value={sortDirection} onValueChange={setSortDirection}>
+                <SelectTrigger className="w-[120px] h-12 bg-white">
+                  <SelectValue placeholder="Order" />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  <SelectItem value="asc">Ascending</SelectItem>
+                  <SelectItem value="desc">Descending</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Items Per Page */}
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => setItemsPerPage(Number(value))}
+              >
+                <SelectTrigger className="w-[100px] h-12 bg-white">
+                  <SelectValue placeholder="Show" />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+
+        {/* SubCategories Table Section */}
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-50">
+                  <TableHead className="text-center font-semibold">
+                    <div className="flex items-center justify-center gap-2">
+                      <ImageIcon className="w-4 h-4" />
+                      Image
+                    </div>
+                  </TableHead>
+                  <TableHead className="font-semibold">
+                    <div className="flex items-center gap-2">
+                      <Tag className="w-4 h-4" />
+                      Name
+                    </div>
+                  </TableHead>
+                  <TableHead className="font-semibold">
+                    <div className="flex items-center gap-2">
+                      <Package className="w-4 h-4" />
+                      Category
+                    </div>
+                  </TableHead>
+                  <TableHead className="font-semibold">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      Created At
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-center font-semibold">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentSubCategories.length > 0 ? (
+                  currentSubCategories.map((subCategory) => (
+                    <TableRow key={subCategory._id} className="hover:bg-gray-50/50 transition-colors">
+                      <TableCell className="text-center p-4">
+                        <div className="flex justify-center">
+                          <div className="relative w-16 h-16 rounded-full overflow-hidden bg-white shadow-lg border-2 border-gray-100">
+                            <Image
+                              src={subCategory.image}
+                              alt={subCategory.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium text-gray-900 text-base">
+                        {subCategory.name}
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        <div className="flex items-center gap-2">
+                          {subCategory.category.name}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        {new Date(subCategory.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </TableCell>
+                      <TableCell className="text-center p-4">
+                        <div className="flex gap-3 justify-center">
+                          <motion.button
+                            onClick={() => console.log("View subcategory", subCategory._id)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="flex items-center justify-center w-10 h-10 bg-blue-500 text-white rounded-xl shadow-lg hover:bg-blue-600 transition-all duration-300"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </motion.button>
+
+                          <motion.button
+                            onClick={() => {
+                              setSubCategoryToDelete(subCategory._id);
+                              setShowDeleteModal(true);
+                            }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="flex items-center justify-center w-10 h-10 bg-red-500 text-white rounded-xl shadow-lg hover:bg-red-600 transition-all duration-300"
+                          >
+                            <FaTrash className="w-4 h-4" />
+                          </motion.button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-4">
+                        <Tag className="w-16 h-16 text-gray-300" />
+                        <div>
+                          <p className="text-lg font-medium text-gray-500">No subcategories found</p>
+                          <p className="text-gray-400">Try adjusting your search or add a new subcategory</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="p-6 border-t bg-gray-50/50">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <PaginationItem key={index}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(index + 1)}
+                        isActive={currentPage === index + 1}
+                        className="cursor-pointer"
+                      >
+                        {index + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Add SubCategory Modal */}
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent className="sm:max-w-[600px] bg-white/95 backdrop-blur-sm">
+          <DialogHeader className="pb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg -m-6 p-6 mb-6">
+            <DialogTitle className="text-2xl flex items-center gap-3 text-gray-900">
+              <Tag className="text-blue-600 w-6 h-6" />
+              SubCategory Management - Basic Information
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 text-base">
+              Enter the fundamental details about the subcategory including its name, parent category and visual representation.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleAddSubCategory} className="space-y-8">
             {/* Category Selection */}
-            <div className="space-y-1.5">
-              <Label htmlFor="category-selection" className="text-gray-700 font-semibold">
-                Category
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <Package className="text-purple-500 w-4 h-4" />
+                Parent Category *
               </Label>
               {fetchingCategories ? (
                 <div className="flex items-center justify-center p-2 bg-gray-50 rounded-md">
@@ -104,10 +548,14 @@ const AddSubCategory = () => {
                         key={category._id}
                         type="button"
                         onClick={() => setSelectedCategory(category._id)}
-                        variant={selectedCategory === category._id ? "default" : "outline"}
+                        variant={
+                          selectedCategory === category._id
+                            ? "default"
+                            : "outline"
+                        }
                         className={`w-full justify-start text-xs px-2 py-1.5 transition-all duration-200 ${
-                          selectedCategory === category._id 
-                            ? "bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md ring-2 ring-blue-300" 
+                          selectedCategory === category._id
+                            ? "bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md ring-2 ring-blue-300"
                             : "bg-white border-gray-300 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 text-gray-800 shadow-sm"
                         }`}
                         size="sm"
@@ -120,56 +568,175 @@ const AddSubCategory = () => {
               )}
             </div>
 
-            {/* Sub-Category Form */}
-            <div className="space-y-3 pt-1">
-              <div className="space-y-1.5">
-                <Label htmlFor="name" className="font-medium text-gray-700">
-                  SubCategory Name
-                </Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter name"
-                  required
-                  className="border-gray-300 focus:border-blue-400 focus:ring-blue-400 bg-gray-50"
-                />
-              </div>
+            {/* SubCategory Name */}
+            <div className="space-y-3">
+              <Label 
+                htmlFor="subCategoryName" 
+                className="text-sm font-semibold text-gray-700 flex items-center gap-2"
+              >
+                <Tag className="text-green-500 w-4 h-4" />
+                SubCategory Name *
+              </Label>
+              <Input
+                id="subCategoryName"
+                value={newSubCategoryName}
+                onChange={(e) => setNewSubCategoryName(e.target.value)}
+                placeholder="Enter subcategory name (e.g., Face Cream, Vitamins)"
+                className="h-12 text-base bg-white w-full"
+                required
+              />
+            </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="image" className="font-medium text-gray-700">
-                  SubCategory Image
-                </Label>
-                <Input
-                  id="image"
-                  key={imageKey}
-                  type="file"
-                  onChange={(e) => setImage(e.target.files[0])}
-                  required
-                  className="cursor-pointer border-gray-300 focus:border-blue-400 bg-gray-50 file:bg-blue-600 file:text-white file:border-0 file:rounded file:px-2 file:py-1 file:mr-2 hover:file:bg-blue-700"
-                />
+            {/* Image Upload */}
+            <div className="space-y-4">
+              <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <Camera className="text-pink-500 w-4 h-4" />
+                SubCategory Image *
+              </Label>
+
+              <div className="space-y-3">
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="subcategory-image-upload"
+                  />
+                  <Label
+                    htmlFor="subcategory-image-upload"
+                    className="w-full h-12 border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-lg flex items-center justify-center gap-2 cursor-pointer transition-colors bg-white hover:bg-gray-50"
+                  >
+                    {uploadingImage ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                        <span className="text-gray-600">Processing image...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 text-gray-400" />
+                        <span className="text-gray-600">Choose Image File</span>
+                      </>
+                    )}
+                  </Label>
+                </div>
+
+                {/* Display selected image name */}
+                {newSubCategoryImage && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">
+                        Selected: {newSubCategoryImage.name}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Image Preview */}
+                {previewImage && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden bg-white shadow-md">
+                        <Image
+                          src={previewImage}
+                          alt="SubCategory preview"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-800">
+                          Image preview ready
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex justify-end pt-3">
+            <DialogFooter className="pt-6 border-t">
+              <DialogClose asChild>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={resetForm}
+                  className="px-10 py-3 text-base"
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
               <Button
                 type="submit"
-                disabled={loading}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition-all duration-300 transform hover:scale-105"
+                disabled={formLoading || uploadingImage || !newSubCategoryName.trim() || !newSubCategoryImage || !selectedCategory}
+                className="bg-green-600 hover:bg-green-700 text-white px-10 py-3 text-base flex items-center gap-2 disabled:opacity-50"
               >
-                {loading ? (
+                {formLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Adding...
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Creating...
                   </>
-                ) : 'Add SubCategory'}
+                ) : (
+                  <>
+                    <Check className="w-4 h-4" />
+                    Create SubCategory
+                  </>
+                )}
               </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="sm:max-w-[500px] bg-white/95 backdrop-blur-sm">
+          <DialogHeader className="pb-6 bg-gradient-to-r from-red-50 to-pink-50 rounded-t-lg -m-6 p-6 mb-6">
+            <DialogTitle className="text-2xl flex items-center gap-3 text-gray-900">
+              <FaTrash className="text-red-600 w-5 h-5" />
+              Confirm Deletion
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 text-base">
+              Are you sure you want to delete this subcategory? This action cannot be undone and may affect associated products.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+              <span className="text-sm font-medium text-red-800">
+                This action is permanent and cannot be reversed
+              </span>
             </div>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline" className="px-6 py-3 text-base">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button 
+              variant="destructive" 
+              onClick={deleteSubCategory}
+              className="px-6 py-3 text-base bg-red-400 hover:bg-red-500"
+            >
+              {deleteLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete SubCategory"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 
-export default AddSubCategory;
+export default SubCategories;

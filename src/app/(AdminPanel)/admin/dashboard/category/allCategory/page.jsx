@@ -62,6 +62,8 @@ const Categories = () => {
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
   const [searchTerm, setSearchTerm] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
 
   // New category form states
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -172,14 +174,20 @@ const Categories = () => {
 
   // Delete category
   const deleteCategory = async () => {
+      setDeleteLoading(true);
+
     try {
       await axios.delete(`/api/admin/dashboard/category/${categoryToDelete}`);
       toast.success("Category deleted successfully");
       setShowDeleteModal(false);
+
       fetchCategories();
     } catch (error) {
       toast.error("Failed to delete category");
       console.error("Error deleting category:", error);
+    }finally{
+     setDeleteLoading(false);
+
     }
   };
 
@@ -623,7 +631,14 @@ const Categories = () => {
               onClick={deleteCategory}
               className="px-6 py-3 text-base bg-red-400 hover:bg-red-500"
             >
-              Delete Category
+            {deleteLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Category"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

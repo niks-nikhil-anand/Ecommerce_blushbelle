@@ -1,10 +1,8 @@
-
-
 import connectDB from "@/lib/dbConnect";
+import deleteImage from "@/lib/deleteImages";
 import subCategoryModels from "@/models/subCategoryModels";
 import { NextResponse } from "next/server";
 
-// Get subcategory by ID
 export const GET = async (req, { params }) => {
   try {
     console.log("Connecting to the database...");
@@ -52,11 +50,23 @@ export const DELETE = async (req, { params }) => {
       return NextResponse.json({ msg: "Subcategory ID is required" }, { status: 400 });
     }
 
-    const deletedSubcategory = await subCategoryModel.findByIdAndDelete(subcategoryId);
+    const deletedSubcategory = await subCategoryModels.findByIdAndDelete(subcategoryId);
 
     if (!deletedSubcategory) {
       console.warn("Subcategory not found.");
       return NextResponse.json({ msg: "Subcategory not found" }, { status: 404 });
+    }
+
+    if (deletedSubcategory.image) {
+      console.log("Found associated image. Attempting to delete from Cloudinary:", deletedCategory.image);
+      try {
+        await deleteImage(deletedSubcategory.image);
+        console.log("Image deleted from Cloudinary successfully.");
+      } catch (cloudErr) {
+        console.error("Failed to delete image from Cloudinary:", cloudErr.message);
+      }
+    } else {
+      console.log("No image found for this category.");
     }
 
     console.log("Subcategory deleted successfully:", deletedSubcategory);
@@ -67,8 +77,6 @@ export const DELETE = async (req, { params }) => {
   }
 };
 
-// PATCH /api/admin/dashboard/subcategory/:id
-// Update subcategory by ID
 export const PATCH = async (req, { params }) => {
   try {
     console.log("Connecting to the database...");

@@ -1,4 +1,5 @@
 import connectDB from "@/lib/dbConnect";
+import deleteImage from "@/lib/deleteImages";
 import uploadImage from "@/lib/uploadImages";
 import ingredientModels from "@/models/ingredientModels";
 import { NextResponse } from "next/server";
@@ -110,3 +111,4 @@ export const GET = async (req) => {
     }, { status: 500 });
   }
 };
+

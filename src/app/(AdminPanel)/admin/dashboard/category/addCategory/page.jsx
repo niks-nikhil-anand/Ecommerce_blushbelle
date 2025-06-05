@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 const AddCategoryForm = () => {
   const [name, setName] = useState('');
@@ -22,7 +22,9 @@ const AddCategoryForm = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      toast.success('Category added successfully!');
+      toast("Success", {
+          description: "Category added successfully!",
+        });
       setName('');
       setImage(null);
     } catch (error) {

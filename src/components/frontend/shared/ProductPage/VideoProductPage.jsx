@@ -43,11 +43,7 @@ const VideoPage = () => {
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-red-500 text-lg">
-        Error: {error}
-      </div>
-    );
+    return null;
   }
 
   if (!videoData || videoData.length === 0) {

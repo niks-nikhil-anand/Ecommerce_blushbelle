@@ -75,7 +75,7 @@ const BenefitsProductPage = () => {
                 alt="Product Benefits" 
                 width={300}
                 height={250}
-                className="w-full sm:w-80 lg:w-72 h-auto rounded-2xl shadow-2xl object-cover mx-auto lg:mx-0"
+                className="w-full sm:w-80 lg:w-72 h-auto  object-cover mx-auto lg:mx-0"
               />
             </div>
           </div>
@@ -98,7 +98,7 @@ const BenefitsProductPage = () => {
                 </div>
 
                 {/* Icon */}
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                <div className="w-10 h-10 sm:w-12 sm:h-12  rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                   <Image 
                     src={item.icon} 
                     alt={item.title}

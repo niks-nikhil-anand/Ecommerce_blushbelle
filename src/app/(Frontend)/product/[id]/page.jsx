@@ -589,20 +589,6 @@ const ProductDetail = () => {
                         {product.category?.name || "Supplements"}
                       </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="text-gray-700 font-medium">Tags:</span>
-                      <div className="flex flex-wrap gap-1">
-                        {product.tags?.map((tag, index) => (
-                          <Badge
-                            key={index}
-                            variant="outline"
-                            className="bg-gray-50"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
                   </div>
 
                   {/* Share */}

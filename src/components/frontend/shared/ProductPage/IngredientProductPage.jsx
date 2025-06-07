@@ -119,26 +119,11 @@ const IngredientProductPage = () => {
 
   // Error state
   if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center px-4">
-        <div className="text-center text-red-600 max-w-md mx-auto">
-          <div className="bg-red-50 rounded-lg p-6 border border-red-200">
-            <p className="text-lg font-medium mb-2">Error loading ingredients</p>
-            <p className="text-sm mb-4">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+      return null;
   }
 
   // Don't render the section if no ingredients
-  if (ingredients.length === 0 && !loading && !error) {
+  if (ingredients.length === 0 && !loading ) {
     return null;
   }
 

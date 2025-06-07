@@ -26,7 +26,6 @@ import {
   Loader2,
   Upload,
   Camera,
-  CheckCircle,
   Plus,
   Search,
   ImageIcon,
@@ -37,7 +36,8 @@ import {
   TrendingUp,
   TrendingDown,
   Eye,
-  Hash,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";

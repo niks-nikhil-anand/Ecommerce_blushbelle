@@ -249,22 +249,12 @@ const ReviewProductPage = () => {
 
   // Error state
   if (error) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
-        <div className="text-center text-black max-w-md mx-auto">
-          <div className="bg-white rounded-lg p-4 sm:p-6 border-2 border-gray-200">
-            <p className="text-base sm:text-lg font-medium mb-2">Error loading reviews</p>
-            <p className="text-xs sm:text-sm mb-4 text-gray-600">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm sm:text-base"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
+  }
+
+  // Return null if no reviews found (this is the key change)
+  if (!loading && reviews.length === 0) {
+    return null;
   }
 
   return (
@@ -444,94 +434,82 @@ const ReviewProductPage = () => {
         </AnimatePresence>
 
         {/* Reviews Grid */}
-        {reviews.length === 0 && !loading && !error ? (
-          <div className="text-center text-gray-600 max-w-md mx-auto">
-            <div className="bg-white rounded-lg p-6 sm:p-8 border border-gray-200 shadow-sm">
-              <Star className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-base sm:text-lg font-medium mb-2 text-black">No Reviews Yet</p>
-              <p className="text-xs sm:text-sm text-gray-600">Be the first to review this product!</p>
-            </div>
-          </div>
-        ) : (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8"
-            >
-              <AnimatePresence>
-                {displayedReviews.map((review, index) => (
-                  <motion.div
-                    key={review._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl border border-gray-200 transition-shadow duration-300 cursor-pointer relative group flex flex-col"
-                    onClick={() => openModal(review)}
-                  >
-                    {/* Card content */}
-                    <div className="p-3 sm:p-4 lg:p-6 flex flex-col">
-                      {/* Header with rating and date */}
-                      <div className="flex items-start justify-between mb-2 sm:mb-3 lg:mb-4">
-                        <div className="flex flex-col">
-                          <div className="flex space-x-1 mb-1">
-                            {renderStars(review.rating || 0)}
-                          </div>
-                          <div className="flex items-center text-xs text-gray-500">
-                            <Calendar className="w-3 h-3 mr-1" />
-                            {formatDate(review.createdAt || review.date)}
-                          </div>
-                        </div>
-                        <div className="flex items-center text-gray-600">
-                          <User className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                          <span className="text-xs font-medium truncate max-w-16 sm:max-w-20">
-                            {review.name || 'Anonymous'}
-                          </span>
-                        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8"
+        >
+          <AnimatePresence>
+            {displayedReviews.map((review, index) => (
+              <motion.div
+                key={review._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl border border-gray-200 transition-shadow duration-300 cursor-pointer relative group flex flex-col"
+                onClick={() => openModal(review)}
+              >
+                {/* Card content */}
+                <div className="p-3 sm:p-4 lg:p-6 flex flex-col">
+                  {/* Header with rating and date */}
+                  <div className="flex items-start justify-between mb-2 sm:mb-3 lg:mb-4">
+                    <div className="flex flex-col">
+                      <div className="flex space-x-1 mb-1">
+                        {renderStars(review.rating || 0)}
                       </div>
-
-                      {/* Review title */}
-                      <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-black mb-2 sm:mb-3 leading-tight line-clamp-2">
-                        {review.reviewTitle || 'No title'}
-                      </h3>
-
-                      {/* Review text - flexible space */}
-                      <div className="flex-1 overflow-hidden">
-                        <p className="text-gray-600 text-xs sm:text-sm leading-relaxed line-clamp-3 sm:line-clamp-4 lg:line-clamp-5">
-                          {review.review || 'No review text available'}
-                        </p>
-                      </div>
-
-                      {/* Hover icon */}
-                      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 lg:top-4 lg:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 bg-green-100 rounded-full flex items-center justify-center">
-                          <Plus className="w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-4 lg:h-4 text-green-600" />
-                        </div>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <Calendar className="w-3 h-3 mr-1" />
+                        {formatDate(review.createdAt || review.date)}
                       </div>
                     </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
+                    <div className="flex items-center text-gray-600">
+                      <User className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                      <span className="text-xs font-medium truncate max-w-16 sm:max-w-20">
+                        {review.name || 'Anonymous'}
+                      </span>
+                    </div>
+                  </div>
 
-            {hasMoreReviews && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="text-center"
-              >
-                <button
-                  onClick={toggleShowAll}
-                  className="px-4 sm:px-6 lg:px-8 py-2 sm:py-3 bg-green-600 text-white font-medium rounded-full hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-xs sm:text-sm lg:text-base"
-                >
-                  {showAll ? `View Less (showing ${reviews.length})` : `View All (${reviews.length - 6} more)`}
-                </button>
+                  {/* Review title */}
+                  <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-black mb-2 sm:mb-3 leading-tight line-clamp-2">
+                    {review.reviewTitle || 'No title'}
+                  </h3>
+
+                  {/* Review text - flexible space */}
+                  <div className="flex-1 overflow-hidden">
+                    <p className="text-gray-600 text-xs sm:text-sm leading-relaxed line-clamp-3 sm:line-clamp-4 lg:line-clamp-5">
+                      {review.review || 'No review text available'}
+                    </p>
+                  </div>
+
+                  {/* Hover icon */}
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3 lg:top-4 lg:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <Plus className="w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-4 lg:h-4 text-green-600" />
+                    </div>
+                  </div>
+                </div>
               </motion.div>
-            )}
-          </>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        {hasMoreReviews && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="text-center"
+          >
+            <button
+              onClick={toggleShowAll}
+              className="px-4 sm:px-6 lg:px-8 py-2 sm:py-3 bg-green-600 text-white font-medium rounded-full hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-xs sm:text-sm lg:text-base"
+            >
+              {showAll ? `View Less (showing ${reviews.length})` : `View All (${reviews.length - 6} more)`}
+            </button>
+          </motion.div>
         )}
 
         {/* Modal */}

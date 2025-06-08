@@ -5,10 +5,9 @@ import WhyChooseBrainbite from "@/components/frontend/ui/WhyChooseBrainbite";
 import FeatureHighlights from "@/components/frontend/ui/FeatureHighlights";
 import StaticPlayer from "@/components/frontend/ui/StaticPlayer";
 import ProductFeatures from "@/components/frontend/ui/ProductFeatures";
-import SmartIQGrid from "@/components/frontend/ui/SmartIQGrid";
-import GenuisKidGrid from "@/components/frontend/ui/GenuisKidGrid";
 import CategoriesSection from "@/components/frontend/ui/CategorySection";
 import FeaturedProductSection from "@/components/frontend/ui/ProductForSale";
+import HomePageProductGrid from "@/components/frontend/ui/HomePageProductGrid";
 
 export default function Home() {
   return (
@@ -18,8 +17,7 @@ export default function Home() {
     <CategoriesSection/>
     <FeaturedProductSection/>
     <ProductFeatures/>
-    <GenuisKidGrid/>
-    <SmartIQGrid/>
+    <HomePageProductGrid/>
     <StaticPlayer/>
     <ProductIngredients/>
     <WhyChooseBrainbite/>

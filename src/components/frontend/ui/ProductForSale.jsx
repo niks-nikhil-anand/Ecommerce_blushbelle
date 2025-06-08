@@ -66,9 +66,20 @@ const FeaturedProductSection = () => {
     visible: { opacity: 1, y: 0 }
   };
 
+  const ViewAllButton = () => (
+    <Button
+      variant="outline"
+      className="border-green-600 text-green-600 hover:bg-green-50 flex items-center"
+      onClick={handleViewAllClick}
+    >
+      View All Products
+      <ArrowRight className="ml-2 h-4 w-4" />
+    </Button>
+  );
+
   return (
-    <section className="w-full  py-12 px-4 sm:px-8">
-      {/* Section Header  bg-gradient-to-b from-green-50 to-white */}
+    <section className="w-full py-12 px-4 sm:px-8">
+      {/* Section Header */}
       <div className="mx-auto">
         <div className="flex items-center mb-2">
           <Leaf className="h-5 w-5 text-green-600 mr-2" />
@@ -79,14 +90,10 @@ const FeaturedProductSection = () => {
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Featured Products</h2>
           </div>
-          <Button
-            variant="outline"
-            className="mt-4 sm:mt-0 border-green-600 text-green-600 hover:bg-green-50 flex items-center"
-            onClick={handleViewAllClick}
-          >
-            View All Products
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          {/* Show button on desktop only */}
+          <div className="hidden sm:block mt-4 sm:mt-0">
+            <ViewAllButton />
+          </div>
         </div>
 
         {/* Error Message */}
@@ -133,18 +140,25 @@ const FeaturedProductSection = () => {
             </Button>
           </div>
         ) : (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-          >
-            {featuredProducts.map((product) => (
-              <motion.div key={product._id} variants={itemVariants}>
-                <ProductCard product={product} />
-              </motion.div>
-            ))}
-          </motion.div>
+          <>
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            >
+              {featuredProducts.map((product) => (
+                <motion.div key={product._id} variants={itemVariants}>
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </motion.div>
+            
+            {/* Show button below cards on mobile only */}
+            <div className="sm:hidden mt-8 text-center">
+              <ViewAllButton />
+            </div>
+          </>
         )}
       </div>
     </section>

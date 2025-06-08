@@ -34,12 +34,7 @@ const VideoPage = () => {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <Loader2 className="animate-spin w-10 h-10 mr-2" />
-        Loading video...
-      </div>
-    );
+    return null;
   }
 
   if (error) {

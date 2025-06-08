@@ -13,9 +13,6 @@ import {
 import {
   AiOutlineMinus,
   AiOutlinePlus,
-  AiOutlineLeft,
-  AiOutlineRight,
-  AiOutlineClose,
 } from "react-icons/ai";
 import Loader from "@/components/loader/loader";
 import RelatedProducts from "@/components/frontend/shared/ProductPage/RelatedProducts";
@@ -39,14 +36,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 import BlogProductPage from "@/components/frontend/shared/ProductPage/BlogProductPage";
 import IngredientProductPage from "@/components/frontend/shared/ProductPage/IngredientProductPage";
 import BenefitsProductPage from "@/components/frontend/shared/ProductPage/BenefitsProductPage";
@@ -66,7 +56,6 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedPack, setSelectedPack] = useState(1); // New state for pack selection
   const [addedToCart, setAddedToCart] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
 
   useEffect(() => {
     const urlPath = window.location.pathname;
@@ -165,22 +154,6 @@ const ProductDetail = () => {
     setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
   };
 
-  const nextImage = () => {
-    setCurrentImageIndex(
-      (prevIndex) => (prevIndex + 1) % product.images.length
-    );
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex(
-      (prevIndex) =>
-        (prevIndex - 1 + product.images.length) % product.images.length
-    );
-  };
-
-  const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
-  };
 
   // Pack selection handler
   const handlePackSelection = (packNumber) => {
@@ -191,20 +164,8 @@ const ProductDetail = () => {
     return <div>Product not found.</div>;
   }
 
-  const {
-    name,
-    description,
-    images,
-    salePrice,
-    originalPrice,
-    featuredImage,
-    ratings,
-    descriptionImage,
-    servingPerBottle,
-    suggestedUse,
-    ingredients,
-    productHighlights,
-  } = product;
+  const { name, images, salePrice, originalPrice, ratings, productHighlights } =
+    product;
 
   const averageRating = ratings?.average || 4.2;
   const currentImage = images[currentImageIndex];
@@ -278,7 +239,7 @@ const ProductDetail = () => {
                           alt={`Product thumbnail ${index + 1}`}
                           width={100}
                           height={100}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       </motion.div>
                     ))}
@@ -289,7 +250,6 @@ const ProductDetail = () => {
                     <div className="aspect-square bg-white rounded-xl overflow-hidden shadow-sm">
                       <motion.div
                         className="w-full h-full flex items-center justify-center cursor-pointer"
-                        onClick={toggleFullScreen}
                       >
                         <Image
                           src={currentImage}
@@ -320,7 +280,7 @@ const ProductDetail = () => {
                                   alt={`Thumbnail ${index + 1}`}
                                   width={80}
                                   height={80}
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full object-contain"
                                 />
                               </div>
                             </CarouselItem>
@@ -341,7 +301,7 @@ const ProductDetail = () => {
                   <div>
                     <div className="flex items-center justify-between">
                       <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
-                        {name}
+                        {product.name}
                       </h1>
                       <Badge
                         variant={product.stock > 0 ? "success" : "destructive"}
@@ -378,11 +338,11 @@ const ProductDetail = () => {
                   {/* Price */}
                   <div className="flex items-center gap-3">
                     <span className="text-3xl font-bold text-green-600">
-                      ₹{getPackPrice(selectedPack)}
+                      ₹{getPackPrice(selectedPack) * quantity}
                     </span>
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-400 line-through">
-                        ₹{getPackOriginalPrice(selectedPack)}
+                        ₹{getPackOriginalPrice(selectedPack) * quantity}
                       </span>
                       <Badge
                         variant="outline"
@@ -398,15 +358,13 @@ const ProductDetail = () => {
                       </Badge>
                     </div>
                   </div>
-
                   <Separator />
 
-                  {/* Short Description */}
                   <div>
                     <p className="text-gray-700">
-                      Brain Bite is a powerful supplement designed to boost
-                      cognitive function, memory, and focus. Made with natural
-                      ingredients.
+                      {product.purpose.length > 150
+                        ? `${product.purpose.substring(0, 150)}...`
+                        : product.purpose}
                     </p>
                   </div>
 
@@ -439,22 +397,6 @@ const ProductDetail = () => {
                           </div>
                           <span className="text-sm text-gray-700">
                             Clinically Tested
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="text-green-500">
-                            <FaCheckCircle size={16} />
-                          </div>
-                          <span className="text-sm text-gray-700">
-                            Improves Focus
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="text-green-500">
-                            <FaCheckCircle size={16} />
-                          </div>
-                          <span className="text-sm text-gray-700">
-                            Enhances Memory
                           </span>
                         </div>
                       </>
@@ -538,7 +480,7 @@ const ProductDetail = () => {
                   <Separator />
 
                   {/* Quantity and Add to Cart */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="space-y-4">
                     <div className="flex items-center">
                       <span className="text-sm text-gray-700 mr-3">
                         Quantity:
@@ -566,17 +508,25 @@ const ProductDetail = () => {
                       </div>
                     </div>
 
-                    <Button
-                      onClick={handleAddToCart}
-                      className={`${
-                        addedToCart
-                          ? "bg-green-700 hover:bg-green-800"
-                          : "bg-green-600 hover:bg-green-700"
-                      } text-white rounded-full px-8 transition-colors`}
-                      disabled={addedToCart}
-                    >
-                      {addedToCart ? "Added to Cart" : "Add to Cart"}
-                    </Button>
+                    {/* Action Buttons */}
+                    <div className="space-y-3">
+                      <Button
+                        onClick={handleAddToCart}
+                        variant="outline"
+                        className={`${
+                          addedToCart
+                            ? "border-green-600 text-green-700 bg-green-50"
+                            : "border-green-600 text-green-600 hover:bg-green-50"
+                        } rounded-full px-6 transition-colors w-full`}
+                        disabled={addedToCart}
+                      >
+                        {addedToCart ? "Added to Cart" : "Add to Cart"}
+                      </Button>
+
+                      <Button className="bg-green-600 hover:bg-green-700 text-white rounded-full px-8 transition-colors w-full">
+                        Buy Now
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Categories & Tags */}
@@ -604,10 +554,9 @@ const ProductDetail = () => {
           </CardContent>
         </Card>
 
-        {/* Tabs Section */}
         <div className="mt-8">
           <Tabs defaultValue="descriptions" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 md:p-5 p-2 gap-1">
+            <TabsList className="grid w-full grid-cols-2 md:p-5 p-2 gap-1">
               <TabsTrigger
                 value="descriptions"
                 className="text-xs sm:text-sm md:text-base px-1 py-1.5"
@@ -615,7 +564,7 @@ const ProductDetail = () => {
                 Description
               </TabsTrigger>
               <TabsTrigger
-                value="additionalInfo"
+                value="specifications"
                 className="text-xs sm:text-sm md:text-base px-1 py-1.5"
               >
                 Specifications
@@ -629,14 +578,16 @@ const ProductDetail = () => {
               <div className="flex flex-col lg:flex-row gap-8">
                 <div className="lg:w-1/2">
                   <div className="prose max-w-none">
-                    <div dangerouslySetInnerHTML={{ __html: description }} />
+                    <div
+                      dangerouslySetInnerHTML={{ __html: product.description }}
+                    />
                   </div>
                 </div>
 
                 <div className="lg:w-1/2">
                   <div className="rounded-xl overflow-hidden shadow-md">
                     <Image
-                      src={product.descriptionImage || currentImage}
+                      src={product.descriptionImage || product.featuredImage}
                       alt="Product description"
                       width={500}
                       height={350}
@@ -648,7 +599,7 @@ const ProductDetail = () => {
             </TabsContent>
 
             <TabsContent
-              value="additionalInfo"
+              value="specifications"
               className="mt-6 bg-white p-6 rounded-lg shadow-sm"
             >
               <div className="space-y-6">
@@ -656,103 +607,52 @@ const ProductDetail = () => {
                   Product Specifications
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+                <div className="grid grid-cols-1 gap-y-4">
                   <div className="border-b pb-2">
                     <div className="text-sm font-medium text-gray-500">
-                      Serving Size
+                      Purpose
                     </div>
-                    <div>{servingPerBottle || "1 capsule daily"}</div>
-                  </div>
-
-                  <div className="border-b pb-2">
-                    <div className="text-sm font-medium text-gray-500">
-                      Bottle Contains
-                    </div>
-                    <div>60 capsules (2 month supply)</div>
+                    <div>{product.purpose}</div>
                   </div>
 
                   <div className="border-b pb-2">
                     <div className="text-sm font-medium text-gray-500">
                       Suggested Use
                     </div>
-                    <div>
-                      {suggestedUse || "Take 1 capsule daily with food"}
-                    </div>
-                  </div>
-
-                  <div className="border-b pb-2">
-                    <div className="text-sm font-medium text-gray-500">
-                      Storage
-                    </div>
-                    <div>Store in a cool, dry place</div>
+                    <div>{product.suggestedUse}</div>
                   </div>
                 </div>
 
-                <div>
-                  <h4 className="font-medium mb-2">Ingredients</h4>
-                  <p className="text-sm text-gray-700">
-                    {ingredients ||
-                      "Bacopa Monnieri, Ginkgo Biloba, Lion's Mane Mushroom, Phosphatidylserine, Vitamin B Complex"}
-                  </p>
-                </div>
+                {product.tags && product.tags.length > 0 && (
+                  <div>
+                    <h4 className="font-medium mb-2">Tags</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {product.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: product.additionalInfo || "",
-                  }}
-                />
+                {product.additionalInfo && (
+                  <div>
+                    <h4 className=" mb-2 font-bold">Additional Information</h4>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: product.additionalInfo,
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </TabsContent>
           </Tabs>
         </div>
-
-        {/* Fullscreen Image Modal */}
-        {isFullScreen && (
-          <Sheet open={isFullScreen} onOpenChange={setIsFullScreen}>
-            <SheetContent
-              side="center"
-              className="w-screen h-screen flex items-center justify-center bg-black bg-opacity-90 p-0 max-w-full sm:max-w-full"
-            >
-              <SheetHeader className="absolute top-4 right-4 z-10">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleFullScreen}
-                  className="text-white hover:bg-white/20"
-                >
-                  <AiOutlineClose size={24} />
-                </Button>
-              </SheetHeader>
-              <div className="relative w-full h-full flex items-center justify-center">
-                <Image
-                  src={currentImage}
-                  alt={name}
-                  width={1200}
-                  height={1200}
-                  className="object-contain max-h-full max-w-full"
-                />
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={prevImage}
-                  className="absolute left-4 text-white hover:bg-white/20 rounded-full"
-                >
-                  <AiOutlineLeft size={24} />
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={nextImage}
-                  className="absolute right-4 text-white hover:bg-white/20 rounded-full"
-                >
-                  <AiOutlineRight size={24} />
-                </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
-        )}
       </div>
 
       <div>
@@ -764,6 +664,11 @@ const ProductDetail = () => {
         </div>
         <div className="mt-16">
           <BenefitsProductPage />
+          <div className="flex justify-center ">
+            <Button className="bg-green-600 hover:bg-green-700 text-white rounded-full px-12 py-3 text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+              Buy Now
+            </Button>
+          </div>
         </div>
         <div className="mt-16">
           <IngredientProductPage />

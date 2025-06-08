@@ -12,13 +12,13 @@ const ReviewProductPage = () => {
   const [idFromURL, setIdFromURL] = useState("");
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    name: "",
+    email: "",
     rating: 0,
-    reviewTitle: '',
-    review: ''
+    reviewTitle: "",
+    review: "",
   });
 
   useEffect(() => {
@@ -43,11 +43,11 @@ const ReviewProductPage = () => {
         const response = await fetch(
           `/api/admin/dashboard/review/product/${id}`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
-            signal: AbortSignal.timeout(10000) // 10 second timeout
+            signal: AbortSignal.timeout(10000), // 10 second timeout
           }
         );
 
@@ -58,24 +58,28 @@ const ReviewProductPage = () => {
             case 404:
               throw new Error(`Product reviews not found (ID: ${idFromURL})`);
             case 401:
-              throw new Error("Unauthorized access. Please check your credentials.");
+              throw new Error(
+                "Unauthorized access. Please check your credentials."
+              );
             case 403:
-              throw new Error("Access forbidden. You don't have permission to view this data.");
+              throw new Error(
+                "Access forbidden. You don't have permission to view this data."
+              );
             case 500:
               throw new Error("Server error. Please try again later.");
             default:
-              throw new Error(`Server error: ${response.statusText} (${statusCode})`);
+              throw new Error(
+                `Server error: ${response.statusText} (${statusCode})`
+              );
           }
         }
 
         const data = await response.json();
         const reviewsData = Array.isArray(data) ? data : [];
-        
-        setReviews(reviewsData);
 
+        setReviews(reviewsData);
       } catch (error) {
-        
-        if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+        if (error.name === "AbortError" || error.name === "TimeoutError") {
           setError("Request timed out. Please try again.");
         } else if (error instanceof TypeError) {
           setError("Network error. Please check your internet connection.");
@@ -94,8 +98,14 @@ const ReviewProductPage = () => {
 
   const displayedReviews = showAll ? reviews : reviews.slice(0, 6);
   const hasMoreReviews = reviews.length > 6;
-  const averageRating = reviews.length > 0 ? 
-    Math.round((reviews.reduce((acc, review) => acc + (review.rating || 0), 0) / reviews.length) * 10) / 10 : 0;
+  const averageRating =
+    reviews.length > 0
+      ? Math.round(
+          (reviews.reduce((acc, review) => acc + (review.rating || 0), 0) /
+            reviews.length) *
+            10
+        ) / 10
+      : 0;
 
   const openModal = (review) => {
     setSelectedReview(review);
@@ -112,7 +122,7 @@ const ReviewProductPage = () => {
   const handleFormChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -121,11 +131,17 @@ const ReviewProductPage = () => {
   };
 
   const handleSubmitReview = async () => {
-    if (!formData.name || !formData.email || !formData.rating || !formData.reviewTitle || !formData.review) {
-      toast.error('Please fill in all required fields');
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.rating ||
+      !formData.reviewTitle ||
+      !formData.review
+    ) {
+      toast.error("Please fill in all required fields");
       return;
     }
-    
+
     setSubmitting(true);
 
     try {
@@ -136,47 +152,48 @@ const ReviewProductPage = () => {
       }
 
       if (!id) {
-        throw new Error('Invalid product ID. Please refresh and try again.');
+        throw new Error("Invalid product ID. Please refresh and try again.");
       }
 
       const response = await fetch(`/api/admin/dashboard/review/${id}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit review. Please try again.');
+        throw new Error("Failed to submit review. Please try again.");
       }
 
       const newReview = await response.json();
-      
+
       // Add new review to the list with current timestamp
       const reviewWithTimestamp = {
         ...newReview,
         createdAt: new Date().toISOString(),
-        _id: Date.now().toString() // Temporary ID until refresh
+        _id: Date.now().toString(), // Temporary ID until refresh
       };
-      
-      setReviews(prevReviews => [reviewWithTimestamp, ...prevReviews]);
-      
+
+      setReviews((prevReviews) => [reviewWithTimestamp, ...prevReviews]);
+
       // Reset form
       setFormData({
-        name: '',
-        email: '',
+        name: "",
+        email: "",
         rating: 0,
-        reviewTitle: '',
-        review: ''
+        reviewTitle: "",
+        review: "",
       });
-      
+
       setShowReviewForm(false);
-      toast.success('Review submitted successfully!');
-      
+      toast.success("Review submitted successfully!");
     } catch (error) {
-      console.error('Error submitting review:', error);
-      toast.error(error.message || 'Failed to submit review. Please try again.');
+      console.error("Error submitting review:", error);
+      toast.error(
+        error.message || "Failed to submit review. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -200,7 +217,9 @@ const ReviewProductPage = () => {
       <Star
         key={i}
         className={`w-6 h-6 cursor-pointer transition-colors ${
-          i < validRating ? "text-green-500 fill-current" : "text-gray-300 hover:text-green-300"
+          i < validRating
+            ? "text-green-500 fill-current"
+            : "text-gray-300 hover:text-green-300"
         }`}
         onClick={() => onRatingChange(i + 1)}
       />
@@ -208,24 +227,24 @@ const ReviewProductPage = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Date not available';
+    if (!dateString) return "Date not available";
     try {
       const date = new Date(dateString);
-      if (isNaN(date.getTime())) return 'Invalid date';
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
+      if (isNaN(date.getTime())) return "Invalid date";
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
       });
     } catch (error) {
-      return 'Date not available';
+      return "Date not available";
     }
   };
 
   // Get rating distribution with safe defaults
   const getRatingDistribution = () => {
     const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    reviews.forEach(review => {
+    reviews.forEach((review) => {
       if (review.rating && review.rating >= 1 && review.rating <= 5) {
         distribution[review.rating] = (distribution[review.rating] || 0) + 1;
       }
@@ -237,14 +256,7 @@ const ReviewProductPage = () => {
 
   // Loading state
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-black font-medium text-sm sm:text-base">Loading reviews...</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Error state
@@ -256,6 +268,14 @@ const ReviewProductPage = () => {
   if (!loading && reviews.length === 0) {
     return null;
   }
+
+  // Function to limit text to specified number of words
+  const limitWords = (text, wordLimit = 20) => {
+    if (!text) return "";
+    const words = text.split(" ");
+    if (words.length <= wordLimit) return text;
+    return words.slice(0, wordLimit).join(" ") + "......";
+  };
 
   return (
     <div className="w-full bg-white  py-4 sm:py-8 lg:py-12 px-3 sm:px-6 lg:px-8">
@@ -269,7 +289,7 @@ const ReviewProductPage = () => {
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-3 sm:mb-4">
             Customer Reviews
           </h1>
-          
+
           {/* Rating Summary - Only show if there are reviews */}
           {reviews.length > 0 && (
             <>
@@ -283,7 +303,8 @@ const ReviewProductPage = () => {
                   </span>
                 </div>
                 <span className="text-gray-600 font-medium text-sm sm:text-base">
-                  ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
+                  ({reviews.length}{" "}
+                  {reviews.length === 1 ? "review" : "reviews"})
                 </span>
               </div>
 
@@ -291,13 +312,17 @@ const ReviewProductPage = () => {
               <div className="max-w-xs sm:max-w-md mx-auto mb-4 sm:mb-6">
                 {[5, 4, 3, 2, 1].map((rating) => (
                   <div key={rating} className="flex items-center mb-1">
-                    <span className="text-xs sm:text-sm text-gray-600 w-4 sm:w-8">{rating}</span>
+                    <span className="text-xs sm:text-sm text-gray-600 w-4 sm:w-8">
+                      {rating}
+                    </span>
                     <Star className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 fill-current mr-1 sm:mr-2" />
                     <div className="flex-1 bg-gray-200 rounded-full h-1.5 sm:h-2">
                       <div
                         className="bg-green-500 h-1.5 sm:h-2 rounded-full transition-all duration-300"
                         style={{
-                          width: `${(ratingDistribution[rating] / reviews.length) * 100}%`
+                          width: `${
+                            (ratingDistribution[rating] / reviews.length) * 100
+                          }%`,
                         }}
                       ></div>
                     </div>
@@ -316,7 +341,7 @@ const ReviewProductPage = () => {
             className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-green-600 text-white font-medium rounded-full hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm sm:text-base"
           >
             <Edit3 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-            {showReviewForm ? 'Cancel Review' : 'Write a Review'}
+            {showReviewForm ? "Cancel Review" : "Write a Review"}
           </button>
         </motion.div>
 
@@ -325,7 +350,7 @@ const ReviewProductPage = () => {
           {showReviewForm && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
               className="mb-6 sm:mb-8"
@@ -334,11 +359,14 @@ const ReviewProductPage = () => {
                 <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-black mb-4 sm:mb-6">
                   Write Your Review
                 </h2>
-                
+
                 <div className="space-y-4 sm:space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <label className="block text-black font-medium mb-2 text-sm sm:text-base" htmlFor="name">
+                      <label
+                        className="block text-black font-medium mb-2 text-sm sm:text-base"
+                        htmlFor="name"
+                      >
                         Name *
                       </label>
                       <input
@@ -351,9 +379,12 @@ const ReviewProductPage = () => {
                         required
                       />
                     </div>
-                    
+
                     <div>
-                      <label className="block text-black font-medium mb-2 text-sm sm:text-base" htmlFor="email">
+                      <label
+                        className="block text-black font-medium mb-2 text-sm sm:text-base"
+                        htmlFor="email"
+                      >
                         Email *
                       </label>
                       <input
@@ -373,12 +404,18 @@ const ReviewProductPage = () => {
                       Rating *
                     </label>
                     <div className="flex space-x-1">
-                      {renderInteractiveStars(formData.rating, handleRatingChange)}
+                      {renderInteractiveStars(
+                        formData.rating,
+                        handleRatingChange
+                      )}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-black font-medium mb-2 text-sm sm:text-base" htmlFor="reviewTitle">
+                    <label
+                      className="block text-black font-medium mb-2 text-sm sm:text-base"
+                      htmlFor="reviewTitle"
+                    >
                       Review Title *
                     </label>
                     <input
@@ -394,7 +431,10 @@ const ReviewProductPage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-black font-medium mb-2 text-sm sm:text-base" htmlFor="review">
+                    <label
+                      className="block text-black font-medium mb-2 text-sm sm:text-base"
+                      htmlFor="review"
+                    >
                       Your Review *
                     </label>
                     <textarea
@@ -467,20 +507,20 @@ const ReviewProductPage = () => {
                     <div className="flex items-center text-gray-600">
                       <User className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                       <span className="text-xs font-medium truncate max-w-16 sm:max-w-20">
-                        {review.name || 'Anonymous'}
+                        {review.name || "Anonymous"}
                       </span>
                     </div>
                   </div>
 
                   {/* Review title */}
                   <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-black mb-2 sm:mb-3 leading-tight line-clamp-2">
-                    {review.reviewTitle || 'No title'}
+                    {review.reviewTitle || "No title"}
                   </h3>
 
                   {/* Review text - flexible space */}
                   <div className="flex-1 overflow-hidden">
                     <p className="text-gray-600 text-xs sm:text-sm leading-relaxed line-clamp-3 sm:line-clamp-4 lg:line-clamp-5">
-                      {review.review || 'No review text available'}
+                      {limitWords(review.review || "Anonymous", 20)}
                     </p>
                   </div>
 
@@ -507,7 +547,9 @@ const ReviewProductPage = () => {
               onClick={toggleShowAll}
               className="px-4 sm:px-6 lg:px-8 py-2 sm:py-3 bg-green-600 text-white font-medium rounded-full hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-xs sm:text-sm lg:text-base"
             >
-              {showAll ? `View Less (showing ${reviews.length})` : `View All (${reviews.length - 6} more)`}
+              {showAll
+                ? `View Less (showing ${reviews.length})`
+                : `View All (${reviews.length - 6} more)`}
             </button>
           </motion.div>
         )}
@@ -538,9 +580,11 @@ const ReviewProductPage = () => {
                       </div>
                       <div>
                         <h2 className="text-base sm:text-lg lg:text-xl font-bold text-black">
-                          {selectedReview.name || 'Anonymous'}
+                          {selectedReview.name || "Anonymous"}
                         </h2>
-                        <p className="text-xs sm:text-sm text-gray-500">{selectedReview.email || 'Email not provided'}</p>
+                        <p className="text-xs sm:text-sm text-gray-500">
+                          {selectedReview.email || "Email not provided"}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -549,7 +593,9 @@ const ReviewProductPage = () => {
                       </div>
                       <div className="flex items-center text-xs sm:text-sm text-gray-500">
                         <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                        {formatDate(selectedReview.createdAt || selectedReview.date)}
+                        {formatDate(
+                          selectedReview.createdAt || selectedReview.date
+                        )}
                       </div>
                     </div>
                   </div>
@@ -564,10 +610,10 @@ const ReviewProductPage = () => {
                 <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                   <div>
                     <h3 className="text-base sm:text-lg lg:text-xl font-bold text-black mb-2 sm:mb-3">
-                      {selectedReview.reviewTitle || 'No title'}
+                      {selectedReview.reviewTitle || "No title"}
                     </h3>
                     <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
-                      {selectedReview.review || 'No review text available'}
+                      {selectedReview.review || "No review text available"}
                     </p>
                   </div>
                 </div>

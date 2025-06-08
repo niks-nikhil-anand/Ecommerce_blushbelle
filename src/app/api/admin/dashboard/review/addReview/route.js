@@ -1,6 +1,6 @@
 import connectDB from "@/lib/dbConnect";
 import reviewModels from "@/models/reviewModels";
-import productModels from "@/models/productModels"; // Assuming this is where your product schema is defined
+import productModels from "@/models/productModels"; 
 import { NextResponse } from "next/server";
 
 export const POST = async (req) => {
@@ -9,7 +9,7 @@ export const POST = async (req) => {
     await connectDB();
     console.log("Database connected.");
 
-    const formData = await req.json(); // Adjusted to parse JSON
+    const formData = await req.json();
     console.log("Received form data:", formData);
 
     const { name, email, rating, reviewTitle, review, product } = formData;
@@ -31,7 +31,7 @@ export const POST = async (req) => {
 
     // Prepare the review data
     const reviewData = { name, email, rating, reviewTitle, review, product };
-    console.log("Creating review with data:", reviewData);
+    console.log("Creating review with data:");
     await reviewModels.create(reviewData);
 
     console.log("Review added successfully.");
@@ -58,7 +58,7 @@ export const GET = async (req) => {
       return NextResponse.json({ msg: "No reviews found for this product" }, { status: 404 });
     }
 
-    console.log("Reviews found:", reviews);
+    console.log("Reviews found:");
     return NextResponse.json(reviews, { status: 200 });
 
   } catch (error) {

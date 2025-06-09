@@ -10,10 +10,7 @@ import {
   FaTwitter,
   FaWhatsapp,
 } from "react-icons/fa";
-import {
-  AiOutlineMinus,
-  AiOutlinePlus,
-} from "react-icons/ai";
+import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import Loader from "@/components/loader/loader";
 import RelatedProducts from "@/components/frontend/shared/ProductPage/RelatedProducts";
 import {
@@ -54,8 +51,10 @@ const ProductDetail = () => {
   const [progress, setProgress] = useState(0);
   const [activeTab, setActiveTab] = useState("descriptions");
   const [quantity, setQuantity] = useState(1);
-  const [selectedPack, setSelectedPack] = useState(1); // New state for pack selection
+  const [selectedPack, setSelectedPack] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const urlPath = window.location.pathname;
@@ -82,6 +81,65 @@ const ProductDetail = () => {
         });
     }
   }, []);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!idFromURL) return; // Early return if no ID
+
+      try {
+        setError(null);
+
+        const response = await fetch(
+          `/api/admin/dashboard/review/product/${idFromURL}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            signal: AbortSignal.timeout(10000),
+          }
+        );
+
+        if (!response.ok) {
+          const statusCode = response.status;
+          switch (statusCode) {
+            case 404:
+              throw new Error(`Product reviews not found (ID: ${idFromURL})`);
+            case 401:
+              throw new Error(
+                "Unauthorized access. Please check your credentials."
+              );
+            case 403:
+              throw new Error(
+                "Access forbidden. You don't have permission to view this data."
+              );
+            case 500:
+              throw new Error("Server error. Please try again later.");
+            default:
+              throw new Error(
+                `Server error: ${response.statusText} (${statusCode})`
+              );
+          }
+        }
+
+        const data = await response.json();
+        console.log("reviews", data);
+        const reviewsData = Array.isArray(data) ? data : [];
+        setReviews(reviewsData);
+      } catch (error) {
+        if (error.name === "AbortError" || error.name === "TimeoutError") {
+          setError("Request timed out. Please try again.");
+        } else if (error instanceof TypeError) {
+          setError("Network error. Please check your internet connection.");
+        } else {
+          setError(error.message || "Failed to fetch reviews");
+        }
+        setReviews([]);
+      }
+    };
+
+    fetchReviews();
+  }, [idFromURL]);
 
   // Update quantity when pack is selected
   useEffect(() => {
@@ -154,7 +212,6 @@ const ProductDetail = () => {
     setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
   };
 
-
   // Pack selection handler
   const handlePackSelection = (packNumber) => {
     setSelectedPack(packNumber);
@@ -167,8 +224,16 @@ const ProductDetail = () => {
   const { name, images, salePrice, originalPrice, ratings, productHighlights } =
     product;
 
-  const averageRating = ratings?.average || 4.2;
+  const averageRating =
+    reviews.length > 0
+      ? Math.round(
+          (reviews.reduce((acc, review) => acc + (review.rating || 0), 0) /
+            reviews.length) *
+            10
+        ) / 10
+      : 0;
   const currentImage = images[currentImageIndex];
+
   const percentageOff = ((originalPrice - salePrice) / originalPrice) * 100;
 
   // Calculate prices for different packs
@@ -248,9 +313,7 @@ const ProductDetail = () => {
                   {/* Main Image */}
                   <div className="flex-1 relative">
                     <div className="aspect-square bg-white rounded-xl overflow-hidden shadow-sm">
-                      <motion.div
-                        className="w-full h-full flex items-center justify-center cursor-pointer"
-                      >
+                      <motion.div className="w-full h-full flex items-center justify-center cursor-pointer">
                         <Image
                           src={currentImage}
                           alt={name}
@@ -330,7 +393,8 @@ const ProductDetail = () => {
                         ))}
                       </div>
                       <span className="text-sm text-gray-600">
-                        {averageRating} ({ratings?.count || 42} reviews)
+                        {averageRating} ({reviews.length}{" "}
+                        {reviews.length === 1 ? "review" : "reviews"})
                       </span>
                     </div>
                   </div>
@@ -680,7 +744,7 @@ const ProductDetail = () => {
           <BlogProductPage />
         </div>
         <div className="mt-16">
-          <ReviewProductPage />
+          <ReviewProductPage reviews={reviews} />
         </div>
 
         {/* Related Sections */}

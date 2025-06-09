@@ -3,13 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Star, User, Calendar, Edit3, Send } from "lucide-react";
 import { toast } from "sonner";
 
-const ReviewProductPage = () => {
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const ReviewProductPage = ({ reviews: initialReviews = [] }) => {
+  const [reviews, setReviews] = useState(initialReviews);
   const [showAll, setShowAll] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
-  const [idFromURL, setIdFromURL] = useState("");
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -21,80 +18,10 @@ const ReviewProductPage = () => {
     review: "",
   });
 
+  // Update reviews when props change
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Safely get ID from URL
-        let id = "";
-        if (typeof window !== "undefined") {
-          const urlPath = window.location.pathname;
-          id = urlPath.substring(urlPath.lastIndexOf("/") + 1);
-          setIdFromURL(id);
-        }
-
-        if (!id) {
-          throw new Error("No product ID found in URL");
-        }
-
-        // Using fetch instead of axios
-        const response = await fetch(
-          `/api/admin/dashboard/review/product/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            signal: AbortSignal.timeout(10000), // 10 second timeout
-          }
-        );
-
-        if (!response.ok) {
-          // Handle specific error cases
-          const statusCode = response.status;
-          switch (statusCode) {
-            case 404:
-              throw new Error(`Product reviews not found (ID: ${idFromURL})`);
-            case 401:
-              throw new Error(
-                "Unauthorized access. Please check your credentials."
-              );
-            case 403:
-              throw new Error(
-                "Access forbidden. You don't have permission to view this data."
-              );
-            case 500:
-              throw new Error("Server error. Please try again later.");
-            default:
-              throw new Error(
-                `Server error: ${response.statusText} (${statusCode})`
-              );
-          }
-        }
-
-        const data = await response.json();
-        const reviewsData = Array.isArray(data) ? data : [];
-
-        setReviews(reviewsData);
-      } catch (error) {
-        if (error.name === "AbortError" || error.name === "TimeoutError") {
-          setError("Request timed out. Please try again.");
-        } else if (error instanceof TypeError) {
-          setError("Network error. Please check your internet connection.");
-        } else {
-          setError(error.message || "Failed to fetch reviews");
-        }
-
-        setReviews([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReviews();
-  }, []);
+    setReviews(initialReviews);
+  }, [initialReviews]);
 
   const displayedReviews = showAll ? reviews : reviews.slice(0, 6);
   const hasMoreReviews = reviews.length > 6;
@@ -254,19 +181,162 @@ const ReviewProductPage = () => {
 
   const ratingDistribution = getRatingDistribution();
 
-  // Loading state
-  if (loading) {
-    return null;
-  }
+  // Return null if no reviews found
+  if (reviews.length === 0) {
+    return (
+      <div className="w-full bg-white py-4 sm:py-8 lg:py-12 px-3 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-6 sm:mb-8 lg:mb-12"
+          >
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-3 sm:mb-4">
+              Customer Reviews
+            </h1>
+            <p className="text-gray-600 mb-6">No reviews yet. Be the first to review this product!</p>
+            
+            {/* Add Review Button */}
+            <button
+              onClick={() => setShowReviewForm(!showReviewForm)}
+              className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-green-600 text-white font-medium rounded-full hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm sm:text-base"
+            >
+              <Edit3 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              {showReviewForm ? "Cancel Review" : "Write a Review"}
+            </button>
+          </motion.div>
 
-  // Error state
-  if (error) {
-    return null;
-  }
+          {/* Review Form */}
+          <AnimatePresence>
+            {showReviewForm && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mb-6 sm:mb-8"
+              >
+                <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-black mb-4 sm:mb-6">
+                    Write Your Review
+                  </h2>
 
-  // Return null if no reviews found (this is the key change)
-  if (!loading && reviews.length === 0) {
-    return null;
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div>
+                        <label
+                          className="block text-black font-medium mb-2 text-sm sm:text-base"
+                          htmlFor="name"
+                        >
+                          Name *
+                        </label>
+                        <input
+                          type="text"
+                          id="name"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleFormChange}
+                          className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm sm:text-base"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label
+                          className="block text-black font-medium mb-2 text-sm sm:text-base"
+                          htmlFor="email"
+                        >
+                          Email *
+                        </label>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleFormChange}
+                          className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm sm:text-base"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-black font-medium mb-3 text-sm sm:text-base">
+                        Rating *
+                      </label>
+                      <div className="flex space-x-1">
+                        {renderInteractiveStars(
+                          formData.rating,
+                          handleRatingChange
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
+                        className="block text-black font-medium mb-2 text-sm sm:text-base"
+                        htmlFor="reviewTitle"
+                      >
+                        Review Title *
+                      </label>
+                      <input
+                        type="text"
+                        id="reviewTitle"
+                        name="reviewTitle"
+                        value={formData.reviewTitle}
+                        onChange={handleFormChange}
+                        className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm sm:text-base"
+                        placeholder="Sum up your review in a few words"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        className="block text-black font-medium mb-2 text-sm sm:text-base"
+                        htmlFor="review"
+                      >
+                        Your Review *
+                      </label>
+                      <textarea
+                        id="review"
+                        name="review"
+                        value={formData.review}
+                        onChange={handleFormChange}
+                        rows="4"
+                        className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none text-sm sm:text-base"
+                        placeholder="Share your experience with this product..."
+                        required
+                      ></textarea>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleSubmitReview}
+                      disabled={submitting || formData.rating === 0}
+                      className="w-full flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                    >
+                      {submitting ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2"></div>
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                          Submit Review
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    );
   }
 
   // Function to limit text to specified number of words
@@ -290,50 +360,46 @@ const ReviewProductPage = () => {
             Customer Reviews
           </h1>
 
-          {/* Rating Summary - Only show if there are reviews */}
-          {reviews.length > 0 && (
-            <>
-              <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 mb-4 sm:mb-6">
-                <div className="flex items-center space-x-2">
-                  <div className="flex space-x-1">
-                    {renderStars(Math.round(averageRating))}
-                  </div>
-                  <span className="text-lg sm:text-2xl font-bold text-black">
-                    {averageRating.toFixed(1)}
-                  </span>
+          {/* Rating Summary */}
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 mb-4 sm:mb-6">
+            <div className="flex items-center space-x-2">
+              <div className="flex space-x-1">
+                {renderStars(Math.round(averageRating))}
+              </div>
+              <span className="text-lg sm:text-2xl font-bold text-black">
+                {averageRating.toFixed(1)}
+              </span>
+            </div>
+            <span className="text-gray-600 font-medium text-sm sm:text-base">
+              ({reviews.length}{" "}
+              {reviews.length === 1 ? "review" : "reviews"})
+            </span>
+          </div>
+
+          {/* Rating Distribution */}
+          <div className="max-w-xs sm:max-w-md mx-auto mb-4 sm:mb-6">
+            {[5, 4, 3, 2, 1].map((rating) => (
+              <div key={rating} className="flex items-center mb-1">
+                <span className="text-xs sm:text-sm text-gray-600 w-4 sm:w-8">
+                  {rating}
+                </span>
+                <Star className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 fill-current mr-1 sm:mr-2" />
+                <div className="flex-1 bg-gray-200 rounded-full h-1.5 sm:h-2">
+                  <div
+                    className="bg-green-500 h-1.5 sm:h-2 rounded-full transition-all duration-300"
+                    style={{
+                      width: `${
+                        (ratingDistribution[rating] / reviews.length) * 100
+                      }%`,
+                    }}
+                  ></div>
                 </div>
-                <span className="text-gray-600 font-medium text-sm sm:text-base">
-                  ({reviews.length}{" "}
-                  {reviews.length === 1 ? "review" : "reviews"})
+                <span className="text-xs sm:text-sm text-gray-600 w-4 sm:w-8 text-right">
+                  {ratingDistribution[rating] || 0}
                 </span>
               </div>
-
-              {/* Rating Distribution */}
-              <div className="max-w-xs sm:max-w-md mx-auto mb-4 sm:mb-6">
-                {[5, 4, 3, 2, 1].map((rating) => (
-                  <div key={rating} className="flex items-center mb-1">
-                    <span className="text-xs sm:text-sm text-gray-600 w-4 sm:w-8">
-                      {rating}
-                    </span>
-                    <Star className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 fill-current mr-1 sm:mr-2" />
-                    <div className="flex-1 bg-gray-200 rounded-full h-1.5 sm:h-2">
-                      <div
-                        className="bg-green-500 h-1.5 sm:h-2 rounded-full transition-all duration-300"
-                        style={{
-                          width: `${
-                            (ratingDistribution[rating] / reviews.length) * 100
-                          }%`,
-                        }}
-                      ></div>
-                    </div>
-                    <span className="text-xs sm:text-sm text-gray-600 w-4 sm:w-8 text-right">
-                      {ratingDistribution[rating] || 0}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
+            ))}
+          </div>
 
           {/* Add Review Button */}
           <button

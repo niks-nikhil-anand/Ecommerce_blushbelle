@@ -41,7 +41,6 @@ const FAQSection = () => {
         );
 
         const faqsData = Array.isArray(response.data) ? response.data : [];
-        console.log(faqsData[0].faq)
         setFaqs(faqsData[0].faq);
 
       } catch (error) {

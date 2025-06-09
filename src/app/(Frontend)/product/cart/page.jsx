@@ -227,9 +227,9 @@ const Cart = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-2 md:p-4">      
       <div className="flex flex-col md:flex-row items-center justify-between w-full">
-        <h1 className="text-2xl md:text-5xl font-semibold text-orange-600 mb-2 md:mb-4">My Shopping Cart</h1>
+        <h1 className="text-2xl md:text-5xl font-semibold text-green-600 mb-2 md:mb-4">My Shopping Cart</h1>
         <Link href={"/"}>
-          <h1 className="text-sm md:text-xl font-semibold text-blue-500 mb-2 md:mb-4 underline hover:cursor-pointer hover:underline-offset-1">Continue Shopping</h1>
+          <h1 className="text-sm md:text-xl font-semibold text-green-600 mb-2 md:mb-4 underline hover:cursor-pointer hover:underline-offset-1">Continue Shopping</h1>
         </Link>
       </div>
 
@@ -353,7 +353,7 @@ const Cart = () => {
                 <div className="text-center py-10">
                   <p className="text-gray-500 text-sm md:text-base mb-4">Your cart is empty</p>
                   <Link href="/">
-                    <Button variant="default" className="bg-orange-600 hover:bg-orange-700">Go Shopping</Button>
+                    <Button variant="default" className="bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800">Go Shopping</Button>
                   </Link>
                 </div>
               )}
@@ -380,7 +380,7 @@ const Cart = () => {
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                           <Button 
                             variant="default" 
-                            className="rounded-full bg-orange-600 hover:bg-orange-700 w-full"
+                            className="rounded-full bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 w-full"
                             onClick={handleApplyCoupon}
                             disabled={couponLoading}
                           >
@@ -448,7 +448,7 @@ const Cart = () => {
               <Link href="/product/cart/checkoutPage" className="w-full" onClick={handleProceedToCheckout}>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full">
                   <Button 
-                    className="w-full bg-orange-600 hover:bg-orange-700 rounded-full" 
+                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 rounded-full" 
                     disabled={products.length === 0}
                   >
                     Proceed to checkout
